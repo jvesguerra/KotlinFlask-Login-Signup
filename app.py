@@ -69,6 +69,13 @@ class RegisterForm(FlaskForm):
             raise ValidationError(
                 'That email already exists. Please choose a different one.')
 
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[InputRequired(), Email(), Length(min=4, max=120)], render_kw={"placeholder": "Email"})
+
+    password = PasswordField(validators=[
+                             InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
+
+    submit = SubmitField('Login')
 # Test database connection
 try:
     with app.app_context():
@@ -134,7 +141,7 @@ def register():
     if form.validate_on_submit():
         print("Form data:", form.email.data, form.password.data)
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(id=19,email=form.email.data, password=hashed_password,fullname=form.fullname.data,type=0,locationId=0)
+        new_user = User(id=12,email=form.email.data, password=hashed_password,fullname=form.fullname.data,type=0,locationId=2)
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User registered successfully'})
@@ -145,21 +152,16 @@ def register():
 
 @app.route('/signin', methods=['POST'])
 def sign_in():
-    users = fetch_data_from_sqlalchemy()
-
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-
-    user = User.query.filter_by(email=email, password=password).first()
-
-    if user:
-        print("LOGGED IN")
-        #login_user(user)
-        return jsonify({'message': 'User logged in successfully'})
-    else:
-        print("FAILED TO LOG IN")
-        return jsonify({'error': 'Invalid username or password'}), 401
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            if bcrypt.check_password_hash(user.password, form.password.data):
+                print("LOGGED IN")
+                return jsonify({'message': 'User logged in successfully'})
+            else:
+                print("FAILED TO LOG IN")
+                return jsonify({'error': 'Invalid username or password'}), 401
 
 
 # Endpoint to fetch all locations

@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         // TODO: Implement sign-up logic
         val newUser = UserModel(
             userId = 55,
-            fullname = "Joshua Esguerra",
+            fullname = "Shula Carvajal",
             email = email,
             password = password,
             type = 0,
