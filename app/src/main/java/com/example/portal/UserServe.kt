@@ -11,4 +11,7 @@ interface UserServe {
 
     @POST("/signin")
     fun signIn(@Body newUser: UserModel): Call<Void>
+
+    @POST("/register")
+    fun register(@Body newUser: UserModel): Call<Void>
 }
