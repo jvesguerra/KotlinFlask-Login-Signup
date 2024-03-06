@@ -93,8 +93,19 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun signUp(username: String, password: String) {
+    private fun signUp(email: String, password: String) {
         // TODO: Implement sign-up logic
+        val newUser = UserModel(
+            userId = 55,
+            fullname = "Joshua Esguerra",
+            email = email,
+            password = password,
+            type = 0,
+            locationId = 0
+        )
+        retrofitService.register(newUser).enqueueVoid {
+            println("Sign Up")
+        }
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {

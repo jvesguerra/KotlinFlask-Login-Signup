@@ -13,7 +13,12 @@ from flask import Flask, jsonify
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_bcrypt import Bcrypt
+from flask_wtf import FlaskForm, CSRFProtect
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, ValidationError, Email
 
 app = Flask(__name__)
 api = Api(app)
@@ -21,10 +26,13 @@ CORS(app)  # Enable CORS for all routes
 
 # Configure your MySQL database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost/travelbetter-dev'
+app.config['SECRET_KEY'] = 'thisisasecretkey'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['WTF_CSRF_ENABLED'] = False
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
+bcrypt = Bcrypt(app)
 
 # Define the User model
 class User(db.Model):
@@ -44,6 +52,22 @@ class Location(db.Model):
     longitude = db.Column(db.Float)
     timestamp = db.Column(DateTime, default=func.now())
 
+class RegisterForm(FlaskForm):
+    email = StringField('Email', validators=[InputRequired(), Email(), Length(min=4, max=120)], render_kw={"placeholder": "Email"})
+
+    password = PasswordField(validators=[
+                             InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
+
+    fullname = StringField('Full Name', validators=[InputRequired(), Length(min=2, max=255)], render_kw={"placeholder": "Full Name"})
+
+    submit = SubmitField('Register')
+
+    def validate_email(self, email):
+        existing_user_email = User.query.filter_by(
+            email=email.data).first()
+        if existing_user_email:
+            raise ValidationError(
+                'That email already exists. Please choose a different one.')
 
 # Test database connection
 try:
@@ -53,7 +77,6 @@ try:
 except Exception as e:
     print("Failed to connect to the database. Error:", str(e))
 
-
 # Fetch data using SQLAlchemy
 def fetch_data_from_sqlalchemy():
     with app.app_context():
@@ -62,22 +85,6 @@ def fetch_data_from_sqlalchemy():
             return [{'id': user.id, 'fullname': user.fullname, 'email': user.email, 'password': user.password} for user in data]
         except Exception as e:
             return {'error': str(e)}
-
-
-# Endpoint to fetch data
-class DataResource(Resource):
-    def get(self):
-        data = fetch_data_from_sqlalchemy()
-        return jsonify(data)
-
-
-api.add_resource(DataResource, '/data')
-
-
-@app.route('/hello', methods=['GET'])
-def hello():
-    return jsonify(message="Hello from Flask!")
-
 
 # add a User
 @app.route('/add_user', methods=['POST'])
@@ -120,19 +127,20 @@ def add_location():
     return jsonify({'message': 'User added successfully'})
 
 
-@app.route('/signup', methods=['POST'])
-def sign_up():
-    users = fetch_data_from_sqlalchemy()
+@app.route('/register', methods=['POST'])
+def register():
+    form = RegisterForm()
 
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-
-    if username and password:
-        users[username] = password
+    if form.validate_on_submit():
+        print("Form data:", form.email.data, form.password.data)
+        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        new_user = User(id=19,email=form.email.data, password=hashed_password,fullname=form.fullname.data,type=0,locationId=0)
+        db.session.add(new_user)
+        db.session.commit()
         return jsonify({'message': 'User registered successfully'})
     else:
-        return jsonify({'error': 'Invalid username or password'}), 400
+        print(form.errors)
+        return jsonify({'error': 'Invalid registration data'}), 400
 
 
 @app.route('/signin', methods=['POST'])
