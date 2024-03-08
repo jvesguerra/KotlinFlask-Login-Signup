@@ -141,7 +141,7 @@ def register():
     if form.validate_on_submit():
         print("Form data:", form.email.data, form.password.data)
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(id=20,email=form.email.data, password=hashed_password,fullname=form.fullname.data,type=0,locationId=2)
+        new_user = User(id=21,email=form.email.data, password=hashed_password,fullname=form.fullname.data,type=0,locationId=2)
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User registered successfully'})

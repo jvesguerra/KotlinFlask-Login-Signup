@@ -107,6 +107,7 @@ class BlankFragment : Fragment() {
         )
         retrofitService.register(newUser).enqueueVoid {
             println("Sign Up")
+            Navigation.findNavController(view).navigate(R.id.action_mainActivity_to_yourFragment)
         }
     }
 
