@@ -37,12 +37,14 @@ class BlankFragment : Fragment() {
     private lateinit var signInButton: Button
     private lateinit var signUpButton: Button
 
+    private lateinit var view: View
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_blank, container, false)
+        view = inflater.inflate(R.layout.fragment_blank, container, false)
 
         emailEditText = view.findViewById(R.id.editTextEmail)
         passwordEditText = view.findViewById(R.id.editTextPassword)
@@ -53,7 +55,7 @@ class BlankFragment : Fragment() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
             signIn(email, password)
-            Navigation.findNavController(view).navigate(R.id.action_mainActivity_to_yourFragment)
+
         }
 
         signUpButton.setOnClickListener {
@@ -88,6 +90,7 @@ class BlankFragment : Fragment() {
 
         retrofitService.signIn(newUser).enqueueVoid {
             println("Sign in")
+            Navigation.findNavController(view).navigate(R.id.action_mainActivity_to_yourFragment)
 
         }
     }
