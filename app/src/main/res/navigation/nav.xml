@@ -13,6 +13,9 @@
         <action
             android:id="@+id/home"
             app:destination="@id/AdminHome" />
+        <action
+            android:id="@+id/signup"
+            app:destination="@id/signUpPage" />
     </fragment>
     <fragment
         android:id="@+id/AdminHome"
@@ -23,4 +26,9 @@
             android:id="@+id/logout"
             app:destination="@id/LogInPage" />
     </fragment>
+    <fragment
+        android:id="@+id/signUpPage"
+        android:name="com.example.portal.SignUpPage"
+        android:label="signup_page"
+        tools:layout="@layout/signup_page" />
 </navigation>

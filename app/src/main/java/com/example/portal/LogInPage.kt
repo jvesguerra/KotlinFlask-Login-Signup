@@ -126,10 +126,11 @@ class LogInPage : Fragment() {
             type = 0,
             locationId = 0
         )
-        retrofitService.register(newUser).enqueueVoid {
-            println("Sign Up")
-            Navigation.findNavController(view).navigate(R.id.home)
-        }
+        Navigation.findNavController(view).navigate(R.id.signup)
+//        retrofitService.register(newUser).enqueueVoid {
+//            println("Sign Up")
+//
+//        }
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
