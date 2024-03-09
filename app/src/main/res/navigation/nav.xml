@@ -31,4 +31,20 @@
         android:name="com.example.portal.SignUpPage"
         android:label="signup_page"
         tools:layout="@layout/signup_page" />
+        <action
+            android:id="@+id/toDriverSignUp"
+            app:destination="@id/driverSignUp" />
+        <action
+            android:id="@+id/toUserSignUp"
+            app:destination="@id/user_signup" />
+    <fragment
+        android:id="@+id/driverSignUp"
+        android:name="com.example.portal.DriverSignUp"
+        android:label="driver_signup"
+        tools:layout="@layout/driver_signup" />
+    <fragment
+        android:id="@+id/user_signup"
+        android:name="com.example.portal.UserSignUp"
+        android:label="user_signup"
+        tools:layout="@layout/user_signup" />
 </navigation>

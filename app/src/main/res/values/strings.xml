@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Portal</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="admin_home">Admin Home Page</string>
     <string name="sign_up_page">Sign Up Page</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Driver or Commuter -->
+    <string name="sign_up_page_title">Welcome to TravelBetter</string>
+    <string name="sign_up_page_subtitle">Choose an account type to proceed</string>
+    <string name="sign_up_page_driver">Driver</string>
+    <string name="sign_up_page_user">User</string>
 </resources>
