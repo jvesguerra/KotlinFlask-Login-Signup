@@ -20,6 +20,9 @@ from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError, Email
 
+import uuid
+import time
+
 app = Flask(__name__)
 api = Api(app)
 CORS(app)  # Enable CORS for all routes
@@ -139,9 +142,11 @@ def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
+        id = generate_new_user_id()
+        locationId = generate_location_id()
         print("Form data:", form.email.data, form.password.data)
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(id=21,email=form.email.data, password=hashed_password,fullname=form.fullname.data,type=0,locationId=2)
+        new_user = User(id=id, email=form.email.data, password=hashed_password,fullname=form.fullname.data,type=0,locationId=locationId)
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User registered successfully'})
@@ -149,7 +154,16 @@ def register():
         print(form.errors)
         return jsonify({'error': 'Invalid registration data'}), 400
 
+def generate_new_user_id():
+    # Add your logic to generate a new unique user ID here
+    # For example, you can query the database for the maximum ID and add 1
+    max_id = db.session.query(func.max(User.id)).scalar()
+    return max_id + 1 if max_id is not None else 1
 
+def generate_location_id():
+    timestamp = int(time.time() * 1000)
+    random_part = uuid.uuid4().int & (2**63 - 1)
+    return timestamp + random_part
 @app.route('/signin', methods=['POST'])
 def sign_in():
     form = LoginForm()
