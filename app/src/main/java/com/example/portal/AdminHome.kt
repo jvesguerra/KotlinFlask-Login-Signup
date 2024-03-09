@@ -21,7 +21,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [BlankFragment2.newInstance] factory method to
  * create an instance of this fragment.
  */
-class BlankFragment2 : Fragment() {
+class AdminHome : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -41,7 +41,7 @@ class BlankFragment2 : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_blank2, container, false)
+        val view = inflater.inflate(R.layout.admin_home, container, false)
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
 
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
@@ -52,7 +52,7 @@ class BlankFragment2 : Fragment() {
             Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
             // Navigate to your login screen or perform other actions after logout
             // For simplicity, let's navigate back to the previous fragment
-            Navigation.findNavController(view).navigateUp()
+            Navigation.findNavController(view).navigate(R.id.logout)
         }
         return view
     }
@@ -78,7 +78,7 @@ class BlankFragment2 : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            BlankFragment2().apply {
+            AdminHome().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
