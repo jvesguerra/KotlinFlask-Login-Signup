@@ -67,9 +67,10 @@ class LogInPage : Fragment() {
         }
 
         signUpButton.setOnClickListener {
-            val email = emailEditText.text.toString()
-            val password = passwordEditText.text.toString()
-            signUp(email, password)
+            Navigation.findNavController(view).navigate(R.id.signup)
+//            val email = emailEditText.text.toString()
+//            val password = passwordEditText.text.toString()
+//            signUp(email, password)
         }
 
         return view
@@ -116,22 +117,7 @@ class LogInPage : Fragment() {
         }
     }
 
-    private fun signUp(email: String, password: String) {
-        // TODO: Implement sign-up logic
-        val newUser = UserModel(
-            userId = 55,
-            fullname = "Shula Carvajal",
-            email = email,
-            password = password,
-            type = 0,
-            locationId = 0
-        )
-        Navigation.findNavController(view).navigate(R.id.signup)
-//        retrofitService.register(newUser).enqueueVoid {
-//            println("Sign Up")
-//
-//        }
-    }
+
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {

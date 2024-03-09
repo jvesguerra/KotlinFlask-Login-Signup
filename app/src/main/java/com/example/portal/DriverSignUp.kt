@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import androidx.navigation.Navigation
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +24,17 @@ class DriverSignUp : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var view: View
+    private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance().create(UserServe::class.java)
+
+    private lateinit var fullNameEditText: EditText
+    private lateinit var contactNumberEditText: EditText
+    private lateinit var routeEditText: EditText
+    private lateinit var plateNumberEditText: EditText
+    private lateinit var emailEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var buttonSignUp: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -34,9 +48,48 @@ class DriverSignUp : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.driver_signup, container, false)
-    }
+        view = inflater.inflate(R.layout.driver_signup, container, false)
 
+        fullNameEditText = view.findViewById(R.id.editTextFullName)
+        contactNumberEditText = view.findViewById(R.id.editTextContactNumber)
+        routeEditText = view.findViewById(R.id.editTextRoute)
+        plateNumberEditText = view.findViewById(R.id.editTextPlateNumber)
+        emailEditText = view.findViewById(R.id.editTextEmail)
+        passwordEditText = view.findViewById(R.id.editTextPassword)
+        buttonSignUp = view.findViewById(R.id.buttonSignUp)
+
+        buttonSignUp.setOnClickListener {
+            val fullName = fullNameEditText.text.toString()
+            val contactNumber = contactNumberEditText.text.toString()
+            val route = routeEditText.text.toString()
+            val plateNumber = plateNumberEditText.text.toString()
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+
+            // You can use the above values as needed, for example, pass them to a signup function
+            signUp(email, password,fullName)
+
+        }
+
+        return view
+    }
+        private fun signUp(email: String, fullname: String, password: String) {
+            // TODO: Implement sign-up logic
+            val newUser = UserModel(
+                userId = 0,
+                fullname = fullname,
+                email = email,
+                password = password,
+                type = 0,
+                locationId = 0
+            )
+            retrofitService.register(newUser).enqueueVoid {
+                println("Sign Up")
+                // TO DO: CHANGE TO DRIVER HOME
+                Navigation.findNavController(view).navigate(R.id.home)
+
+            }
+        }
     companion object {
         /**
          * Use this factory method to create a new instance of
