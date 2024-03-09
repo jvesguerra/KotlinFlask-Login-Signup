@@ -26,7 +26,7 @@ import retrofit2.Response
 import retrofit2.await
 
 
-class BlankFragment : Fragment() {
+class LogInPage : Fragment() {
     private val RC_SIGN_IN = 123 // Replace with any unique request code
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance().create(UserServe::class.java)
     private var yourWebClientId: String = "562377295927-0rk3t4op4e7kb0mufqif63o0s7gob42i.apps.googleusercontent.com"
@@ -48,7 +48,7 @@ class BlankFragment : Fragment() {
 
 
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_blank, container, false)
+        view = inflater.inflate(R.layout.login_page, container, false)
 
         emailEditText = view.findViewById(R.id.editTextEmail)
         passwordEditText = view.findViewById(R.id.editTextPassword)
@@ -112,7 +112,7 @@ class BlankFragment : Fragment() {
         retrofitService.signIn(newUser).enqueueVoid {
             showToast("Login successful!")
             saveLoginSession()
-            Navigation.findNavController(view).navigate(R.id.action_mainActivity_to_yourFragment)
+            Navigation.findNavController(view).navigate(R.id.home)
         }
     }
 
@@ -128,7 +128,7 @@ class BlankFragment : Fragment() {
         )
         retrofitService.register(newUser).enqueueVoid {
             println("Sign Up")
-            Navigation.findNavController(view).navigate(R.id.action_mainActivity_to_yourFragment)
+            Navigation.findNavController(view).navigate(R.id.home)
         }
     }
 
