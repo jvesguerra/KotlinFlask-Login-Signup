@@ -1,16 +1,20 @@
 package com.example.portal
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.Dispatchers
@@ -20,11 +24,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.await
-import android.widget.EditText
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
-import com.example.portal.GoogleSignInRequest
-import com.example.portal.UserModel
+
 
 class BlankFragment : Fragment() {
     private val RC_SIGN_IN = 123 // Replace with any unique request code
@@ -38,11 +38,15 @@ class BlankFragment : Fragment() {
     private lateinit var signUpButton: Button
 
     private lateinit var view: View
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+
+
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_blank, container, false)
 
@@ -50,6 +54,10 @@ class BlankFragment : Fragment() {
         passwordEditText = view.findViewById(R.id.editTextPassword)
         signInButton = view.findViewById(R.id.buttonSignIn)
         signUpButton = view.findViewById(R.id.buttonSignUp)
+
+        // REMOVE
+        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
 
         signInButton.setOnClickListener {
             val email = emailEditText.text.toString()
@@ -77,6 +85,19 @@ class BlankFragment : Fragment() {
         }
     }
 
+    private fun saveLoginSession() {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("isLoggedIn", true)
+        // You can also save additional information like username, user ID, etc.
+        // editor.putString("username", username)
+        // editor.putString("userId", userId)
+        editor.apply()
+
+        // REMOVE
+        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
+    }
+
     private fun signIn(email: String, password: String) {
         // TODO: Implement sign-in logic
         val newUser = UserModel(
@@ -89,9 +110,9 @@ class BlankFragment : Fragment() {
         )
 
         retrofitService.signIn(newUser).enqueueVoid {
-            println("Sign in")
+            showToast("Login successful!")
+            saveLoginSession()
             Navigation.findNavController(view).navigate(R.id.action_mainActivity_to_yourFragment)
-
         }
     }
 
@@ -143,6 +164,9 @@ class BlankFragment : Fragment() {
                 Log.e("MainActivity", "Error during Google Sign-In: $e")
             }
         }
+    }
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
 
