@@ -88,6 +88,7 @@ class DriverSignUp : Fragment() {
                 // TO DO: CHANGE TO DRIVER HOME
                 Navigation.findNavController(view).navigate(R.id.home)
 
+                
             }
         }
     companion object {
