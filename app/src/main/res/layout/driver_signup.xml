@@ -7,23 +7,28 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/textViewSignUpTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="DRIVER SIGN UP" />
+        android:layout_height="wrap_content"
+        android:text="DRIVER SIGN UP"
+        android:gravity="center"
+        android:layout_marginTop="24dp" />
 
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/textViewSignUpTitle"
+        android:layout_marginTop="16dp"
         android:hint="Email"
         android:inputType="text" />
-
 
     <EditText
         android:id="@+id/editTextFullName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextEmail"
+        android:layout_marginTop="16dp"
         android:hint="Full Name"
         android:inputType="text" />
 
@@ -70,4 +75,5 @@
         android:layout_below="@id/editTextPlateNumber"
         android:layout_marginTop="16dp"
         android:text="Sign Up" />
+
 </RelativeLayout>

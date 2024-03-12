@@ -1,34 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignUpPage">
 
     <!-- TODO: Update blank fragment layout -->
+
     <TextView
+        android:id="@+id/sign_up_page_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/sign_up_page_title" />
 
     <TextView
+        android:id="@+id/sign_up_page_subtitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sign_up_page_title"
+        android:layout_marginTop="8dp"
         android:text="@string/sign_up_page_subtitle" />
 
     <Button
         android:id="@+id/toDriverSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DRIVER"
-        android:layout_gravity="center" />
+        android:layout_below="@id/sign_up_page_subtitle"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"
+        android:text="DRIVER" />
 
     <Button
         android:id="@+id/toUserSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/toDriverSignUp"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"
         android:text="USER"
-        android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="16dp" />
 
-</FrameLayout>
+</RelativeLayout>
