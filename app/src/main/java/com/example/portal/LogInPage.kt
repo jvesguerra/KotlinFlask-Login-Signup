@@ -129,9 +129,17 @@ class LogInPage : Fragment() {
             val stringNumber: String = userType.toString()
             //showToast("Login successful!")
             showToast(stringNumber)
-            if (userType == 1) {
+            // admin homepage
+            if (userType == 0) {
+                Navigation.findNavController(view).navigate(R.id.home)
+            // user homepage
+            }else if(userType == 1){
                 Navigation.findNavController(view).navigate(R.id.userHome)
+            // driver homepage
+            }else if(userType == 2){
+                Navigation.findNavController(view).navigate(R.id.toDriverHome)
             }
+
         } ?: showToast("Failed to retrieve user details")
     }
 
