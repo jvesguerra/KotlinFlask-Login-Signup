@@ -14,6 +14,9 @@
             android:id="@+id/home"
             app:destination="@id/AdminHome" />
         <action
+            android:id="@+id/userHome"
+            app:destination="@id/userHome1" />
+        <action
             android:id="@+id/signup"
             app:destination="@id/signUpPage" />
     </fragment>
@@ -47,4 +50,12 @@
         android:name="com.example.portal.UserSignUp"
         android:label="user_signup"
         tools:layout="@layout/user_signup" />
+        <action
+            android:id="@+id/toUserHome1"
+            app:destination="@id/userHome1" />
+    <fragment
+        android:id="@+id/userHome1"
+        android:name="com.example.portal.UserHome1"
+        android:label="user_home1"
+        tools:layout="@layout/user_home1" />
 </navigation>

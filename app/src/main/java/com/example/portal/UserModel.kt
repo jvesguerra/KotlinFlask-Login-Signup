@@ -15,9 +15,14 @@ class UserModel (
     @SerializedName("password")
     val password: String,
 
-    @SerializedName("type")
-    val type: Int,
+    @SerializedName("userType")
+    val userType: Int,
 
     @SerializedName("locationId")
     val locationId: Long,
+)
+
+data class UserResponse(
+    @SerializedName("message") val message: String?,
+    @SerializedName("user") val user: UserModel?
 )

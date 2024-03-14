@@ -86,35 +86,53 @@ class LogInPage : Fragment() {
         }
     }
 
-    private fun saveLoginSession() {
+    private fun saveLoginSession(userType: Int) {
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)
-        // You can also save additional information like username, user ID, etc.
-        // editor.putString("username", username)
-        // editor.putString("userId", userId)
+        editor.putInt("userType", userType) // Save user type in SharedPreferences
         editor.apply()
-
-        // REMOVE
-        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
-        Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
     }
 
     private fun signIn(email: String, password: String) {
-        // TODO: Implement sign-in logic
         val newUser = UserModel(
             userId = 0,
             fullname = "admin",
             email = email,
             password = password,
-            type = 0,
+            userType = 0,
             locationId = 0
         )
 
-        retrofitService.signIn(newUser).enqueueVoid {
-            showToast("Login successful!")
-            saveLoginSession()
-            Navigation.findNavController(view).navigate(R.id.home)
-        }
+        val call = retrofitService.signIn(newUser)
+        call.enqueue(object : Callback<UserResponse> {
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                if (response.isSuccessful) {
+                    val userResponse = response.body()
+                    userResponse?.let { handleSignInSuccess(it) }
+                } else {
+                    showToast("Failed to sign in: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                showToast("Failed to sign in: ${t.message}")
+            }
+        })
+    }
+
+    private fun handleSignInSuccess(userResponse: UserResponse) {
+        val user = userResponse.user
+        user?.let {
+            val userType = it.userType
+            saveLoginSession(userType)
+
+            val stringNumber: String = userType.toString()
+            //showToast("Login successful!")
+            showToast(stringNumber)
+            if (userType == 1) {
+                Navigation.findNavController(view).navigate(R.id.userHome)
+            }
+        } ?: showToast("Failed to retrieve user details")
     }
 
 
@@ -172,6 +190,18 @@ fun Call<Void>.enqueueVoid(callback: () -> Unit) {
 
         override fun onFailure(call: Call<Void>, t: Throwable) {
             println("Network request failed: ${t.message}")
+        }
+    })
+}
+
+fun <T> Call<T>.enqueue(callback: (Response<T>) -> Unit) {
+    enqueue(object : Callback<T> {
+        override fun onResponse(call: Call<T>, response: Response<T>) {
+            callback(response)
+        }
+
+        override fun onFailure(call: Call<T>, t: Throwable) {
+            Log.e("Network request failed", t.message ?: "Unknown error")
         }
     })
 }

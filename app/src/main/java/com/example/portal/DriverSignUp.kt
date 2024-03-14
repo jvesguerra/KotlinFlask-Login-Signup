@@ -80,7 +80,7 @@ class DriverSignUp : Fragment() {
                 fullname = fullname,
                 email = email,
                 password = password,
-                type = 0,
+                userType = 0,
                 locationId = 0
             )
             retrofitService.register(newUser).enqueueVoid {
