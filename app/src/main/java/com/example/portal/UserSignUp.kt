@@ -63,7 +63,7 @@ class UserSignUp : Fragment() {
             val password = passwordEditText.text.toString()
 
             // You can use the above values as needed, for example, pass them to a signup function
-            signUp(email, password,fullName)
+            signUp(email, fullName, password,)
 
         }
 
@@ -77,7 +77,7 @@ class UserSignUp : Fragment() {
             fullname = fullname,
             email = email,
             password = password,
-            type = 0,
+            userType = 0,
             locationId = 0
         )
         retrofitService.register(newUser).enqueueVoid {
