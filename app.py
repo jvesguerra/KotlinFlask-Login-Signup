@@ -14,7 +14,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm, CSRFProtect
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField
 from wtforms.validators import InputRequired, Length, ValidationError, Email
 import uuid
 import time
@@ -80,11 +80,10 @@ def generate_location_id():
 
 class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(), Email(), Length(min=4, max=120)], render_kw={"placeholder": "Email"})
-
     password = PasswordField(validators=[
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
-
     fullname = StringField('Full Name', validators=[InputRequired(), Length(min=2, max=255)], render_kw={"placeholder": "Full Name"})
+    userType = IntegerField('User Type')
 
     submit = SubmitField('Register')
 
@@ -97,12 +96,12 @@ class RegisterForm(FlaskForm):
 @app.route('/register', methods=['POST'])
 def register():
     form = RegisterForm()
-    print("Form data:", form.email.data, form.password.data, form.password.data)
+    print("Form data:", form.email.data, form.fullname.data, form.password.data)
     if form.validate_on_submit():
         userId = generate_new_user_id()
         locationId = generate_location_id()
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(userId=userId, email=form.email.data, password=hashed_password,fullname=form.fullname.data,userType=0,locationId=locationId)
+        new_user = User(userId=userId, fullname=form.fullname.data, email=form.email.data, password=hashed_password,userType=form.userType.data,locationId=locationId)
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User registered successfully'})

@@ -17,6 +17,9 @@
             android:id="@+id/userHome"
             app:destination="@id/userHome1" />
         <action
+            android:id="@+id/toDriverHome"
+            app:destination="@id/driverHome" />
+        <action
             android:id="@+id/signup"
             app:destination="@id/signUpPage" />
     </fragment>
@@ -40,11 +43,16 @@
         <action
             android:id="@+id/toUserSignUp"
             app:destination="@id/user_signup" />
+
     <fragment
         android:id="@+id/driverSignUp"
         android:name="com.example.portal.DriverSignUp"
         android:label="driver_signup"
         tools:layout="@layout/driver_signup" />
+        <action
+            android:id="@+id/toDriverHome"
+            app:destination="@id/driverHome" />
+
     <fragment
         android:id="@+id/user_signup"
         android:name="com.example.portal.UserSignUp"
@@ -53,9 +61,15 @@
         <action
             android:id="@+id/toUserHome1"
             app:destination="@id/userHome1" />
+
     <fragment
         android:id="@+id/userHome1"
         android:name="com.example.portal.UserHome1"
         android:label="user_home1"
         tools:layout="@layout/user_home1" />
+    <fragment
+        android:id="@+id/driverHome"
+        android:name="com.example.portal.DriverHome"
+        android:label="driver_home"
+        tools:layout="@layout/driver_home" />
 </navigation>

@@ -77,15 +77,12 @@ class UserSignUp : Fragment() {
             fullname = fullname,
             email = email,
             password = password,
-            userType = 0,
+            userType = 1,
             locationId = 0
         )
         retrofitService.register(newUser).enqueueVoid {
             println("Sign Up")
-            // TO DO: CHANGE TO DRIVER HOME
-            Navigation.findNavController(view).navigate(R.id.home)
-
-
+            Navigation.findNavController(view).navigate(R.id.toUserHome1)
         }
     }
 

@@ -67,7 +67,7 @@ class DriverSignUp : Fragment() {
             val password = passwordEditText.text.toString()
 
             // You can use the above values as needed, for example, pass them to a signup function
-            signUp(email, password,fullName)
+            signUp(email, fullName, password)
 
         }
 
@@ -80,13 +80,12 @@ class DriverSignUp : Fragment() {
                 fullname = fullname,
                 email = email,
                 password = password,
-                userType = 0,
+                userType = 2,
                 locationId = 0
             )
             retrofitService.register(newUser).enqueueVoid {
                 println("Sign Up")
-                // TO DO: CHANGE TO DRIVER HOME
-                Navigation.findNavController(view).navigate(R.id.home)
+                Navigation.findNavController(view).navigate(R.id.toDriverHome)
 
                 
             }
