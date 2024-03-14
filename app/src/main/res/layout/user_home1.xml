@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UserHome1">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- TextView for displaying "ROUTES" -->
     <TextView
+        android:id="@+id/textViewRoutes"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="USER HOME 1" />
+        android:layout_height="wrap_content"
+        android:text="ROUTES"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:layout_centerHorizontal="true" />
 
-</FrameLayout>
+    <!-- Button for action 1 -->
+    <Button
+        android:id="@+id/btnForestry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Forestry"
+        android:layout_below="@id/textViewRoutes"
+        android:layout_marginTop="16dp" />
+
+    <!-- Button for action 2 -->
+    <Button
+        android:id="@+id/btnRural"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rural"
+        android:layout_below="@id/btnForestry"
+        android:layout_marginTop="16dp" />
+
+</RelativeLayout>
