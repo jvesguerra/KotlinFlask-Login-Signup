@@ -81,7 +81,8 @@ class DriverSignUp : Fragment() {
                 email = email,
                 password = password,
                 userType = 2,
-                locationId = 0
+                locationId = 0,
+                isActive = true
             )
             retrofitService.register(newUser).enqueueVoid {
                 println("Sign Up")

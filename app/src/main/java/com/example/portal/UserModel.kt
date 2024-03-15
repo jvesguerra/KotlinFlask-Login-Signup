@@ -20,6 +20,9 @@ class UserModel (
 
     @SerializedName("locationId")
     val locationId: Long,
+
+    @SerializedName("isActive")
+    val isActive: Boolean,
 )
 
 data class UserResponse(
