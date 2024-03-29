@@ -5,14 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".LogInPage">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="text" />
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/editTextPassword"
@@ -20,8 +19,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextEmail"
         android:layout_marginTop="16dp"
-        android:hint="Password"
-        android:inputType="textPassword" />
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:autofillHints="" />
 
     <Button
         android:id="@+id/buttonSignIn"
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextPassword"
         android:layout_marginTop="16dp"
-        android:text="Sign In" />
+        android:text="@string/sign_in" />
 
     <Button
         android:id="@+id/buttonSignUp"
@@ -37,13 +37,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/buttonSignIn"
         android:layout_marginTop="16dp"
-        android:text="Sign Up" />
+        android:text="@string/sign_up" />
 
     <Button
         android:id="@+id/signInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Sign In with Google" />
+        android:text="@string/sign_in_with_google" />
 
 </RelativeLayout>
