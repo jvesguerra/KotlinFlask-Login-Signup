@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/AdminHome"
-        android:name="com.example.portal.AdminHome"
+        android:name="com.example.portal.admin.AdminHome"
         android:label="fragment_blank2"
         tools:layout="@layout/admin_home">
         <action
@@ -46,7 +46,7 @@
 
     <fragment
         android:id="@+id/driverSignUp"
-        android:name="com.example.portal.DriverSignUp"
+        android:name="com.example.portal.driver.DriverSignUp"
         android:label="driver_signup"
         tools:layout="@layout/driver_signup" />
         <action
@@ -55,13 +55,13 @@
 
     <fragment
         android:id="@+id/driverHome"
-        android:name="com.example.portal.DriverHome"
+        android:name="com.example.portal.driver.DriverHome"
         android:label="driver_home"
         tools:layout="@layout/driver_home" />
 
     <fragment
         android:id="@+id/user_signup"
-        android:name="com.example.portal.UserSignUp"
+        android:name="com.example.portal.user.UserSignUp"
         android:label="user_signup"
         tools:layout="@layout/user_signup" />
         <action
@@ -70,7 +70,7 @@
 
     <fragment
         android:id="@+id/userHome1"
-        android:name="com.example.portal.UserHome1"
+        android:name="com.example.portal.user.UserHome1"
         android:label="user_home1"
         tools:layout="@layout/user_home1" />
         <action
@@ -79,7 +79,7 @@
 
     <fragment
         android:id="@+id/userHome2"
-        android:name="com.example.portal.UserHome2"
+        android:name="com.example.portal.user.UserHome2"
         android:label="user_home2"
         tools:layout="@layout/user_home2" />
 

@@ -1,23 +1,26 @@
-package com.example.portal
+package com.example.portal.user
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import com.example.portal.R
+import com.example.portal.models.UserModel
+import com.example.portal.api.RetrofitInstance
+import com.example.portal.api.UserServe
+import com.example.portal.enqueueVoid
 
 class UserSignUp : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
     private lateinit var view: View
-    private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance().create(UserServe::class.java)
+    private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
+        .create(UserServe::class.java)
 
     private lateinit var emailEditText: EditText
     private lateinit var firstNameEditText: EditText
@@ -33,8 +36,8 @@ class UserSignUp : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+//            param1 = it.getString(com.example.portal.ARG_PARAM1)
+//            param2 = it.getString(com.example.portal.ARG_PARAM2)
         }
     }
 
@@ -88,8 +91,8 @@ class UserSignUp : Fragment() {
         fun newInstance(param1: String, param2: String) =
             UserSignUp().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+//                    putString(com.example.portal.ARG_PARAM1, param1)
+//                    putString(com.example.portal.ARG_PARAM2, param2)
                 }
             }
     }

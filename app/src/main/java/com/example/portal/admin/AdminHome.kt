@@ -1,32 +1,28 @@
-package com.example.portal
+package com.example.portal.admin
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.navigation.Navigation
+import com.example.portal.R
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [UserHome1.newInstance] factory method to
- * create an instance of this fragment.
- */
-class UserHome1 : Fragment() {
+class AdminHome : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
-    private lateinit var view: View
-
-    private lateinit var btnForestry: Button
-    private lateinit var btnRural: Button
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,20 +37,29 @@ class UserHome1 : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.user_home1, container, false)
+        val view = inflater.inflate(R.layout.admin_home, container, false)
+        sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
 
-        btnForestry = view.findViewById(R.id.btnForestry)
-        btnRural = view.findViewById(R.id.btnRural)
+        val logoutButton: Button = view.findViewById(R.id.btnLogout)
+        logoutButton.setOnClickListener {
+            signOut()
 
-        btnForestry.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.toAvailableVehicles)
+            val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+            Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
+            // Navigate to your login screen or perform other actions after logout
+            // For simplicity, let's navigate back to the previous fragment
+            Navigation.findNavController(view).navigate(R.id.logout)
         }
-
-        btnRural.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.toAvailableVehicles)
-        }
-
         return view
+    }
+    private fun signOut() {
+         val editor = sharedPreferences.edit()
+         editor.clear()
+         editor.apply()
+
+        // Add any additional logic for sign-out, such as navigating to a login screen
+        // For simplicity, let's just print a log message
+        println("User logged out")
     }
 
     companion object {
@@ -64,12 +69,12 @@ class UserHome1 : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment UserHome1.
+         * @return A new instance of fragment BlankFragment2.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            UserHome1().apply {
+            AdminHome().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
