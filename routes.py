@@ -19,25 +19,82 @@ def generate_location_id():
     return timestamp + random_part
 
 
+def generate_vehicle_id():
+    timestamp = int(time.time())
+    return timestamp
+
+
 @app.route('/register', methods=['POST'])
 def register():
-    from models import User  # Import User model locally inside the function to avoid circular import
+    from models import User, Vehicle  # Import User model locally inside the function to avoid circular import
     from forms import RegisterForm
     form = RegisterForm()
     if form.validate_on_submit():
-        print(form.contactNumber.data)
         userId = generate_new_user_id()
-        locationId = generate_location_id()
         hashed_password = bcrypt.generate_password_hash(form.password.data)
         new_user = User(userId=userId, firstName=form.firstName.data, lastName=form.lastName.data,
                         email=form.email.data, contactNumber=form.contactNumber.data, password=hashed_password,
                         rating=form.rating.data, userType=form.userType.data, isActive=form.isActive.data)
+
+        if form.userType.data == 2:
+            vehicleId = generate_vehicle_id()
+            new_vehicle = Vehicle(vehicleId=vehicleId,
+                                  userId=userId,
+                                  plateNumber=form.plateNumber.data,
+                                  route=form.route.data)
+            db.session.add(new_vehicle)
+
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User registered successfully'})
     else:
         print(form.errors)
         return jsonify({'error': 'Invalid registration data'}), 400
+
+
+@app.route('/register_driver', methods=['POST'])
+def register_driver():
+    from models import User, Vehicle  # Import User model locally inside the function to avoid circular import
+    from forms import RegisterForm
+    data = request.json
+
+    user_data = data.get('user', {})
+    vehicle_data = data.get('vehicle', {})
+
+    # form = RegisterFormDriver()
+    # if form.validate_on_submit():
+    #     userId = generate_new_user_id()
+    #     hashed_password = bcrypt.generate_password_hash(form.password.data)
+    #     new_user = User(userId=userId, firstName=form.firstName.data, lastName=form.lastName.data,
+    #                     email=form.email.data, contactNumber=form.contactNumber.data, password=hashed_password,
+    #                     rating=form.rating.data, userType=form.userType.data, isActive=form.isActive.data)
+    #
+    #     vehicleId = generate_vehicle_id()
+    #     new_vehicle = Vehicle(vehicleId=vehicleId,
+    #                           userId=userId,
+    #                           plateNumber=form.plateNumber.data,
+    #                           route=form.route.data)
+
+    userId = generate_new_user_id()
+    hashed_password = bcrypt.generate_password_hash(user_data['password'])
+    new_user = User(userId=userId, firstName=user_data['firstName'], lastName=user_data['lastName'],
+                    email=user_data['email'], contactNumber=user_data['contactNumber'], password=hashed_password,
+                    rating=user_data['rating'], userType=user_data['userType'], isActive=user_data['isActive'])
+
+    vehicleId = generate_vehicle_id()
+    new_vehicle = Vehicle(vehicleId=vehicleId,
+                          userId=userId,
+                          plateNumber=vehicle_data['plateNumber'],
+                          route=vehicle_data['route'])
+
+    db.session.add(new_vehicle)
+    db.session.add(new_user)
+
+    db.session.commit()
+    return jsonify({'message': 'User registered successfully'})
+    # else:
+    #     print(form.errors)
+    #     return jsonify({'error': 'Invalid registration data'}), 400
 
 
 @app.route('/signin', methods=['POST'])

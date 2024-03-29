@@ -35,3 +35,8 @@ data class UserResponse(
     @SerializedName("message") val message: String?,
     @SerializedName("user") val user: UserModel?
 )
+
+data class DriverSignUpRequest(
+    val user: UserModel,
+    val vehicle: VehicleModel
+)

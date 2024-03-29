@@ -1,5 +1,6 @@
 from app import db
 from sqlalchemy import DateTime, func
+from pydantic import BaseModel
 
 
 class User(db.Model):
