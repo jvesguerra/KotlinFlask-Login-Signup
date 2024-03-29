@@ -67,30 +67,30 @@ class DriverSignUp : Fragment() {
             val password = passwordEditText.text.toString()
 
             // You can use the above values as needed, for example, pass them to a signup function
-            signUp(email, fullName, password)
+            //signUp(email, fullName, password)
 
         }
 
         return view
     }
-        private fun signUp(email: String, fullname: String, password: String) {
-            // TODO: Implement sign-up logic
-            val newUser = UserModel(
-                userId = 0,
-                fullname = fullname,
-                email = email,
-                password = password,
-                userType = 2,
-                locationId = 0,
-                isActive = true
-            )
-            retrofitService.register(newUser).enqueueVoid {
-                println("Sign Up")
-                Navigation.findNavController(view).navigate(R.id.toDriverHome)
-
-                
-            }
-        }
+//        private fun signUp(email: String, fullname: String, password: String) {
+//            // TODO: Implement sign-up logic
+//            val newUser = UserModel(
+//                userId = 0,
+//                fullname = fullname,
+//                email = email,
+//                password = password,
+//                userType = 2,
+//                locationId = 0,
+//                isActive = true
+//            )
+//            retrofitService.register(newUser).enqueueVoid {
+//                println("Sign Up")
+//                Navigation.findNavController(view).navigate(R.id.toDriverHome)
+//
+//
+//            }
+//        }
     companion object {
         /**
          * Use this factory method to create a new instance of

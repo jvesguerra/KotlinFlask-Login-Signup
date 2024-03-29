@@ -63,20 +63,15 @@ class LogInPage : Fragment() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
             signIn(email, password)
-
         }
 
         signUpButton.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.signup)
-//            val email = emailEditText.text.toString()
-//            val password = passwordEditText.text.toString()
-//            signUp(email, password)
         }
 
         return view
     }
 
-    // The rest of your methods remain the same...
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -96,11 +91,14 @@ class LogInPage : Fragment() {
     private fun signIn(email: String, password: String) {
         val newUser = UserModel(
             userId = 0,
-            fullname = "admin",
+            firstName = "admin",
+            lastName = "admin",
             email = email,
+            contactNumber = "",
             password = password,
+            rating = 0,
             userType = 0,
-            locationId = 0
+            isActive = true,
         )
 
         val call = retrofitService.signIn(newUser)
@@ -142,9 +140,6 @@ class LogInPage : Fragment() {
 
         } ?: showToast("Failed to retrieve user details")
     }
-
-
-
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account = completedTask.getResult(ApiException::class.java)
@@ -181,8 +176,6 @@ class LogInPage : Fragment() {
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
-
-
 }
 fun Call<Void>.enqueueVoid(callback: () -> Unit) {
     this.enqueue(object : Callback<Void> {

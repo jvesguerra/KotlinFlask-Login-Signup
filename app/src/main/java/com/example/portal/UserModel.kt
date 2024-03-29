@@ -6,20 +6,26 @@ class UserModel (
     @SerializedName("id")
     val userId: Int,
 
-    @SerializedName("fullname")
-    val fullname: String,
-
     @SerializedName("email")
     val email: String,
+
+    @SerializedName("firstName")
+    val firstName: String,
+
+    @SerializedName("lastName")
+    val lastName: String,
+
+    @SerializedName("contactNumber")
+    val contactNumber: String,
 
     @SerializedName("password")
     val password: String,
 
+    @SerializedName("rating")
+    val rating: Long,
+
     @SerializedName("userType")
     val userType: Int,
-
-    @SerializedName("locationId")
-    val locationId: Long,
 
     @SerializedName("isActive")
     val isActive: Boolean,
