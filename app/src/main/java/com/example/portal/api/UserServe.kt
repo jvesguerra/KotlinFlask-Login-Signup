@@ -1,6 +1,8 @@
-package com.example.portal
+package com.example.portal.api
 
-import com.google.gson.annotations.SerializedName
+import com.example.portal.GoogleSignInRequest
+import com.example.portal.models.UserModel
+import com.example.portal.models.UserResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST

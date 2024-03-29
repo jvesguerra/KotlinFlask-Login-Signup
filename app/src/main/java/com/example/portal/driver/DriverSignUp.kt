@@ -1,13 +1,15 @@
-package com.example.portal
+package com.example.portal.driver
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import androidx.navigation.Navigation
+import androidx.fragment.app.Fragment
+import com.example.portal.R
+import com.example.portal.api.RetrofitInstance
+import com.example.portal.api.UserServe
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,7 +27,8 @@ class DriverSignUp : Fragment() {
     private var param2: String? = null
 
     private lateinit var view: View
-    private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance().create(UserServe::class.java)
+    private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
+        .create(UserServe::class.java)
 
     private lateinit var fullNameEditText: EditText
     private lateinit var contactNumberEditText: EditText
