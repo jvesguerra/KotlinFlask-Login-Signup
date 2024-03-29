@@ -7,20 +7,22 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import com.example.portal.R
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
+import com.example.portal.enqueue
+import com.example.portal.enqueueVoid
+import com.example.portal.models.DriverSignUpRequest
+import com.example.portal.models.UserModel
+import com.example.portal.models.VehicleModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [DriverSignUp.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DriverSignUp : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -30,7 +32,8 @@ class DriverSignUp : Fragment() {
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
 
-    private lateinit var fullNameEditText: EditText
+    private lateinit var firstNameEditText: EditText
+    private lateinit var lastNameEditText: EditText
     private lateinit var contactNumberEditText: EditText
     private lateinit var routeEditText: EditText
     private lateinit var plateNumberEditText: EditText
@@ -49,61 +52,76 @@ class DriverSignUp : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         view = inflater.inflate(R.layout.driver_signup, container, false)
 
-        fullNameEditText = view.findViewById(R.id.editTextFullName)
+        firstNameEditText = view.findViewById(R.id.editTextFirstName)
+        lastNameEditText = view.findViewById(R.id.editTextLastName)
+        emailEditText = view.findViewById(R.id.editTextEmail)
         contactNumberEditText = view.findViewById(R.id.editTextContactNumber)
+        passwordEditText = view.findViewById(R.id.editTextPassword)
+
         routeEditText = view.findViewById(R.id.editTextRoute)
         plateNumberEditText = view.findViewById(R.id.editTextPlateNumber)
-        emailEditText = view.findViewById(R.id.editTextEmail)
-        passwordEditText = view.findViewById(R.id.editTextPassword)
         buttonSignUp = view.findViewById(R.id.buttonSignUp)
 
         buttonSignUp.setOnClickListener {
-            val fullName = fullNameEditText.text.toString()
-            val contactNumber = contactNumberEditText.text.toString()
-            val route = routeEditText.text.toString()
-            val plateNumber = plateNumberEditText.text.toString()
+            val firstName = firstNameEditText.text.toString()
+            val lastName = lastNameEditText.text.toString()
             val email = emailEditText.text.toString()
+            val contactNumber = contactNumberEditText.text.toString()
             val password = passwordEditText.text.toString()
 
-            // You can use the above values as needed, for example, pass them to a signup function
-            //signUp(email, fullName, password)
+            val route = routeEditText.text.toString()
+            val plateNumber = plateNumberEditText.text.toString()
 
+            signUp(email, firstName, lastName, contactNumber, password, route, plateNumber)
         }
 
         return view
     }
-//        private fun signUp(email: String, fullname: String, password: String) {
-//            // TODO: Implement sign-up logic
-//            val newUser = UserModel(
-//                userId = 0,
-//                fullname = fullname,
-//                email = email,
-//                password = password,
-//                userType = 2,
-//                locationId = 0,
-//                isActive = true
-//            )
-//            retrofitService.register(newUser).enqueueVoid {
-//                println("Sign Up")
-//                Navigation.findNavController(view).navigate(R.id.toDriverHome)
-//
-//
-//            }
-//        }
+
+
+    private fun signUp(email: String, firstName: String, lastName: String, contactNumber: String, password: String, route: String, plateNumber: String) {
+            val newUser = UserModel(
+                userId = 0,
+                firstName = firstName,
+                lastName = lastName,
+                email = email,
+                contactNumber = contactNumber,
+                password = password,
+                userType = 2,
+                rating = 0,
+                isActive = true,
+            )
+
+            val newVehicle = VehicleModel(
+                vehicleId = 0, // Assuming you generate this on the server side
+                userId = 0, // Will be set by the server
+                plateNumber = plateNumber,
+                route = route
+            )
+
+            val request = DriverSignUpRequest(newUser, newVehicle)
+
+            retrofitService.registerDriver(request).enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    if (response.isSuccessful) {
+                        println("User and Vehicle registered successfully")
+                        Navigation.findNavController(view).navigate(R.id.toDriverHome)
+                    } else {
+                        println("Failed to register user and vehicle")
+                        // Handle error
+                    }
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    println("Failed to register user and vehicle: ${t.message}")
+                    // Handle failure
+                }
+            })
+    }
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DriverSignUp.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             DriverSignUp().apply {

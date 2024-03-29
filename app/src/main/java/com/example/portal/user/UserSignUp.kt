@@ -12,6 +12,7 @@ import com.example.portal.R
 import com.example.portal.models.UserModel
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
+import com.example.portal.enqueue
 import com.example.portal.enqueueVoid
 
 class UserSignUp : Fragment() {
@@ -81,7 +82,7 @@ class UserSignUp : Fragment() {
             rating = 0,
             isActive = true,
         )
-        retrofitService.register(newUser).enqueueVoid {
+        retrofitService.register(newUser).enqueue{
             Navigation.findNavController(view).navigate(R.id.toUserHome1)
         }
     }

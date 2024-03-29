@@ -21,4 +21,6 @@
     <string name="user">USER</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_in_with_google">Sign In with Google</string>
+    <string name="plate_number">Plate Number</string>
+    <string name="route">Route</string>
 </resources>
