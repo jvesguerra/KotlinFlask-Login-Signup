@@ -3,6 +3,7 @@ package com.example.portal.admin
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.example.portal.R
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.portal.ItemAdapter
+import com.example.portal.MyAdapter
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.enqueue
@@ -62,8 +64,23 @@ class AdminHome : Fragment() {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = ItemAdapter(getSampleItems())
-        recyclerView.adapter = adapter
+//        adapter = ItemAdapter(getSampleItems())
+//        recyclerView.adapter = adapter
+
+        val call = retrofitService.getData()
+
+        call.enqueue(object : Callback<List<UserModel>> {
+            override fun onResponse(call: Call<List<UserModel>>, response: Response<List<UserModel>>) {
+                if (response.isSuccessful) {
+                    val items = response.body() ?: emptyList()
+                    recyclerView.adapter = MyAdapter(items)
+                }
+            }
+
+            override fun onFailure(call: Call<List<UserModel>>, t: Throwable) {
+                Log.e("MainActivity", "Error fetching data", t)
+            }
+        })
 
         return view
     }

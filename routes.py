@@ -222,3 +222,24 @@ def get_locations():
     return jsonify(
         [{'locationId': loc.locationId, 'id': loc.id, 'latitude': loc.latitude, 'longitude': loc.longitude} for loc in
          locations])
+
+@app.route('/data', methods=['GET'])
+def get_data():
+    #items = User.query.all()
+    #items = User.query.join(User).filter(User.user_type == 2).all()
+
+    items = User.query.filter(User.userType == 2).all()
+    # Convert SQLAlchemy objects to dictionary
+    items_dict = [{
+        'userId': user.userId,
+        'firstName': user.firstName,
+        'lastName': user.lastName,
+        'email': user.email,
+        'contactNumber': user.contactNumber,
+        'password': user.password,
+
+        'rating': user.rating,
+        'userType': user.userType,
+        'isActive': user.isActive,
+    } for user in items]
+    return jsonify(items_dict)
