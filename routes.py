@@ -170,6 +170,34 @@ def add_location():
     return jsonify({'message': 'User added successfully'})
 
 
+@app.route('/get_drivers_vehicles', methods=['GET'])
+def get_drivers_vehicles():
+    try:
+        users = User.query.all()
+        user_list = []
+
+        for user in users:
+            user_data = {
+                'userId': user.userId,
+                'firstName': user.firstName,
+                'lastName': user.lastName,
+                'email': user.email,
+                'contactNumber': user.contactNumber,
+                'password': user.password,
+
+                'rating': user.rating,
+                'userType': user.userType,
+                'isActive': user.isActive,
+            }
+            user_list.append(user_data)
+
+        print(user_list)
+        return jsonify({'users': user_list})
+    except Exception as e:
+        print("Eto?")
+        return jsonify({"error": str(e)}), 500
+
+
 # Endpoint to fetch all locations
 # @app.route('/locations', methods=['GET'])
 # def get_locations():
