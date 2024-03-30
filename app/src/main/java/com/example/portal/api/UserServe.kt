@@ -23,4 +23,7 @@ interface UserServe {
 
     @POST("/register_driver")
     fun registerDriver(@Body request: DriverSignUpRequest): Call<Void>
+
+    @GET("/data")
+    fun getData(): Call<List<UserModel>>
 }
