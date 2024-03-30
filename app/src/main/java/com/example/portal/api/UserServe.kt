@@ -6,7 +6,9 @@ import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
 import com.example.portal.models.VehicleModel
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface UserServe {

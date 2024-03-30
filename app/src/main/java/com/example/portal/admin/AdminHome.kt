@@ -11,18 +11,30 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.navigation.Navigation
 import com.example.portal.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.portal.ItemAdapter
+import com.example.portal.api.RetrofitInstance
+import com.example.portal.api.UserServe
+import com.example.portal.enqueue
+import com.example.portal.models.UserModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 class AdminHome : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: ItemAdapter
+
+    private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
+        .create(UserServe::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,12 +58,20 @@ class AdminHome : Fragment() {
 
             val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
             Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
-            // Navigate to your login screen or perform other actions after logout
-            // For simplicity, let's navigate back to the previous fragment
             Navigation.findNavController(view).navigate(R.id.logout)
         }
+        recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = ItemAdapter(getSampleItems())
+        recyclerView.adapter = adapter
+
         return view
     }
+    private fun getSampleItems(): List<String> {
+        // Replace this with your actual data retrieval logic
+        return listOf("Item 1", "Item 2", "Item 3")
+    }
+
     private fun signOut() {
          val editor = sharedPreferences.edit()
          editor.clear()
@@ -63,15 +83,6 @@ class AdminHome : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BlankFragment2.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             AdminHome().apply {
@@ -81,4 +92,8 @@ class AdminHome : Fragment() {
                 }
             }
     }
+}
+
+private fun <T> Response<T>.enqueue(callback: Callback<T>) {
+
 }
