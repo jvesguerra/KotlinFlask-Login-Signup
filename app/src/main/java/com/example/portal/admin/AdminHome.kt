@@ -19,6 +19,7 @@ import com.example.portal.MyAdapter
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.enqueue
+import com.example.portal.models.DriverVehicle
 import com.example.portal.models.UserModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -67,19 +68,20 @@ class AdminHome : Fragment() {
 //        adapter = ItemAdapter(getSampleItems())
 //        recyclerView.adapter = adapter
 
-        val call = retrofitService.getData()
+        val call = retrofitService.getDriverVehicles()
 
-        call.enqueue(object : Callback<List<UserModel>> {
-            override fun onResponse(call: Call<List<UserModel>>, response: Response<List<UserModel>>) {
+        call.enqueue(object : Callback<List<DriverVehicle>> {
+            override fun onResponse(call: Call<List<DriverVehicle>>, response: Response<List<DriverVehicle>>) {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
                     recyclerView.adapter = MyAdapter(items)
                 }
             }
 
-            override fun onFailure(call: Call<List<UserModel>>, t: Throwable) {
+            override fun onFailure(call: Call<List<DriverVehicle>>, t: Throwable) {
                 Log.e("MainActivity", "Error fetching data", t)
             }
+
         })
 
         return view
