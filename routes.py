@@ -223,8 +223,8 @@ def get_locations():
         [{'locationId': loc.locationId, 'id': loc.id, 'latitude': loc.latitude, 'longitude': loc.longitude} for loc in
          locations])
 
-@app.route('/data', methods=['GET'])
-def get_data():
+@app.route('/get_driver_names', methods=['GET'])
+def get_driver_names():
     #items = User.query.all()
     #items = User.query.join(User).filter(User.user_type == 2).all()
 
@@ -243,3 +243,23 @@ def get_data():
         'isActive': user.isActive,
     } for user in items]
     return jsonify(items_dict)
+
+@app.route('/get_driver_vehicles', methods=['GET'])
+def get_driver_vehicles():
+    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(User.userType == 2).all()
+
+    drivers_dict = [{
+        'userId': user.userId,
+        'firstName': user.firstName,
+        'lastName': user.lastName,
+        'email': user.email,
+        'contactNumber': user.contactNumber,
+        'password': user.password,
+        'rating': user.rating,
+        'userType': user.userType,
+        'isActive': user.isActive,
+        'plateNumber': vehicle.plateNumber,
+        'route': vehicle.route
+    } for user, vehicle in drivers]
+
+    return jsonify(drivers_dict)

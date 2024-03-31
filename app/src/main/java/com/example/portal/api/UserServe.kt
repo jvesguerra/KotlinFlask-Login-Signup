@@ -2,6 +2,7 @@ package com.example.portal.api
 
 import com.example.portal.GoogleSignInRequest
 import com.example.portal.models.DriverSignUpRequest
+import com.example.portal.models.DriverVehicle
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
 import com.example.portal.models.VehicleModel
@@ -24,6 +25,9 @@ interface UserServe {
     @POST("/register_driver")
     fun registerDriver(@Body request: DriverSignUpRequest): Call<Void>
 
-    @GET("/data")
-    fun getData(): Call<List<UserModel>>
+    @GET("/get_driver_names")
+    fun getDriverNames(): Call<List<UserModel>>
+
+    @GET("/get_driver_vehicles")
+    fun getDriverVehicles(): Call<List<DriverVehicle>>
 }
