@@ -31,8 +31,11 @@ interface UserServe {
     @GET("/get_driver_names")
     fun getDriverNames(): Call<List<UserModel>>
 
-    @GET("/get_driver_vehicles")
-    fun getDriverVehicles(): Call<List<DriverVehicle>>
+    @GET("/get_auth_drivers")
+    fun getAuthDrivers(): Call<List<DriverVehicle>>
+
+    @GET("/get_pending_drivers")
+    fun getPendingDrivers(): Call<List<DriverVehicle>>
 
     @DELETE("admin_delete_user/{userId}")
     fun adminDeleteUser(@Path("userId") userId: Int): Call<Void>

@@ -17,9 +17,10 @@ import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
 
-class AdminAdapter(private val context: AdminHome, private var items: MutableList<DriverVehicle>) : RecyclerView.Adapter<AdminAdapter.ViewHolder>() {
-
-
+class AdminAdapter(
+    private val context: Context,
+    private var items: MutableList<DriverVehicle>
+) : RecyclerView.Adapter<AdminAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
         return ViewHolder(view)
@@ -62,7 +63,7 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
     }
 
     private fun showDeleteConfirmationDialog(userId: Int, position: Int) {
-        val builder = AlertDialog.Builder(context.requireContext())
+        val builder = AlertDialog.Builder(context)
         builder.setTitle("Confirm Delete")
         builder.setMessage("Are you sure you want to delete this user?")
         builder.setPositiveButton("Delete") { dialogInterface: DialogInterface, i: Int ->
@@ -76,7 +77,7 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
     }
 
     private fun showAuthorizeConfirmationDialog(userId: Int) {
-        val builder = AlertDialog.Builder(context.requireContext())
+        val builder = AlertDialog.Builder(context)
         builder.setTitle("Confirm Authorization")
         builder.setMessage("Are you sure you want to authorize this user?")
         builder.setPositiveButton("Authorize") { dialogInterface: DialogInterface, i: Int ->
@@ -90,14 +91,14 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
     }
 
     private fun showDriverDetailsDialog(user: DriverVehicle) {
-        val dialogView = LayoutInflater.from(context.requireContext()).inflate(R.layout.dialog_driver_detail, null)
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_driver_detail, null)
 
         dialogView.findViewById<TextView>(R.id.fullNameTextView).text = "${user.firstName} ${user.lastName}"
         dialogView.findViewById<TextView>(R.id.userIdTextView).text = "User ID: ${user.contactNumber}"
         dialogView.findViewById<TextView>(R.id.plateNumberTextView).text = "Plate Number: ${user.plateNumber}"
         dialogView.findViewById<TextView>(R.id.routeTextView).text = "Route: ${user.route}"
 
-        val builder = AlertDialog.Builder(context.requireContext())
+        val builder = AlertDialog.Builder(context)
         builder.setView(dialogView)
         builder.setTitle("Confirm Authorization")
         builder.setPositiveButton("Authorize") { dialogInterface: DialogInterface, i: Int ->
