@@ -31,7 +31,15 @@
         <action
             android:id="@+id/logout"
             app:destination="@id/LogInPage" />
+        <action
+            android:id="@+id/toPendingLists"
+            app:destination="@id/pendingLists" />
     </fragment>
+    <fragment
+        android:id="@+id/pendingLists"
+        android:name="com.example.portal.PendingLists"
+        android:label="pending_lists"
+        tools:layout="@layout/pending_lists" />
     <fragment
         android:id="@+id/signUpPage"
         android:name="com.example.portal.SignUpPage"

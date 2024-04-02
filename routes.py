@@ -7,6 +7,7 @@ from forms import *
 import time
 import uuid
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import and_
 
 
 def generate_new_user_id():
@@ -170,41 +171,13 @@ def add_location():
     db.session.commit()
     return jsonify({'message': 'User added successfully'})
 
+
 @app.route('/update_authorized/<int:userId>', methods=['PUT'])
 def update_authorized(userId):
     user = User.query.get(userId)
     user.authorized = True
     db.session.commit()
     return jsonify({'message': 'User authorized successfully'})
-
-
-
-@app.route('/get_drivers_vehicles', methods=['GET'])
-def get_drivers_vehicles():
-    try:
-        users = User.query.all()
-        user_list = []
-
-        for user in users:
-            user_data = {
-                'userId': user.userId,
-                'firstName': user.firstName,
-                'lastName': user.lastName,
-                'email': user.email,
-                'contactNumber': user.contactNumber,
-                'password': user.password,
-
-                'rating': user.rating,
-                'userType': user.userType,
-                'isActive': user.isActive,
-            }
-            user_list.append(user_data)
-
-        print(user_list)
-        return jsonify({'users': user_list})
-    except Exception as e:
-        print("Eto?")
-        return jsonify({"error": str(e)}), 500
 
 
 # Endpoint to fetch all locations
@@ -255,10 +228,35 @@ def get_driver_names():
     return jsonify(items_dict)
 
 
-@app.route('/get_driver_vehicles', methods=['GET'])
-def get_driver_vehicles():
+@app.route('/get_auth_drivers', methods=['GET'])
+def get_auth_drivers():
     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
-        User.userType == 2).all()
+        User.userType == 2, User.authorized == True).all()
+
+    drivers_dict = [{
+        'userId': user.userId,
+        'firstName': user.firstName,
+        'lastName': user.lastName,
+        'email': user.email,
+        'contactNumber': user.contactNumber,
+        'password': user.password,
+        'rating': user.rating,
+        'userType': user.userType,
+        'isActive': user.isActive,
+        'authorized': user.authorized,
+        'plateNumber': vehicle.plateNumber,
+        'route': vehicle.route
+    } for user, vehicle in drivers]
+
+    print(drivers_dict)
+
+    return jsonify(drivers_dict)
+
+
+@app.route('/get_pending_drivers', methods=['GET'])
+def get_pending_drivers():
+    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+        User.userType == 2, User.authorized == False).all()
 
     drivers_dict = [{
         'userId': user.userId,
@@ -296,5 +294,3 @@ def admin_delete_user(userId):
     except Exception as e:
         db.session.rollback()
         return f"An error occurred: {str(e)}"
-
-
