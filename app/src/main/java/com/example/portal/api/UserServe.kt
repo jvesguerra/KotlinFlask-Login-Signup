@@ -33,6 +33,6 @@ interface UserServe {
     @GET("/get_driver_vehicles")
     fun getDriverVehicles(): Call<List<DriverVehicle>>
 
-    @DELETE("delete_user/{itemId}")
-    fun deleteItem(@Path("itemId") itemId: Int): Call<Void>
+    @DELETE("admin_delete_user/{userId}")
+    fun adminDeleteUser(@Path("userId") userId: Int): Call<Void>
 }

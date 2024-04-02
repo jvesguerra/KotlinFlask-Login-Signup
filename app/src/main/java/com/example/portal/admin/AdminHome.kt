@@ -14,7 +14,7 @@ import androidx.navigation.Navigation
 import com.example.portal.R
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.portal.MyAdapter
+import com.example.portal.AdminAdapter
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.models.DriverVehicle
@@ -31,7 +31,7 @@ class AdminHome : Fragment() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: MyAdapter
+    private lateinit var adapter: AdminAdapter
 
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
@@ -48,7 +48,6 @@ class AdminHome : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.admin_home, container, false)
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
 
@@ -62,8 +61,7 @@ class AdminHome : Fragment() {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        //adapter = MyAdapter(mutableListOf()) // Initialize with an empty list
-        adapter = MyAdapter(this, mutableListOf())
+        adapter = AdminAdapter(this, mutableListOf())
         recyclerView.adapter = adapter
 
         val call = retrofitService.getDriverVehicles()
@@ -88,8 +86,8 @@ class AdminHome : Fragment() {
         return listOf("Item 1", "Item 2", "Item 3")
     }
 
-    fun deleteItem(itemId: Int, position: Int) {
-        val call = retrofitService.deleteItem(itemId) // Assuming retrofitService is your Retrofit instance's service
+    fun deleteItem(userId: Int, position: Int) {
+        val call = retrofitService.adminDeleteUser(userId) // Assuming retrofitService is your Retrofit instance's service
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {

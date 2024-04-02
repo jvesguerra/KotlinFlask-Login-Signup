@@ -271,13 +271,13 @@ def get_driver_vehicles():
     return jsonify(drivers_dict)
 
 
-@app.route('/delete_user/<int:userId>', methods=['DELETE'])
-def delete_user(userId):
+@app.route('/admin_delete_user/<int:userId>', methods=['DELETE'])
+def admin_delete_user(userId):
     try:
         # Step 1: Delete associated vehicle records
-        Vehicle.query.filter_by(userId=user_id).delete()
+        Vehicle.query.filter_by(userId=userId).delete()
         # Step 2: Delete the user record
-        user = User.query.get(user_id)
+        user = User.query.get(userId)
         db.session.delete(user)
         db.session.commit()
         return "User and associated vehicles deleted successfully"
