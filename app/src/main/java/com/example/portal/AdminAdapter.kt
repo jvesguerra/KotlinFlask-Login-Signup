@@ -136,7 +136,6 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
 
         fun bind(user: DriverVehicle) {
             val fullname = "${user.firstName} ${user.lastName}"
-            itemView.findViewById<TextView>(R.id.userIdTextView).text = user.userId.toString()
             itemView.findViewById<TextView>(R.id.itemNameTextView).text = fullname
             itemView.findViewById<TextView>(R.id.RouteTextView).text = user.plateNumber
             itemView.findViewById<TextView>(R.id.PlateNumberTextView).text = user.route
