@@ -1,6 +1,5 @@
 package com.example.portal
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.portal.admin.AdminHome
 import com.example.portal.models.DriverVehicle
-import com.google.gson.Gson
 
-class MyAdapter(private val context: AdminHome, private var items: MutableList<DriverVehicle>) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
+class AdminAdapter(private val context: AdminHome, private var items: MutableList<DriverVehicle>) : RecyclerView.Adapter<AdminAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,20 +22,13 @@ class MyAdapter(private val context: AdminHome, private var items: MutableList<D
         holder.bind(item)
 
         holder.deleteButton.setOnClickListener {
-            // Call deleteItem function when delete button is clicked
-            deleteItem(item.userId, position)
+            deleteUser(item.userId, position)
         }
     }
 
     override fun getItemCount(): Int {
         return items.size
     }
-
-//    fun deleteItem(position: Int) {
-//        items.removeAt(position)
-//        notifyItemRemoved(position)
-//        notifyItemRangeChanged(position, itemCount)
-//    }
 
     fun removeItemAt(position: Int) {
         items.removeAt(position)
@@ -49,20 +40,12 @@ class MyAdapter(private val context: AdminHome, private var items: MutableList<D
         items.addAll(newItems)
         notifyDataSetChanged()
     }
-    private fun deleteItem(itemId: Int, position: Int) {
-        Log.d("ItemID", "Item ID: $itemId") // Print item ID to logcat
-        (context as? AdminHome)?.deleteItem(itemId, position)
+    private fun deleteUser(userId: Int, position: Int) {
+        (context as? AdminHome)?.deleteItem(userId, position)
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
-
-//        init {
-//            deleteButton.setOnClickListener {
-//                // Call deleteItem when the delete button is clicked
-//                removeItemAt(adapterPosition)
-//            }
-//        }
 
         fun bind(user: DriverVehicle) {
             val fullname = "${user.firstName} ${user.lastName}"
