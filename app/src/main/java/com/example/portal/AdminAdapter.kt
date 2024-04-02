@@ -8,6 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.portal.admin.AdminHome
 import com.example.portal.models.DriverVehicle
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 
 class AdminAdapter(private val context: AdminHome, private var items: MutableList<DriverVehicle>) : RecyclerView.Adapter<AdminAdapter.ViewHolder>() {
 
@@ -22,7 +25,7 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
         holder.bind(item)
 
         holder.deleteButton.setOnClickListener {
-            deleteUser(item.userId, position)
+            showDeleteConfirmationDialog(item.userId, position)
         }
     }
 
@@ -40,8 +43,23 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
         items.addAll(newItems)
         notifyDataSetChanged()
     }
+
     private fun deleteUser(userId: Int, position: Int) {
         (context as? AdminHome)?.deleteItem(userId, position)
+    }
+
+    private fun showDeleteConfirmationDialog(userId: Int, position: Int) {
+        val builder = AlertDialog.Builder(context.requireContext())
+        builder.setTitle("Confirm Delete")
+        builder.setMessage("Are you sure you want to delete this user?")
+        builder.setPositiveButton("Delete") { dialogInterface: DialogInterface, i: Int ->
+            deleteUser(userId, position)
+            dialogInterface.dismiss()
+        }
+        builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
+            dialogInterface.dismiss()
+        }
+        builder.show()
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
