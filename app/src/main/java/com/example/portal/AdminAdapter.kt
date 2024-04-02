@@ -36,6 +36,10 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
         holder.authorizeButton.setOnClickListener {
             showAuthorizeConfirmationDialog(item.userId)
         }
+
+        holder.showDriverDetails.setOnClickListener {
+            showDriverDetailsDialog(item)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -85,6 +89,27 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
         builder.show()
     }
 
+    private fun showDriverDetailsDialog(user: DriverVehicle) {
+        val dialogView = LayoutInflater.from(context.requireContext()).inflate(R.layout.dialog_driver_detail, null)
+
+        dialogView.findViewById<TextView>(R.id.fullNameTextView).text = "${user.firstName} ${user.lastName}"
+        dialogView.findViewById<TextView>(R.id.userIdTextView).text = "User ID: ${user.contactNumber}"
+        dialogView.findViewById<TextView>(R.id.plateNumberTextView).text = "Plate Number: ${user.plateNumber}"
+        dialogView.findViewById<TextView>(R.id.routeTextView).text = "Route: ${user.route}"
+
+        val builder = AlertDialog.Builder(context.requireContext())
+        builder.setView(dialogView)
+        builder.setTitle("Confirm Authorization")
+        builder.setPositiveButton("Authorize") { dialogInterface: DialogInterface, i: Int ->
+            updateAuthorizedStatus(user.userId)
+            dialogInterface.dismiss()
+        }
+        builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
+            dialogInterface.dismiss()
+        }
+        builder.show()
+    }
+
     private fun updateAuthorizedStatus(userId: Int) {
         val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
             .create(UserServe::class.java)
@@ -107,6 +132,7 @@ class AdminAdapter(private val context: AdminHome, private var items: MutableLis
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
         val authorizeButton: Button = itemView.findViewById(R.id.authorizeButton)
+        val showDriverDetails: Button = itemView.findViewById(R.id.showDriverDetails)
 
         fun bind(user: DriverVehicle) {
             val fullname = "${user.firstName} ${user.lastName}"
