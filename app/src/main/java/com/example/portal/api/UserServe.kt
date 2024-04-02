@@ -12,6 +12,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface UserServe {
@@ -35,4 +36,7 @@ interface UserServe {
 
     @DELETE("admin_delete_user/{userId}")
     fun adminDeleteUser(@Path("userId") userId: Int): Call<Void>
+
+    @PUT("update_authorized/{userId}")
+    fun updateAuthorizedStatus(@Path("userId") userId: Int): Call<Void>
 }

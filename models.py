@@ -13,7 +13,8 @@ class User(db.Model):
 
     rating = db.Column(db.Integer)
     userType = db.Column(db.Integer)  # 0 = admin, 1 = driver, 2 = student
-    isActive = db.Column(db.Boolean, default=True)
+    isActive = db.Column(db.Boolean, default=False)
+    authorized = db.Column(db.Boolean, default=False)
 
     def is_active(self):
         return self.is_active
