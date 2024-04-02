@@ -81,6 +81,7 @@ class UserSignUp : Fragment() {
             userType = 1,
             rating = 0,
             isActive = true,
+            authorized = false,
         )
         retrofitService.register(newUser).enqueue{
             Navigation.findNavController(view).navigate(R.id.toUserHome1)

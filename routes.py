@@ -170,6 +170,14 @@ def add_location():
     db.session.commit()
     return jsonify({'message': 'User added successfully'})
 
+@app.route('/update_authorized/<int:userId>', methods=['PUT'])
+def update_authorized(userId):
+    user = User.query.get(userId)
+    user.authorized = True
+    db.session.commit()
+    return jsonify({'message': 'User authorized successfully'})
+
+
 
 @app.route('/get_drivers_vehicles', methods=['GET'])
 def get_drivers_vehicles():
@@ -262,6 +270,7 @@ def get_driver_vehicles():
         'rating': user.rating,
         'userType': user.userType,
         'isActive': user.isActive,
+        'authorized': user.authorized,
         'plateNumber': vehicle.plateNumber,
         'route': vehicle.route
     } for user, vehicle in drivers]
@@ -287,3 +296,5 @@ def admin_delete_user(userId):
     except Exception as e:
         db.session.rollback()
         return f"An error occurred: {str(e)}"
+
+

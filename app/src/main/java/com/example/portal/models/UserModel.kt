@@ -29,6 +29,9 @@ class UserModel (
 
     @SerializedName("isActive")
     val isActive: Boolean,
+
+    @SerializedName("authorized")
+    val authorized: Boolean,
 )
 
 data class UserResponse(

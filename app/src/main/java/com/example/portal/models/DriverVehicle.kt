@@ -30,6 +30,9 @@ class DriverVehicle (
     @SerializedName("isActive")
     val isActive: Boolean,
 
+    @SerializedName("authorized")
+    val authorized: Boolean,
+
     @SerializedName("plateNumber")
     val plateNumber: String,
 
