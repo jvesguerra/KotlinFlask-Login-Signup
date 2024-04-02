@@ -3,7 +3,7 @@ package com.example.portal.models
 import com.google.gson.annotations.SerializedName
 
 class UserModel (
-    @SerializedName("id")
+    @SerializedName("userId")
     val userId: Int,
 
     @SerializedName("email")

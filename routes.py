@@ -6,6 +6,7 @@ from models import *
 from forms import *
 import time
 import uuid
+from sqlalchemy.exc import IntegrityError
 
 
 def generate_new_user_id():
@@ -223,10 +224,11 @@ def get_locations():
         [{'locationId': loc.locationId, 'id': loc.id, 'latitude': loc.latitude, 'longitude': loc.longitude} for loc in
          locations])
 
+
 @app.route('/get_driver_names', methods=['GET'])
 def get_driver_names():
-    #items = User.query.all()
-    #items = User.query.join(User).filter(User.user_type == 2).all()
+    # items = User.query.all()
+    # items = User.query.join(User).filter(User.user_type == 2).all()
 
     items = User.query.filter(User.userType == 2).all()
     # Convert SQLAlchemy objects to dictionary
@@ -244,9 +246,11 @@ def get_driver_names():
     } for user in items]
     return jsonify(items_dict)
 
+
 @app.route('/get_driver_vehicles', methods=['GET'])
 def get_driver_vehicles():
-    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(User.userType == 2).all()
+    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+        User.userType == 2).all()
 
     drivers_dict = [{
         'userId': user.userId,
@@ -262,4 +266,24 @@ def get_driver_vehicles():
         'route': vehicle.route
     } for user, vehicle in drivers]
 
+    print(drivers_dict)
+
     return jsonify(drivers_dict)
+
+
+@app.route('/delete_user/<int:userId>', methods=['DELETE'])
+def delete_user(userId):
+    try:
+        # Step 1: Delete associated vehicle records
+        Vehicle.query.filter_by(userId=user_id).delete()
+        # Step 2: Delete the user record
+        user = User.query.get(user_id)
+        db.session.delete(user)
+        db.session.commit()
+        return "User and associated vehicles deleted successfully"
+    except IntegrityError:
+        db.session.rollback()
+        return "Integrity error occurred while deleting user and associated vehicles"
+    except Exception as e:
+        db.session.rollback()
+        return f"An error occurred: {str(e)}"

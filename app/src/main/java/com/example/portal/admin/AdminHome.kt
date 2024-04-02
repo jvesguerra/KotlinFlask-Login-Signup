@@ -14,13 +14,10 @@ import androidx.navigation.Navigation
 import com.example.portal.R
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.portal.ItemAdapter
 import com.example.portal.MyAdapter
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
-import com.example.portal.enqueue
 import com.example.portal.models.DriverVehicle
-import com.example.portal.models.UserModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,7 +31,7 @@ class AdminHome : Fragment() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ItemAdapter
+    private lateinit var adapter: MyAdapter
 
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
@@ -65,8 +62,9 @@ class AdminHome : Fragment() {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-//        adapter = ItemAdapter(getSampleItems())
-//        recyclerView.adapter = adapter
+        //adapter = MyAdapter(mutableListOf()) // Initialize with an empty list
+        adapter = MyAdapter(this, mutableListOf())
+        recyclerView.adapter = adapter
 
         val call = retrofitService.getDriverVehicles()
 
@@ -74,14 +72,13 @@ class AdminHome : Fragment() {
             override fun onResponse(call: Call<List<DriverVehicle>>, response: Response<List<DriverVehicle>>) {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
-                    recyclerView.adapter = MyAdapter(items)
+                    adapter.updateData(items) // Update the adapter's data
                 }
             }
 
             override fun onFailure(call: Call<List<DriverVehicle>>, t: Throwable) {
-                Log.e("MainActivity", "Error fetching data", t)
+                Log.e("AdminHome", "Error fetching data", t)
             }
-
         })
 
         return view
@@ -89,6 +86,26 @@ class AdminHome : Fragment() {
     private fun getSampleItems(): List<String> {
         // Replace this with your actual data retrieval logic
         return listOf("Item 1", "Item 2", "Item 3")
+    }
+
+    fun deleteItem(itemId: Int, position: Int) {
+        val call = retrofitService.deleteItem(itemId) // Assuming retrofitService is your Retrofit instance's service
+        call.enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    adapter.removeItemAt(position)
+                    Toast.makeText(requireContext(), "Item deleted successfully", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Handle error, could use response.code() to tailor the message
+                    Toast.makeText(requireContext(), "Failed to delete item", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                // Handle failure
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun signOut() {
