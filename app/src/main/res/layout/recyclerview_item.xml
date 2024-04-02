@@ -23,6 +23,14 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- User ID -->
+            <TextView
+                android:id="@+id/userIdTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="User Id"
+                android:textSize="24sp"/>
+
             <!-- Item Name -->
             <TextView
                 android:id="@+id/itemNameTextView"
@@ -48,7 +56,16 @@
                 android:layout_marginTop="8dp"
                 android:text="Plate Number"
                 android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/deleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"/>
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

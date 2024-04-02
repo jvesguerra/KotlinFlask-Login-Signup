@@ -9,8 +9,10 @@ import com.example.portal.models.VehicleModel
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface UserServe {
     @POST("/google-sign-in-endpoint")
@@ -30,4 +32,7 @@ interface UserServe {
 
     @GET("/get_driver_vehicles")
     fun getDriverVehicles(): Call<List<DriverVehicle>>
+
+    @DELETE("delete_user/{itemId}")
+    fun deleteItem(@Path("itemId") itemId: Int): Call<Void>
 }
