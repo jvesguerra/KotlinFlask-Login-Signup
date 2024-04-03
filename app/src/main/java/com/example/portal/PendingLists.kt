@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
-import com.example.portal.models.DriverVehicle
+import com.example.portal.models.DriverVehicleModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,8 +69,8 @@ class PendingLists : Fragment(), OnDeleteUserListener {
 
         val call = retrofitService.getPendingDrivers()
 
-        call.enqueue(object : Callback<List<DriverVehicle>> {
-            override fun onResponse(call: Call<List<DriverVehicle>>, response: Response<List<DriverVehicle>>) {
+        call.enqueue(object : Callback<List<DriverVehicleModel>> {
+            override fun onResponse(call: Call<List<DriverVehicleModel>>, response: Response<List<DriverVehicleModel>>) {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
                     adapter.updateData(items) // Update the adapter's data
@@ -79,7 +79,7 @@ class PendingLists : Fragment(), OnDeleteUserListener {
                 }
             }
 
-            override fun onFailure(call: Call<List<DriverVehicle>>, t: Throwable) {
+            override fun onFailure(call: Call<List<DriverVehicleModel>>, t: Throwable) {
                 Log.e("API_ERROR", "Error fetching data", t)
             }
         })

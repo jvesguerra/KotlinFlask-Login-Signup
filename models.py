@@ -36,3 +36,7 @@ class Vehicle(db.Model):
     userId = db.Column(db.Integer)
     plateNumber = db.Column(db.String(255))
     route = db.Column(db.String(255))
+    isAvailable = db.Column(db.Boolean, default=False)
+    hasDeparted = db.Column(db.Boolean, default=False)
+    isFull = db.Column(db.Boolean, default=False)
+    queuedUsers = db.Column(db.Integer, default=0)

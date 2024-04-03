@@ -2,12 +2,9 @@ package com.example.portal.models
 
 import com.google.gson.annotations.SerializedName
 
-class DriverVehicle (
+class DriverVehicleModel (
     @SerializedName("userId")
     val userId: Int,
-
-    @SerializedName("email")
-    val email: String,
 
     @SerializedName("firstName")
     val firstName: String,
@@ -17,9 +14,6 @@ class DriverVehicle (
 
     @SerializedName("contactNumber")
     val contactNumber: String,
-
-    @SerializedName("password")
-    val password: String,
 
     @SerializedName("rating")
     val rating: Long,
@@ -38,4 +32,16 @@ class DriverVehicle (
 
     @SerializedName("route")
     val route: String,
+
+    @SerializedName("isAvailable")
+    val isAvailable: Boolean,
+
+    @SerializedName("hasDeparted")
+    val hasDeparted: Boolean,
+
+    @SerializedName("isFull")
+    val isFull: Boolean,
+
+    @SerializedName("queuedUsers")
+    val queuedUsers: Int,
 )

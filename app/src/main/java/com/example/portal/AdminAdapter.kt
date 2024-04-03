@@ -6,8 +6,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.portal.admin.AdminHome
-import com.example.portal.models.DriverVehicle
+import com.example.portal.models.DriverVehicleModel
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -22,7 +21,7 @@ class AdminAdapter(
     private val onDeleteUserListener: OnDeleteUserListener?,
     private val context: Context,
     private val contextType: ContextType,
-    private var items: MutableList<DriverVehicle>
+    private var items: MutableList<DriverVehicleModel>
 ) : RecyclerView.Adapter<AdminAdapter.ViewHolder>() {
 
     enum class ContextType {
@@ -59,7 +58,7 @@ class AdminAdapter(
         notifyItemRemoved(position)
     }
 
-    fun updateData(newItems: List<DriverVehicle>) {
+    fun updateData(newItems: List<DriverVehicleModel>) {
         items.clear()
         items.addAll(newItems)
         notifyDataSetChanged()
@@ -97,7 +96,7 @@ class AdminAdapter(
         builder.show()
     }
 
-    private fun showDriverDetailsDialog(user: DriverVehicle) {
+    private fun showDriverDetailsDialog(user: DriverVehicleModel) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_driver_detail, null)
 
         dialogView.findViewById<TextView>(R.id.fullNameTextView).text = "${user.firstName} ${user.lastName}"
@@ -146,7 +145,7 @@ class AdminAdapter(
         val authorizeButton: Button = itemView.findViewById(R.id.authorizeButton)
         val showDriverDetails: Button = itemView.findViewById(R.id.showDriverDetails)
 
-        fun bind(user: DriverVehicle) {
+        fun bind(user: DriverVehicleModel) {
             val fullname = "${user.firstName} ${user.lastName}"
             itemView.findViewById<TextView>(R.id.itemNameTextView).text = fullname
             itemView.findViewById<TextView>(R.id.RouteTextView).text = user.plateNumber

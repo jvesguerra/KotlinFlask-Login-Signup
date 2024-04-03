@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,7 @@ import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.SessionManager
 import com.example.portal.api.UserServe
 import com.example.portal.functions.UserDeletion
-import com.example.portal.models.DriverVehicle
+import com.example.portal.models.DriverVehicleModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,21 +52,21 @@ class UserHome2 : Fragment(), OnDeleteUserListener {
         adapter = AdminAdapter(this@UserHome2,requireContext(),  AdminAdapter.ContextType.ADMIN_HOME,mutableListOf())
         recyclerView.adapter = adapter
 
-        val call: Call<List<DriverVehicle>> = if (route == "Forestry"){
+        val call: Call<List<DriverVehicleModel>> = if (route == "Forestry"){
             retrofitService.getAvailableForestryDrivers()
         }else{
             retrofitService.getAvailableRuralDrivers()
         }
 
-        call.enqueue(object : Callback<List<DriverVehicle>> {
-            override fun onResponse(call: Call<List<DriverVehicle>>, response: Response<List<DriverVehicle>>) {
+        call.enqueue(object : Callback<List<DriverVehicleModel>> {
+            override fun onResponse(call: Call<List<DriverVehicleModel>>, response: Response<List<DriverVehicleModel>>) {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
                     adapter.updateData(items) // Update the adapter's data
                 }
             }
 
-            override fun onFailure(call: Call<List<DriverVehicle>>, t: Throwable) {
+            override fun onFailure(call: Call<List<DriverVehicleModel>>, t: Throwable) {
                 Log.e("UserHome2", "Error fetching data", t)
             }
         })

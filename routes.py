@@ -43,7 +43,7 @@ def register():
             new_vehicle = Vehicle(vehicleId=vehicleId,
                                   userId=userId,
                                   plateNumber=form.plateNumber.data,
-                                  route=form.route.data)
+                                  route=form.route.data, )
             db.session.add(new_vehicle)
 
         db.session.add(new_user)
@@ -209,21 +209,26 @@ def get_locations():
 @app.route('/get_available_forestry_drivers', methods=['GET'])
 def get_available_forestry_drivers():
     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
-        User.userType == 2, User.authorized == True, Vehicle.route == 'Forestry').all()
+        User.userType == 2,
+        User.authorized.is_(True),
+        Vehicle.route == 'Forestry',
+        Vehicle.isAvailable.is_(True)).all()
 
     drivers_dict = [{
         'userId': user.userId,
         'firstName': user.firstName,
         'lastName': user.lastName,
-        'email': user.email,
         'contactNumber': user.contactNumber,
-        'password': user.password,
         'rating': user.rating,
         'userType': user.userType,
         'isActive': user.isActive,
         'authorized': user.authorized,
         'plateNumber': vehicle.plateNumber,
-        'route': vehicle.route
+        'route': vehicle.route,
+        'isAvailable': vehicle.isAvailable,
+        'hasDeparted': vehicle.hasDeparted,
+        'isFull': vehicle.isFull,
+        'queuedUsers': vehicle.queuedUsers,
     } for user, vehicle in drivers]
 
     print(drivers_dict)
@@ -234,21 +239,26 @@ def get_available_forestry_drivers():
 @app.route('/get_available_rural_drivers', methods=['GET'])
 def get_available_rural_drivers():
     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
-        User.userType == 2, User.authorized == True, Vehicle.route == 'Rural').all()
+        User.userType == 2,
+        User.authorized.is_(True),
+        Vehicle.route == 'Rural',
+        Vehicle.isAvailable.is_(True)).all()
 
     drivers_dict = [{
         'userId': user.userId,
         'firstName': user.firstName,
         'lastName': user.lastName,
-        'email': user.email,
         'contactNumber': user.contactNumber,
-        'password': user.password,
         'rating': user.rating,
         'userType': user.userType,
         'isActive': user.isActive,
         'authorized': user.authorized,
         'plateNumber': vehicle.plateNumber,
-        'route': vehicle.route
+        'route': vehicle.route,
+        'isAvailable': vehicle.isAvailable,
+        'hasDeparted': vehicle.hasDeparted,
+        'isFull': vehicle.isFull,
+        'queuedUsers': vehicle.queuedUsers,
     } for user, vehicle in drivers]
 
     print(drivers_dict)
@@ -259,21 +269,24 @@ def get_available_rural_drivers():
 @app.route('/get_auth_drivers', methods=['GET'])
 def get_auth_drivers():
     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
-        User.userType == 2, User.authorized == True).all()
+        User.userType == 2,
+        User.authorized.is_(True)).all()
 
     drivers_dict = [{
         'userId': user.userId,
         'firstName': user.firstName,
         'lastName': user.lastName,
-        'email': user.email,
         'contactNumber': user.contactNumber,
-        'password': user.password,
         'rating': user.rating,
         'userType': user.userType,
         'isActive': user.isActive,
         'authorized': user.authorized,
         'plateNumber': vehicle.plateNumber,
-        'route': vehicle.route
+        'route': vehicle.route,
+        'isAvailable': vehicle.isAvailable,
+        'hasDeparted': vehicle.hasDeparted,
+        'isFull': vehicle.isFull,
+        'queuedUsers': vehicle.queuedUsers,
     } for user, vehicle in drivers]
 
     print(drivers_dict)
@@ -284,21 +297,25 @@ def get_auth_drivers():
 @app.route('/get_pending_drivers', methods=['GET'])
 def get_pending_drivers():
     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
-        User.userType == 2, User.authorized == False).all()
+        User.userType == 2,
+        User.authorized.is_(False)).all()
 
     drivers_dict = [{
         'userId': user.userId,
         'firstName': user.firstName,
         'lastName': user.lastName,
-        'email': user.email,
         'contactNumber': user.contactNumber,
-        'password': user.password,
         'rating': user.rating,
         'userType': user.userType,
         'isActive': user.isActive,
         'authorized': user.authorized,
         'plateNumber': vehicle.plateNumber,
-        'route': vehicle.route
+        'route': vehicle.route,
+        'isAvailable': vehicle.isAvailable,
+        'hasDeparted': vehicle.hasDeparted,
+        'isFull': vehicle.isFull,
+        'queuedUsers': vehicle.queuedUsers,
+
     } for user, vehicle in drivers]
 
     print(drivers_dict)
