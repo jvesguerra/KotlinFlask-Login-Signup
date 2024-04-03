@@ -14,7 +14,7 @@ import androidx.navigation.Navigation
 import com.example.portal.R
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.portal.AdminAdapter
+import com.example.portal.Adapter
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.SessionManager
@@ -33,7 +33,7 @@ class AdminHome : Fragment(), OnDeleteUserListener {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: AdminAdapter
+    private lateinit var adapter: Adapter
 
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
@@ -66,7 +66,7 @@ class AdminHome : Fragment(), OnDeleteUserListener {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = AdminAdapter(this@AdminHome,requireContext(),  AdminAdapter.ContextType.ADMIN_HOME,mutableListOf())
+        adapter = Adapter(this@AdminHome,requireContext(),  Adapter.ContextType.ADMIN_HOME,mutableListOf())
         recyclerView.adapter = adapter
 
         val call2 = retrofitService.getAuthDrivers()

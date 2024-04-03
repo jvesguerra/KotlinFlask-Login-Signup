@@ -12,7 +12,7 @@ import android.widget.Button
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.portal.AdminAdapter
+import com.example.portal.Adapter
 import com.example.portal.R
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
@@ -27,7 +27,7 @@ import retrofit2.Response
 class UserHome2 : Fragment(), OnDeleteUserListener {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: AdminAdapter
+    private lateinit var adapter: Adapter
 
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
@@ -49,7 +49,7 @@ class UserHome2 : Fragment(), OnDeleteUserListener {
 
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = AdminAdapter(this@UserHome2,requireContext(),  AdminAdapter.ContextType.ADMIN_HOME,mutableListOf())
+        adapter = Adapter(this@UserHome2,requireContext(),  Adapter.ContextType.USER_HOME2,mutableListOf())
         recyclerView.adapter = adapter
 
         val call: Call<List<DriverVehicleModel>> = if (route == "Forestry"){

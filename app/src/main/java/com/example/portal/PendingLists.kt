@@ -31,7 +31,7 @@ class PendingLists : Fragment(), OnDeleteUserListener {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: AdminAdapter
+    private lateinit var adapter: Adapter
 
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
@@ -64,7 +64,7 @@ class PendingLists : Fragment(), OnDeleteUserListener {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = AdminAdapter(this@PendingLists,requireContext(), AdminAdapter.ContextType.PENDING_LISTS, mutableListOf())
+        adapter = Adapter(this@PendingLists,requireContext(), Adapter.ContextType.PENDING_LISTS, mutableListOf())
         recyclerView.adapter = adapter
 
         val call = retrofitService.getPendingDrivers()
