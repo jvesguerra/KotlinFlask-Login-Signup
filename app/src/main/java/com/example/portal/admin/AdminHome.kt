@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.portal.AdminAdapter
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
+import com.example.portal.api.SessionManager
 import com.example.portal.api.UserServe
 import com.example.portal.models.DriverVehicle
 import retrofit2.Call
@@ -61,9 +62,6 @@ class AdminHome : Fragment(), OnDeleteUserListener {
 
         logoutButton.setOnClickListener {
             signOut()
-
-            val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
-            Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
             Navigation.findNavController(view).navigate(R.id.logout)
         }
         recyclerView = view.findViewById(R.id.recyclerView)
@@ -129,13 +127,7 @@ class AdminHome : Fragment(), OnDeleteUserListener {
 //    }
 
     private fun signOut() {
-         val editor = sharedPreferences.edit()
-         editor.clear()
-         editor.apply()
-
-        // Add any additional logic for sign-out, such as navigating to a login screen
-        // For simplicity, let's just print a log message
-        println("User logged out")
+        SessionManager.signOut(requireContext())
     }
 
     companion object {
