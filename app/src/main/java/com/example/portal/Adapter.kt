@@ -17,15 +17,15 @@ import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
 
-class AdminAdapter(
+class Adapter(
     private val onDeleteUserListener: OnDeleteUserListener?,
     private val context: Context,
     private val contextType: ContextType,
     private var items: MutableList<DriverVehicleModel>
-) : RecyclerView.Adapter<AdminAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
     enum class ContextType {
-        ADMIN_HOME, PENDING_LISTS
+        ADMIN_HOME, PENDING_LISTS, USER_HOME2
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
@@ -144,6 +144,9 @@ class AdminAdapter(
         val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
         val authorizeButton: Button = itemView.findViewById(R.id.authorizeButton)
         val showDriverDetails: Button = itemView.findViewById(R.id.showDriverDetails)
+        private val queueButton: Button = itemView.findViewById(R.id.queueButton)
+        private val isFullTextView: TextView = itemView.findViewById(R.id.IsFullTextView)
+        private val hasDepartedTextView: TextView = itemView.findViewById(R.id.HasDepartedTextView)
 
         fun bind(user: DriverVehicleModel) {
             val fullname = "${user.firstName} ${user.lastName}"
@@ -151,7 +154,43 @@ class AdminAdapter(
             itemView.findViewById<TextView>(R.id.RouteTextView).text = user.plateNumber
             itemView.findViewById<TextView>(R.id.PlateNumberTextView).text = user.route
 
-            authorizeButton.visibility = if (contextType == ContextType.ADMIN_HOME) View.GONE else View.VISIBLE
+            // Chooses which buttons to Show
+            when (contextType) {
+                ContextType.ADMIN_HOME -> {
+                    deleteButton.visibility = View.VISIBLE
+                    showDriverDetails.visibility = View.VISIBLE
+
+                    authorizeButton.visibility = View.GONE
+                    queueButton.visibility = View.GONE
+
+                    isFullTextView.visibility = View.GONE
+                    hasDepartedTextView.visibility = View.GONE
+                }
+                ContextType.USER_HOME2 -> {
+                    val isFull = if(user.isFull) "Full" else "Not Full"
+                    val hasDeparted = if(user.hasDeparted) "Departed" else "Not Departed"
+                    isFullTextView.text = isFull
+                    hasDepartedTextView.text = hasDeparted
+
+                    queueButton.visibility = View.VISIBLE
+                    isFullTextView.visibility = View.VISIBLE
+                    hasDepartedTextView.visibility = View.VISIBLE
+
+                    authorizeButton.visibility = View.GONE
+                    deleteButton.visibility = View.GONE
+                    showDriverDetails.visibility = View.GONE
+                }
+                ContextType.PENDING_LISTS -> {
+                    authorizeButton.visibility = View.VISIBLE
+                    deleteButton.visibility = View.VISIBLE
+                    showDriverDetails.visibility = View.VISIBLE
+
+                    queueButton.visibility = View.GONE
+
+                    isFullTextView.visibility = View.GONE
+                    hasDepartedTextView.visibility = View.GONE
+                }
+            }
         }
     }
 }

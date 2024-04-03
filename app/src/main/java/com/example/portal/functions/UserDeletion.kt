@@ -2,13 +2,13 @@ package com.example.portal.functions
 
 import android.content.Context
 import android.widget.Toast
-import com.example.portal.AdminAdapter
+import com.example.portal.Adapter
 import com.example.portal.api.UserServe
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UserDeletion(private val context: Context, private val adapter: AdminAdapter) {
+class UserDeletion(private val context: Context, private val adapter: Adapter) {
     fun deleteUser(retrofitService: UserServe, userId: Int, position: Int) {
         val call = retrofitService.adminDeleteUser(userId)
         call.enqueue(object : Callback<Void> {
