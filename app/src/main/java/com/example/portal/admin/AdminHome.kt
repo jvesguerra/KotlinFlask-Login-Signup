@@ -15,6 +15,7 @@ import com.example.portal.R
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.portal.AdminAdapter
+import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.models.DriverVehicle
@@ -25,7 +26,7 @@ import retrofit2.Response
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class AdminHome : Fragment() {
+class AdminHome : Fragment(), OnDeleteUserListener {
     private var param1: String? = null
     private var param2: String? = null
 
@@ -52,10 +53,12 @@ class AdminHome : Fragment() {
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
 
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
+
         val pendingListsButton: Button = view.findViewById(R.id.btnPending)
         pendingListsButton.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.toPendingLists)
         }
+
         logoutButton.setOnClickListener {
             signOut()
 
@@ -65,7 +68,7 @@ class AdminHome : Fragment() {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = AdminAdapter(requireContext(), mutableListOf())
+        adapter = AdminAdapter(this@AdminHome,requireContext(),  AdminAdapter.ContextType.ADMIN_HOME,mutableListOf())
         recyclerView.adapter = adapter
 
         val call2 = retrofitService.getAuthDrivers()
@@ -85,12 +88,8 @@ class AdminHome : Fragment() {
 
         return view
     }
-    private fun getSampleItems(): List<String> {
-        // Replace this with your actual data retrieval logic
-        return listOf("Item 1", "Item 2", "Item 3")
-    }
 
-    fun deleteItem(userId: Int, position: Int) {
+    override fun onDeleteUser(userId: Int, position: Int) {
         val call = retrofitService.adminDeleteUser(userId) // Assuming retrofitService is your Retrofit instance's service
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -109,6 +108,25 @@ class AdminHome : Fragment() {
             }
         })
     }
+//    fun deleteItem(userId: Int, position: Int) {
+//        val call = retrofitService.adminDeleteUser(userId) // Assuming retrofitService is your Retrofit instance's service
+//        call.enqueue(object : Callback<Void> {
+//            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+//                if (response.isSuccessful) {
+//                    adapter.removeItemAt(position)
+//                    Toast.makeText(requireContext(), "Item deleted successfully", Toast.LENGTH_SHORT).show()
+//                } else {
+//                    // Handle error, could use response.code() to tailor the message
+//                    Toast.makeText(requireContext(), "Failed to delete item", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<Void>, t: Throwable) {
+//                // Handle failure
+//                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+//            }
+//        })
+//    }
 
     private fun signOut() {
          val editor = sharedPreferences.edit()

@@ -11,6 +11,7 @@ import com.example.portal.models.DriverVehicle
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import retrofit2.Response
@@ -18,9 +19,15 @@ import retrofit2.Call
 import retrofit2.Callback
 
 class AdminAdapter(
+    private val onDeleteUserListener: OnDeleteUserListener?,
     private val context: Context,
+    private val contextType: ContextType,
     private var items: MutableList<DriverVehicle>
 ) : RecyclerView.Adapter<AdminAdapter.ViewHolder>() {
+
+    enum class ContextType {
+        ADMIN_HOME, PENDING_LISTS
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
         return ViewHolder(view)
@@ -59,7 +66,7 @@ class AdminAdapter(
     }
 
     private fun deleteUser(userId: Int, position: Int) {
-        (context as? AdminHome)?.deleteItem(userId, position)
+        onDeleteUserListener?.onDeleteUser(userId, position)
     }
 
     private fun showDeleteConfirmationDialog(userId: Int, position: Int) {
@@ -100,10 +107,14 @@ class AdminAdapter(
 
         val builder = AlertDialog.Builder(context)
         builder.setView(dialogView)
-        builder.setTitle("Confirm Authorization")
-        builder.setPositiveButton("Authorize") { dialogInterface: DialogInterface, i: Int ->
-            updateAuthorizedStatus(user.userId)
-            dialogInterface.dismiss()
+        builder.setTitle("Driver Details")
+
+        if (contextType == ContextType.PENDING_LISTS) {
+            builder.setTitle("Confirm Authorization")
+            builder.setPositiveButton("Authorize") { dialogInterface: DialogInterface, i: Int ->
+                updateAuthorizedStatus(user.userId)
+                dialogInterface.dismiss()
+            }
         }
         builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
             dialogInterface.dismiss()
@@ -140,6 +151,8 @@ class AdminAdapter(
             itemView.findViewById<TextView>(R.id.itemNameTextView).text = fullname
             itemView.findViewById<TextView>(R.id.RouteTextView).text = user.plateNumber
             itemView.findViewById<TextView>(R.id.PlateNumberTextView).text = user.route
+
+            authorizeButton.visibility = if (contextType == ContextType.ADMIN_HOME) View.GONE else View.VISIBLE
         }
     }
 }

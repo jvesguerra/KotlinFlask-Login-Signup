@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.models.DriverVehicle
@@ -24,7 +25,7 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 
-class PendingLists : Fragment() {
+class PendingLists : Fragment(), OnDeleteUserListener {
     private var param1: String? = null
     private var param2: String? = null
 
@@ -53,10 +54,7 @@ class PendingLists : Fragment() {
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
 
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
-        val pendingListsButton: Button = view.findViewById(R.id.btnPending)
-        pendingListsButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.toPendingLists)
-        }
+
         logoutButton.setOnClickListener {
             signOut()
 
@@ -66,7 +64,7 @@ class PendingLists : Fragment() {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = AdminAdapter(requireContext(), mutableListOf())
+        adapter = AdminAdapter(this@PendingLists,requireContext(), AdminAdapter.ContextType.PENDING_LISTS, mutableListOf())
         recyclerView.adapter = adapter
 
         val call = retrofitService.getPendingDrivers()
@@ -100,7 +98,7 @@ class PendingLists : Fragment() {
         println("User logged out")
     }
 
-    fun deleteItem(userId: Int, position: Int) {
+    override fun onDeleteUser(userId: Int, position: Int) {
         val call = retrofitService.adminDeleteUser(userId) // Assuming retrofitService is your Retrofit instance's service
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {

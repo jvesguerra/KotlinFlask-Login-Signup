@@ -35,18 +35,9 @@
         android:layout_height="wrap_content"
         android:text="Map"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnPending"
-        android:layout_margin="16dp"/>
-
-    <!-- Pending Lists Button -->
-    <Button
-        android:id="@+id/btnPending"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pending"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnLogout"
         android:layout_margin="16dp"/>
+
 
     <!-- Sign Out Button -->
     <Button
