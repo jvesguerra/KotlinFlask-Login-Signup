@@ -2,7 +2,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
 
     <TextView
         android:id="@+id/fullNameTextView"
@@ -10,24 +13,28 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:paddingBottom="8dp"/>
+        android:paddingBottom="8dp"
+        android:text="Full Name"/>
 
     <TextView
         android:id="@+id/userIdTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="User ID"
         android:paddingBottom="4dp"/>
 
     <TextView
         android:id="@+id/plateNumberTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Plate Number"
         android:paddingBottom="4dp"/>
 
     <TextView
         android:id="@+id/routeTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Route"
         android:paddingBottom="4dp"/>
 
 </LinearLayout>
