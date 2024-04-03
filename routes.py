@@ -206,26 +206,54 @@ def get_locations():
          locations])
 
 
-@app.route('/get_driver_names', methods=['GET'])
-def get_driver_names():
-    # items = User.query.all()
-    # items = User.query.join(User).filter(User.user_type == 2).all()
+@app.route('/get_available_forestry_drivers', methods=['GET'])
+def get_available_forestry_drivers():
+    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+        User.userType == 2, User.authorized == True, Vehicle.route == 'Forestry').all()
 
-    items = User.query.filter(User.userType == 2).all()
-    # Convert SQLAlchemy objects to dictionary
-    items_dict = [{
+    drivers_dict = [{
         'userId': user.userId,
         'firstName': user.firstName,
         'lastName': user.lastName,
         'email': user.email,
         'contactNumber': user.contactNumber,
         'password': user.password,
-
         'rating': user.rating,
         'userType': user.userType,
         'isActive': user.isActive,
-    } for user in items]
-    return jsonify(items_dict)
+        'authorized': user.authorized,
+        'plateNumber': vehicle.plateNumber,
+        'route': vehicle.route
+    } for user, vehicle in drivers]
+
+    print(drivers_dict)
+
+    return jsonify(drivers_dict)
+
+
+@app.route('/get_available_rural_drivers', methods=['GET'])
+def get_available_rural_drivers():
+    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+        User.userType == 2, User.authorized == True, Vehicle.route == 'Rural').all()
+
+    drivers_dict = [{
+        'userId': user.userId,
+        'firstName': user.firstName,
+        'lastName': user.lastName,
+        'email': user.email,
+        'contactNumber': user.contactNumber,
+        'password': user.password,
+        'rating': user.rating,
+        'userType': user.userType,
+        'isActive': user.isActive,
+        'authorized': user.authorized,
+        'plateNumber': vehicle.plateNumber,
+        'route': vehicle.route
+    } for user, vehicle in drivers]
+
+    print(drivers_dict)
+
+    return jsonify(drivers_dict)
 
 
 @app.route('/get_auth_drivers', methods=['GET'])

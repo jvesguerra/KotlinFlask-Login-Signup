@@ -28,8 +28,11 @@ interface UserServe {
     @POST("/register_driver")
     fun registerDriver(@Body request: DriverSignUpRequest): Call<Void>
 
-    @GET("/get_driver_names")
-    fun getDriverNames(): Call<List<UserModel>>
+    @GET("/get_available_forestry_drivers")
+    fun getAvailableForestryDrivers(): Call<List<DriverVehicle>>
+
+    @GET("/get_available_rural_drivers")
+    fun getAvailableRuralDrivers(): Call<List<DriverVehicle>>
 
     @GET("/get_auth_drivers")
     fun getAuthDrivers(): Call<List<DriverVehicle>>
