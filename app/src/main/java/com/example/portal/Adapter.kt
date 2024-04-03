@@ -100,7 +100,7 @@ class Adapter(
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_driver_detail, null)
 
         dialogView.findViewById<TextView>(R.id.fullNameTextView).text = "${user.firstName} ${user.lastName}"
-        dialogView.findViewById<TextView>(R.id.userIdTextView).text = "User ID: ${user.contactNumber}"
+        dialogView.findViewById<TextView>(R.id.userIdTextView).text = "Contact Number: ${user.contactNumber}"
         dialogView.findViewById<TextView>(R.id.plateNumberTextView).text = "Plate Number: ${user.plateNumber}"
         dialogView.findViewById<TextView>(R.id.routeTextView).text = "Route: ${user.route}"
 
@@ -178,7 +178,7 @@ class Adapter(
 
                     authorizeButton.visibility = View.GONE
                     deleteButton.visibility = View.GONE
-                    showDriverDetails.visibility = View.GONE
+                    showDriverDetails.visibility = View.VISIBLE
                 }
                 ContextType.PENDING_LISTS -> {
                     authorizeButton.visibility = View.VISIBLE
