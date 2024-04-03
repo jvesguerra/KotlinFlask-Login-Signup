@@ -14,4 +14,16 @@ class VehicleModel (
 
     @SerializedName("route")
     val route: String,
+
+    @SerializedName("isAvailable")
+    val isAvailable: Boolean,
+
+    @SerializedName("hasDeparted")
+    val hasDeparted: Boolean,
+
+    @SerializedName("isFull")
+    val isFull: Boolean,
+
+    @SerializedName("queuedUsers")
+    val queuedUsers: Int,
 )

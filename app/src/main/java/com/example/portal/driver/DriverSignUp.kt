@@ -24,7 +24,6 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 class DriverSignUp : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
@@ -97,10 +96,14 @@ class DriverSignUp : Fragment() {
             )
 
             val newVehicle = VehicleModel(
-                vehicleId = 0, // Assuming you generate this on the server side
-                userId = 0, // Will be set by the server
+                vehicleId = 0,
+                userId = 0,
                 plateNumber = plateNumber,
-                route = route
+                route = route,
+                isAvailable = false,
+                hasDeparted = false,
+                isFull = false,
+                queuedUsers = 0
             )
 
             val request = DriverSignUpRequest(newUser, newVehicle)

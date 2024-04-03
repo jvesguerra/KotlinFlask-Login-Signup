@@ -2,12 +2,10 @@ package com.example.portal.api
 
 import com.example.portal.GoogleSignInRequest
 import com.example.portal.models.DriverSignUpRequest
-import com.example.portal.models.DriverVehicle
+import com.example.portal.models.DriverVehicleModel
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
-import com.example.portal.models.VehicleModel
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -29,16 +27,16 @@ interface UserServe {
     fun registerDriver(@Body request: DriverSignUpRequest): Call<Void>
 
     @GET("/get_available_forestry_drivers")
-    fun getAvailableForestryDrivers(): Call<List<DriverVehicle>>
+    fun getAvailableForestryDrivers(): Call<List<DriverVehicleModel>>
 
     @GET("/get_available_rural_drivers")
-    fun getAvailableRuralDrivers(): Call<List<DriverVehicle>>
+    fun getAvailableRuralDrivers(): Call<List<DriverVehicleModel>>
 
     @GET("/get_auth_drivers")
-    fun getAuthDrivers(): Call<List<DriverVehicle>>
+    fun getAuthDrivers(): Call<List<DriverVehicleModel>>
 
     @GET("/get_pending_drivers")
-    fun getPendingDrivers(): Call<List<DriverVehicle>>
+    fun getPendingDrivers(): Call<List<DriverVehicleModel>>
 
     @DELETE("admin_delete_user/{userId}")
     fun adminDeleteUser(@Path("userId") userId: Int): Call<Void>
