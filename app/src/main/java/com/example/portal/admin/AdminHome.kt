@@ -66,7 +66,13 @@ class AdminHome : Fragment(), OnDeleteUserListener {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = Adapter(this@AdminHome,requireContext(),  Adapter.ContextType.ADMIN_HOME,mutableListOf())
+        adapter = Adapter(
+            onDeleteUserListener = this@AdminHome,
+            onQueueUserListener = null,
+            context = requireContext(),
+            contextType = Adapter.ContextType.ADMIN_HOME,
+            items = mutableListOf()
+        )
         recyclerView.adapter = adapter
 
         val call2 = retrofitService.getAuthDrivers()

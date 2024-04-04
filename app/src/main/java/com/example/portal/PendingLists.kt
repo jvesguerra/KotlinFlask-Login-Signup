@@ -64,7 +64,13 @@ class PendingLists : Fragment(), OnDeleteUserListener {
         }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = Adapter(this@PendingLists,requireContext(), Adapter.ContextType.PENDING_LISTS, mutableListOf())
+        adapter = Adapter(
+            onDeleteUserListener = this@PendingLists,
+            onQueueUserListener = null,
+            context = requireContext(),
+            contextType = Adapter.ContextType.PENDING_LISTS,
+            items = mutableListOf()
+        )
         recyclerView.adapter = adapter
 
         val call = retrofitService.getPendingDrivers()

@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, session
 from app import app, db, bcrypt
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
@@ -8,6 +8,8 @@ import time
 import uuid
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_
+import json
+from app import app, db, bcrypt, login_manager
 
 
 def generate_new_user_id():
@@ -100,6 +102,7 @@ def register_driver():
 
 
 @app.route('/signin', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def sign_in():
     from models import User  # Import User model locally inside the function to avoid circular import
     from forms import LoginForm
@@ -109,9 +112,10 @@ def sign_in():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
-                print("LOGGED IN")
-                print(user.userType)
-                login_user(user)  # Log in the user
+                session['user_id'] = user.userId
+                login_user(user)
+                print("Session contents:", session)
+                print("SESSION USER ID: ", session.get('user_id'))
                 return jsonify({
                     'message': 'User logged in successfully',
                     'user': {
@@ -128,14 +132,39 @@ def sign_in():
                 print("FAILED TO LOG IN")
                 return jsonify({'error': 'Invalid username or password'}), 401
     else:
+        print("INVALID FORM DATA:", form.errors)  # Debug statement
         return jsonify({'error': 'Invalid username or password'}), 401
 
 
 @app.route("/logout")
+@cross_origin(supports_credentials=True)
 @login_required
 def logout():
+    session.pop('user_id', None)
     logout_user()
     return jsonify({'message': 'Logged out'})
+
+
+@app.route('/add_queued_user/<int:vehicleId>/<int:userId>', methods=['POST'])
+def add_queued_user(vehicleId, userId):
+    try:
+        # Query the vehicle by its ID
+        vehicle = Vehicle.query.get(vehicleId)
+        user_id = current_user.userId  # User id of the user that will queue to the driver
+        print("SESSION USER ID: ", current_user.userId)
+
+        if vehicle is None:
+            return jsonify({'error': f'Vehicle with ID {vehicleId} not found'}), 404
+
+        # Add the user to the queued users list
+        vehicle.add_queued_user(user_id)
+        db.session.commit()
+
+        return jsonify({'message': f'User {user_id} added to the queued users list for vehicle {vehicleId}'}), 200
+    except Exception as e:
+        print(f"Error occurred while processing vehicle with ID {vehicleId}: {e}")
+        # Handle any unexpected errors
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
 
 @app.route('/add_user', methods=['POST'])
@@ -216,6 +245,7 @@ def get_available_forestry_drivers():
 
     drivers_dict = [{
         'userId': user.userId,
+        'vehicleId': vehicle.vehicleId,
         'firstName': user.firstName,
         'lastName': user.lastName,
         'contactNumber': user.contactNumber,
@@ -228,7 +258,7 @@ def get_available_forestry_drivers():
         'isAvailable': vehicle.isAvailable,
         'hasDeparted': vehicle.hasDeparted,
         'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers,
+        'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else []
     } for user, vehicle in drivers]
 
     print(drivers_dict)
@@ -236,91 +266,91 @@ def get_available_forestry_drivers():
     return jsonify(drivers_dict)
 
 
-@app.route('/get_available_rural_drivers', methods=['GET'])
-def get_available_rural_drivers():
-    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
-        User.userType == 2,
-        User.authorized.is_(True),
-        Vehicle.route == 'Rural',
-        Vehicle.isAvailable.is_(True)).all()
-
-    drivers_dict = [{
-        'userId': user.userId,
-        'firstName': user.firstName,
-        'lastName': user.lastName,
-        'contactNumber': user.contactNumber,
-        'rating': user.rating,
-        'userType': user.userType,
-        'isActive': user.isActive,
-        'authorized': user.authorized,
-        'plateNumber': vehicle.plateNumber,
-        'route': vehicle.route,
-        'isAvailable': vehicle.isAvailable,
-        'hasDeparted': vehicle.hasDeparted,
-        'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers,
-    } for user, vehicle in drivers]
-
-    print(drivers_dict)
-
-    return jsonify(drivers_dict)
-
-
-@app.route('/get_auth_drivers', methods=['GET'])
-def get_auth_drivers():
-    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
-        User.userType == 2,
-        User.authorized.is_(True)).all()
-
-    drivers_dict = [{
-        'userId': user.userId,
-        'firstName': user.firstName,
-        'lastName': user.lastName,
-        'contactNumber': user.contactNumber,
-        'rating': user.rating,
-        'userType': user.userType,
-        'isActive': user.isActive,
-        'authorized': user.authorized,
-        'plateNumber': vehicle.plateNumber,
-        'route': vehicle.route,
-        'isAvailable': vehicle.isAvailable,
-        'hasDeparted': vehicle.hasDeparted,
-        'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers,
-    } for user, vehicle in drivers]
-
-    print(drivers_dict)
-
-    return jsonify(drivers_dict)
-
-
-@app.route('/get_pending_drivers', methods=['GET'])
-def get_pending_drivers():
-    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
-        User.userType == 2,
-        User.authorized.is_(False)).all()
-
-    drivers_dict = [{
-        'userId': user.userId,
-        'firstName': user.firstName,
-        'lastName': user.lastName,
-        'contactNumber': user.contactNumber,
-        'rating': user.rating,
-        'userType': user.userType,
-        'isActive': user.isActive,
-        'authorized': user.authorized,
-        'plateNumber': vehicle.plateNumber,
-        'route': vehicle.route,
-        'isAvailable': vehicle.isAvailable,
-        'hasDeparted': vehicle.hasDeparted,
-        'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers,
-
-    } for user, vehicle in drivers]
-
-    print(drivers_dict)
-
-    return jsonify(drivers_dict)
+# @app.route('/get_available_rural_drivers', methods=['GET'])
+# def get_available_rural_drivers():
+#     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+#         User.userType == 2,
+#         User.authorized.is_(True),
+#         Vehicle.route == 'Rural',
+#         Vehicle.isAvailable.is_(True)).all()
+#
+#     drivers_dict = [{
+#         'userId': user.userId,
+#         'firstName': user.firstName,
+#         'lastName': user.lastName,
+#         'contactNumber': user.contactNumber,
+#         'rating': user.rating,
+#         'userType': user.userType,
+#         'isActive': user.isActive,
+#         'authorized': user.authorized,
+#         'plateNumber': vehicle.plateNumber,
+#         'route': vehicle.route,
+#         'isAvailable': vehicle.isAvailable,
+#         'hasDeparted': vehicle.hasDeparted,
+#         'isFull': vehicle.isFull,
+#         'queuedUsers': vehicle.queuedUsers,
+#     } for user, vehicle in drivers]
+#
+#     print(drivers_dict)
+#
+#     return jsonify(drivers_dict)
+#
+#
+# @app.route('/get_auth_drivers', methods=['GET'])
+# def get_auth_drivers():
+#     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+#         User.userType == 2,
+#         User.authorized.is_(True)).all()
+#
+#     drivers_dict = [{
+#         'userId': user.userId,
+#         'firstName': user.firstName,
+#         'lastName': user.lastName,
+#         'contactNumber': user.contactNumber,
+#         'rating': user.rating,
+#         'userType': user.userType,
+#         'isActive': user.isActive,
+#         'authorized': user.authorized,
+#         'plateNumber': vehicle.plateNumber,
+#         'route': vehicle.route,
+#         'isAvailable': vehicle.isAvailable,
+#         'hasDeparted': vehicle.hasDeparted,
+#         'isFull': vehicle.isFull,
+#         'queuedUsers': vehicle.queuedUsers,
+#     } for user, vehicle in drivers]
+#
+#     print(drivers_dict)
+#
+#     return jsonify(drivers_dict)
+#
+#
+# @app.route('/get_pending_drivers', methods=['GET'])
+# def get_pending_drivers():
+#     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+#         User.userType == 2,
+#         User.authorized.is_(False)).all()
+#
+#     drivers_dict = [{
+#         'userId': user.userId,
+#         'firstName': user.firstName,
+#         'lastName': user.lastName,
+#         'contactNumber': user.contactNumber,
+#         'rating': user.rating,
+#         'userType': user.userType,
+#         'isActive': user.isActive,
+#         'authorized': user.authorized,
+#         'plateNumber': vehicle.plateNumber,
+#         'route': vehicle.route,
+#         'isAvailable': vehicle.isAvailable,
+#         'hasDeparted': vehicle.hasDeparted,
+#         'isFull': vehicle.isFull,
+#         'queuedUsers': vehicle.queuedUsers,
+#
+#     } for user, vehicle in drivers]
+#
+#     print(drivers_dict)
+#
+#     return jsonify(drivers_dict)
 
 
 @app.route('/admin_delete_user/<int:userId>', methods=['DELETE'])

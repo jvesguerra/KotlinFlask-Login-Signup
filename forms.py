@@ -3,6 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, IntegerField, Boole
 from wtforms.validators import InputRequired, Length, ValidationError, Email
 import re
 from models import *
+from flask_cors import CORS, cross_origin
 
 
 class RegisterForm(FlaskForm):

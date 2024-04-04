@@ -103,7 +103,7 @@ class DriverSignUp : Fragment() {
                 isAvailable = false,
                 hasDeparted = false,
                 isFull = false,
-                queuedUsers = 0
+                queuedUsers = mutableListOf()
             )
 
             val request = DriverSignUpRequest(newUser, newVehicle)
