@@ -1,9 +1,11 @@
 from app import db
 from sqlalchemy import DateTime, func
 from pydantic import BaseModel
+import json
+from flask_login import UserMixin
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     userId = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(255))
     lastName = db.Column(db.String(255))
@@ -39,4 +41,15 @@ class Vehicle(db.Model):
     isAvailable = db.Column(db.Boolean, default=False)
     hasDeparted = db.Column(db.Boolean, default=False)
     isFull = db.Column(db.Boolean, default=False)
-    queuedUsers = db.Column(db.Integer, default=0)
+    queuedUsers = db.Column(db.String(255), default="[]")  # Store as JSON string
+
+    def add_queued_user(self, user_id):
+        queued_users = json.loads(self.queuedUsers)
+        queued_users.append(user_id)
+        self.queuedUsers = json.dumps(queued_users)
+
+    def remove_queued_user(self, user_id):
+        queued_users = json.loads(self.queuedUsers)
+        if user_id in queued_users:
+            queued_users.remove(user_id)
+            self.queuedUsers = json.dumps(queued_users)

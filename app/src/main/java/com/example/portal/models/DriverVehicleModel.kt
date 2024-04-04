@@ -6,6 +6,9 @@ class DriverVehicleModel (
     @SerializedName("userId")
     val userId: Int,
 
+    @SerializedName("vehicleId")
+    val vehicleId: Int,
+
     @SerializedName("firstName")
     val firstName: String,
 
@@ -43,5 +46,5 @@ class DriverVehicleModel (
     val isFull: Boolean,
 
     @SerializedName("queuedUsers")
-    val queuedUsers: Int,
+    val queuedUsers: List<String>,
 )

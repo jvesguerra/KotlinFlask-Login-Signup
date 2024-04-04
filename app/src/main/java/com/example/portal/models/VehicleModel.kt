@@ -25,5 +25,5 @@ class VehicleModel (
     val isFull: Boolean,
 
     @SerializedName("queuedUsers")
-    val queuedUsers: Int,
+    val queuedUsers: List<String>,
 )

@@ -18,13 +18,15 @@ import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.SessionManager
 import com.example.portal.api.UserServe
+import com.example.portal.api.OnQueueUserListener
 import com.example.portal.functions.UserDeletion
+import com.example.portal.functions.UserQueue
 import com.example.portal.models.DriverVehicleModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UserHome2 : Fragment(), OnDeleteUserListener {
+class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: Adapter
@@ -49,8 +51,15 @@ class UserHome2 : Fragment(), OnDeleteUserListener {
 
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = Adapter(this@UserHome2,requireContext(),  Adapter.ContextType.USER_HOME2,mutableListOf())
+        adapter = Adapter(
+            onDeleteUserListener = null,
+            onQueueUserListener = this@UserHome2,
+            context = requireContext(),
+            contextType = Adapter.ContextType.USER_HOME2,
+            items = mutableListOf()
+        )
         recyclerView.adapter = adapter
+
 
         val call: Call<List<DriverVehicleModel>> = if (route == "Forestry"){
             retrofitService.getAvailableForestryDrivers()
@@ -81,6 +90,13 @@ class UserHome2 : Fragment(), OnDeleteUserListener {
         val userDeletion = UserDeletion(requireContext(), adapter)
         userDeletion.deleteUser(retrofitService, userId, position)
     }
+
+    override fun onQueueUser(userId: Int, position: Int, vehicleId: Int) {
+        val userQueue = UserQueue(requireContext(), adapter)
+        userQueue.addQueuedUser(retrofitService, userId, position, vehicleId)
+    }
+
+
 
     companion object {
         @JvmStatic

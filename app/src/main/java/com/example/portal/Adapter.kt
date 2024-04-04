@@ -13,12 +13,14 @@ import android.content.DialogInterface
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
+import com.example.portal.api.OnQueueUserListener
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
 
 class Adapter(
     private val onDeleteUserListener: OnDeleteUserListener?,
+    private val onQueueUserListener: OnQueueUserListener?,
     private val context: Context,
     private val contextType: ContextType,
     private var items: MutableList<DriverVehicleModel>
@@ -47,6 +49,11 @@ class Adapter(
         holder.showDriverDetails.setOnClickListener {
             showDriverDetailsDialog(item)
         }
+
+        holder.queueButton.setOnClickListener {
+            showQueueConfirmationDialog(item.userId, position, item.vehicleId)
+        }
+
     }
 
     override fun getItemCount(): Int {
@@ -66,6 +73,24 @@ class Adapter(
 
     private fun deleteUser(userId: Int, position: Int) {
         onDeleteUserListener?.onDeleteUser(userId, position)
+    }
+
+    private fun queueUser(userId: Int, position: Int, vehicleId: Int) {
+        onQueueUserListener?.onQueueUser(userId, position, vehicleId)
+    }
+
+    private fun showQueueConfirmationDialog(userId: Int, position: Int, vehicleId: Int) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Queue Driver")
+        builder.setMessage("Are you sure you want to queue this driver?")
+        builder.setPositiveButton("Yes") { dialogInterface: DialogInterface, i: Int ->
+            queueUser(userId, position, vehicleId)
+            dialogInterface.dismiss()
+        }
+        builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
+            dialogInterface.dismiss()
+        }
+        builder.show()
     }
 
     private fun showDeleteConfirmationDialog(userId: Int, position: Int) {
@@ -100,7 +125,7 @@ class Adapter(
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_driver_detail, null)
 
         dialogView.findViewById<TextView>(R.id.fullNameTextView).text = "${user.firstName} ${user.lastName}"
-        dialogView.findViewById<TextView>(R.id.userIdTextView).text = "Contact Number: ${user.contactNumber}"
+        dialogView.findViewById<TextView>(R.id.userIdTextView).text = "Contact Number: ${user.vehicleId}"
         dialogView.findViewById<TextView>(R.id.plateNumberTextView).text = "Plate Number: ${user.plateNumber}"
         dialogView.findViewById<TextView>(R.id.routeTextView).text = "Route: ${user.route}"
 
@@ -144,7 +169,8 @@ class Adapter(
         val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
         val authorizeButton: Button = itemView.findViewById(R.id.authorizeButton)
         val showDriverDetails: Button = itemView.findViewById(R.id.showDriverDetails)
-        private val queueButton: Button = itemView.findViewById(R.id.queueButton)
+        val queueButton: Button = itemView.findViewById(R.id.queueButton)
+
         private val isFullTextView: TextView = itemView.findViewById(R.id.IsFullTextView)
         private val hasDepartedTextView: TextView = itemView.findViewById(R.id.HasDepartedTextView)
 

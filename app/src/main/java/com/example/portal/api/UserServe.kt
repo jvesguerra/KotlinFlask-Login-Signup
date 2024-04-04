@@ -40,6 +40,11 @@ interface UserServe {
 
     @DELETE("admin_delete_user/{userId}")
     fun adminDeleteUser(@Path("userId") userId: Int): Call<Void>
+    @POST("/add_queued_user/{vehicleId}/{userId}")
+    fun addQueuedUser(
+        @Path("vehicleId") vehicleId: Int,
+        @Path("userId") userId: Int
+    ): Call<Void>
 
     @PUT("update_authorized/{userId}")
     fun updateAuthorizedStatus(@Path("userId") userId: Int): Call<Void>
