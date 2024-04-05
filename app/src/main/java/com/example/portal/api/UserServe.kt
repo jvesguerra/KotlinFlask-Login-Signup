@@ -41,6 +41,9 @@ interface UserServe {
     @GET("/get_pending_drivers")
     fun getPendingDrivers(): Call<List<DriverVehicleModel>>
 
+    @GET("/get_incoming_passengers/{userId}")
+    fun getIncomingPassengers(@Path("userId") userId: Int): Call<Int>
+
     @DELETE("admin_delete_user/{userId}")
     fun adminDeleteUser(@Path("userId") userId: Int): Call<Void>
     @POST("/add_queued_user/{vehicleId}/{userId}")
