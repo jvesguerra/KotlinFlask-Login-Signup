@@ -406,6 +406,18 @@ def ready_driver(userId):
             return jsonify({'message': 'No vehicle found for this user'}), 404
     return jsonify({'message': 'Driver set to ready successfully'})
 
+@app.route('/get_incoming_passengers/<int:userId>', methods=['GET'])
+def get_incoming_passengers(userId):
+    user = User.query.get(userId)
+    vehicle = Vehicle.query.filter_by(userId=user.userId).first()
+    if vehicle:
+        queued_users_count = len(json.loads(vehicle.queuedUsers))
+        print("Queued Users Count: ", queued_users_count)
+        #return jsonify({'queuedUsersCount': queued_users_count})
+        return str(queued_users_count)
+    else:
+        return jsonify({'error': 'Vehicle not found'})
+
 
 # Endpoint to fetch all locations
 # @app.route('/locations', methods=['GET'])
