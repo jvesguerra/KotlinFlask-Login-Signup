@@ -1,14 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".driver.DriverHome">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- TextView for displaying "DRIVER HOME" -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="DRIVER HOME" />
+        android:id="@+id/driverHomeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DRIVER HOME"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"/>
 
-</FrameLayout>
+    <!-- TextView for instruction -->
+    <TextView
+        android:id="@+id/instructionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Press 'READY' to start accepting passengers"
+        android:textSize="16sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_below="@id/driverHomeText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Button in the middle -->
+    <Button
+        android:id="@+id/readyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="READY"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_button"
+        android:textColor="@android:color/white"
+        android:layout_below="@id/instructionText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"/>
+
+</RelativeLayout>
