@@ -85,10 +85,11 @@ class LogInPage : Fragment() {
         }
     }
 
-    private fun saveLoginSession(userType: Int) {
+    private fun saveLoginSession(userType: Int,userId: Int) {
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)
         editor.putInt("userType", userType) // Save user type in SharedPreferences
+        editor.putInt("userId", userId) // Save user type in SharedPreferences
         editor.apply()
     }
 
@@ -127,7 +128,8 @@ class LogInPage : Fragment() {
         val user = userResponse.user
         user?.let {
             val userType = it.userType
-            saveLoginSession(userType)
+            val userId = it.userId
+            saveLoginSession(userType,userId)
 
             val stringNumber: String = userType.toString()
             //showToast("Login successful!")
