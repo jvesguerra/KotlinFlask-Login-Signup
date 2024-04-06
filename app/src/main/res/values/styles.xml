@@ -5,4 +5,8 @@
         <item name="android:layout_margin">16dp</item>
         <item name="android:popupBackground">@color/colorPopupBackground</item> <!-- Set the popup background color -->
     </style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here -->
+        <item name="android:fontFamily">@font/poppins_regular</item>
+    </style>
 </resources>

@@ -16,6 +16,7 @@
     <string name="password">Password</string>
     <string name="sign_up">Sign Up</string>
     <string name="user_sign_up">User Sign Up</string>
+    <string name="driver_sign_up">Driver Sign Up</string>
 
     <string name="driver">DRIVER</string>
     <string name="user">USER</string>
