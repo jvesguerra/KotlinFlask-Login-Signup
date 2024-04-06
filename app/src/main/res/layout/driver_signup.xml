@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    tools:context=".user.UserSignUp">
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -70,21 +78,35 @@
         android:inputType="textPassword"
         android:autofillHints="" />
 
-    <EditText
-        android:id="@+id/editTextRoute"
+    <LinearLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_below="@id/editTextPassword"
-        android:layout_marginTop="16dp"
-        android:hint="@string/route"
-        android:inputType="text"
-        android:autofillHints="" />
+        android:layout_marginTop="24dp"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/selectYourRouteText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please Select your Route"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/editTextRoute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/SpinnerStyle" />
+    </LinearLayout>
 
     <EditText
         android:id="@+id/editTextPlateNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextRoute"
+        android:layout_below="@id/layout"
         android:layout_marginTop="16dp"
         android:hint="@string/plate_number"
         android:inputType="text" />
@@ -99,3 +121,4 @@
         android:gravity="center" />
 
 </RelativeLayout>
+</LinearLayout>
