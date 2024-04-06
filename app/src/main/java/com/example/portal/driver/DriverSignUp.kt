@@ -1,11 +1,15 @@
 package com.example.portal.driver
 
+import android.R.layout.simple_spinner_item
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.portal.R
@@ -34,11 +38,13 @@ class DriverSignUp : Fragment() {
     private lateinit var firstNameEditText: EditText
     private lateinit var lastNameEditText: EditText
     private lateinit var contactNumberEditText: EditText
-    private lateinit var routeEditText: EditText
     private lateinit var plateNumberEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var buttonSignUp: Button
+
+    private lateinit var routeEditText: Spinner
+    var selectedItem: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,9 +66,30 @@ class DriverSignUp : Fragment() {
         contactNumberEditText = view.findViewById(R.id.editTextContactNumber)
         passwordEditText = view.findViewById(R.id.editTextPassword)
 
-        routeEditText = view.findViewById(R.id.editTextRoute)
         plateNumberEditText = view.findViewById(R.id.editTextPlateNumber)
         buttonSignUp = view.findViewById(R.id.buttonSignUp)
+
+        routeEditText = view.findViewById(R.id.editTextRoute)
+        // Create an ArrayAdapter using a string array and a default spinner layout
+        val routeAdapter: ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.route_options,
+            R.layout.custom_spinner_item
+        )
+        //  Specify the layout to use when the list of choices appears
+        routeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        routeEditText.adapter = routeAdapter
+
+        routeEditText.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedItem = parent.getItemAtPosition(position).toString()
+                // Use selectedItem as needed
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing here
+            }
+        }
 
         buttonSignUp.setOnClickListener {
             val firstName = firstNameEditText.text.toString()
@@ -71,7 +98,7 @@ class DriverSignUp : Fragment() {
             val contactNumber = contactNumberEditText.text.toString()
             val password = passwordEditText.text.toString()
 
-            val route = routeEditText.text.toString()
+            val route = selectedItem
             val plateNumber = plateNumberEditText.text.toString()
 
             signUp(email, firstName, lastName, contactNumber, password, route, plateNumber)

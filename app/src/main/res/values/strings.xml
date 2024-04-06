@@ -23,4 +23,8 @@
     <string name="sign_in_with_google">Sign In with Google</string>
     <string name="plate_number">Plate Number</string>
     <string name="route">Route</string>
+    <string-array name="route_options">
+        <item>Forestry</item>
+        <item>Rural</item>
+    </string-array>
 </resources>

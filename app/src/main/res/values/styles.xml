@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <!--<item name="android:background">@drawable/bg_spinner</item> -->
+        <item name="android:layout_margin">16dp</item>
+        <item name="android:popupBackground">@color/colorPopupBackground</item> <!-- Set the popup background color -->
+    </style>
+</resources>
