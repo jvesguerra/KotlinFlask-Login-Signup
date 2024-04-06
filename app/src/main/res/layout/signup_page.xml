@@ -7,35 +7,40 @@
 
     <TextView
         android:id="@+id/sign_up_page_title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sign_up_page_title" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:text="@string/sign_up_page_title"
+        android:textSize="24sp" />
 
     <TextView
         android:id="@+id/sign_up_page_subtitle"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/sign_up_page_title"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
         android:text="@string/sign_up_page_subtitle" />
 
     <Button
         android:id="@+id/toDriverSignUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
         android:layout_below="@id/sign_up_page_subtitle"
-        android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"
-        android:text="@string/driver"/>
+        android:layout_marginTop="100dp"
+        android:text="@string/driver"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/toUserSignUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
         android:layout_below="@id/toDriverSignUp"
-        android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
         android:text="@string/user"
-        android:layout_marginBottom="16dp" />
+        android:textSize="18sp" />
 
 </RelativeLayout>

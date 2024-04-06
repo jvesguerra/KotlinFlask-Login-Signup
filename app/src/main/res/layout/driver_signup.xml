@@ -1,124 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    tools:context=".user.UserSignUp">
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".user.UserSignUp">
-
-    <TextView
-        android:id="@+id/textViewSignUpTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:gravity="center"
-        android:text="@string/user_sign_up"
-        android:textSize="24sp" />
-
-    <EditText
-        android:id="@+id/editTextEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textViewSignUpTitle"
-        android:layout_marginTop="32dp"
-        android:padding="12dp"
-        android:hint="@string/email"
-        android:inputType="textEmailAddress"
-        android:autofillHints="" />
-
-    <EditText
-        android:id="@+id/editTextFirstName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextEmail"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:hint="@string/first_name"
-        android:inputType="text"
-        android:autofillHints="" />
-
-    <EditText
-        android:id="@+id/editTextLastName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextFirstName"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:hint="@string/last_name"
-        android:inputType="text"
-        android:autofillHints="" />
-
-    <EditText
-        android:id="@+id/editTextContactNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextLastName"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:hint="@string/contact_number"
-        android:inputType="phone"
-        android:textColor="#333333"
-        android:autofillHints="" />
-
-    <EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextContactNumber"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:hint="@string/password"
-        android:inputType="textPassword"
-        android:autofillHints="" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/editTextPassword"
-        android:layout_marginTop="24dp"
-        android:gravity="center">
+        android:padding="16dp"
+        android:layout_marginTop="16dp">
 
-        <TextView
-            android:id="@+id/selectYourRouteText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Please Select your Route"
-            android:textSize="18sp" />
-
-        <Spinner
-            android:id="@+id/editTextRoute"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            style="@style/SpinnerStyle" />
+            tools:context=".user.UserSignUp">
+
+            <TextView
+                android:id="@+id/textViewSignUpTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="@string/driver_sign_up"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewSignUpTitle"
+                android:layout_marginBottom="8dp"
+                android:padding="12dp"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress" />
+
+            <EditText
+                android:id="@+id/editTextFirstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextEmail"
+                android:layout_marginBottom="8dp"
+                android:padding="12dp"
+                android:hint="@string/first_name"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/editTextLastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextFirstName"
+                android:layout_marginBottom="8dp"
+                android:padding="12dp"
+                android:hint="@string/last_name"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/editTextContactNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextLastName"
+                android:layout_marginBottom="8dp"
+                android:padding="12dp"
+                android:hint="@string/contact_number"
+                android:inputType="phone" />
+
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextContactNumber"
+                android:layout_marginBottom="8dp"
+                android:padding="12dp"
+                android:hint="@string/password"
+                android:inputType="textPassword" />
+
+            <LinearLayout
+                android:id="@+id/layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@id/editTextPassword"
+                android:layout_marginBottom="8dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/selectYourRouteText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Please Select your Route"
+                    android:textSize="18sp" />
+
+                <Spinner
+                    android:id="@+id/editTextRoute"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/editTextPlateNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/plate_number"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/buttonSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextPlateNumber"
+                android:text="@string/sign_up"
+                android:gravity="center" />
+
+        </RelativeLayout>
     </LinearLayout>
-
-    <EditText
-        android:id="@+id/editTextPlateNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/layout"
-        android:layout_marginTop="16dp"
-        android:hint="@string/plate_number"
-        android:inputType="text" />
-
-    <Button
-        android:id="@+id/buttonSignUp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTextPlateNumber"
-        android:layout_marginTop="24dp"
-        android:text="@string/sign_up"
-        android:gravity="center" />
-
-</RelativeLayout>
-</LinearLayout>
+</ScrollView>
