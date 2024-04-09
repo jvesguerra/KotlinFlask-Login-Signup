@@ -71,9 +71,8 @@ def generate_new_user_id():
 
 
 def generate_location_id():
-    timestamp = int(time.time() * 1000)
-    random_part = uuid.uuid4().int & (2 ** 63 - 1)
-    return timestamp + random_part
+    max_id = db.session.query(func.max(Location.locationId)).scalar()
+    return max_id + 1 if max_id is not None else 1
 
 
 def generate_vehicle_id():
@@ -371,7 +370,7 @@ def add_user():
 def add_location():
     data = request.get_json()
 
-    locationId = data.get('locationId')
+    locationId = generate_location_id()
     userId = data.get('userId')
     latitude = data.get('latitude')
     longitude = data.get('longitude')
@@ -382,7 +381,7 @@ def add_location():
 
     db.session.add(new_location)
     db.session.commit()
-    return jsonify({'message': 'Location added successfully'})
+    return jsonify({'message': 'User added successfully'})
 
 
 @app.route('/update_authorized/<int:userId>', methods=['PUT'])
@@ -440,8 +439,13 @@ def get_incoming_passengers(userId):
 @app.route('/get_locations', methods=['GET'])
 def get_locations():
     locations = Location.query.all()
+    for loc in locations:
+        print("Location ID:", loc.locationId)
+        print("ID:", loc.userId)
+        print("Latitude:", loc.latitude)
+        print("Longitude:", loc.longitude)
     return jsonify(
-        [{'locationId': loc.locationId, 'id': loc.id, 'latitude': loc.latitude, 'longitude': loc.longitude} for loc in
+        [{'locationId': loc.locationId, 'userId': loc.userId, 'latitude': loc.latitude, 'longitude': loc.longitude} for loc in
          locations])
 
 
