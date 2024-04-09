@@ -351,7 +351,7 @@ class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
             val randomNumericId = generateRandomNumericId()
             val timestamp = System.currentTimeMillis()
             val newLocation = LocationModel(
-                locationId = randomNumericId,
+                locationId = 0,
                 userId = 99,
                 latitude=lat.toFloat(),
                 longitude = long.toFloat(),
