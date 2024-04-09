@@ -23,6 +23,8 @@
             android:id="@+id/signup"
             app:destination="@id/signUpPage" />
     </fragment>
+
+    <!-- Admin -->
     <fragment
         android:id="@+id/AdminHome"
         android:name="com.example.portal.admin.AdminHome"
@@ -34,6 +36,9 @@
         <action
             android:id="@+id/toPendingLists"
             app:destination="@id/pendingLists" />
+        <action
+            android:id="@+id/toMaps"
+            app:destination="@id/maps" />
     </fragment>
     <fragment
         android:id="@+id/pendingLists"
@@ -51,7 +56,13 @@
         <action
             android:id="@+id/toUserSignUp"
             app:destination="@id/user_signup" />
+        <fragment
+            android:id="@+id/maps"
+            android:name="com.example.portal.Maps"
+            android:label="maps"
+            tools:layout="@layout/maps" />
 
+    <!-- Driver -->
     <fragment
         android:id="@+id/driverSignUp"
         android:name="com.example.portal.driver.DriverSignUp"
@@ -76,6 +87,7 @@
         android:label="driver_home2"
         tools:layout="@layout/driver_home2" />
 
+    <!-- User -->
     <fragment
         android:id="@+id/user_signup"
         android:name="com.example.portal.user.UserSignUp"

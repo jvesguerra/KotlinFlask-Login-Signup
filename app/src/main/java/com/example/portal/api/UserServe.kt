@@ -1,6 +1,7 @@
 package com.example.portal.api
 
 import com.example.portal.GoogleSignInRequest
+import com.example.portal.LocationModel
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.DriverVehicleModel
 import com.example.portal.models.UserModel
@@ -54,4 +55,10 @@ interface UserServe {
 
     @PUT("update_authorized/{userId}")
     fun updateAuthorizedStatus(@Path("userId") userId: Int): Call<Void>
+
+    @GET("/get_locations")
+    fun getLocations(): Call<List<LocationModel>>
+
+    @POST("/add_location")
+    fun addLocation(@Body newLocation: LocationModel): Call<Void>
 }
