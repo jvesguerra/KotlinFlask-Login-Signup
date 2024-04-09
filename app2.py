@@ -382,7 +382,7 @@ def add_location():
 
     db.session.add(new_location)
     db.session.commit()
-    return jsonify({'message': 'User added successfully'})
+    return jsonify({'message': 'Location added successfully'})
 
 
 @app.route('/update_authorized/<int:userId>', methods=['PUT'])

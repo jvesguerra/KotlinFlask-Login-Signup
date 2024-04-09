@@ -54,16 +54,22 @@ class AdminHome : Fragment(), OnDeleteUserListener {
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
 
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
-
+        val mapsButton: Button = view.findViewById(R.id.btnMap)
         val pendingListsButton: Button = view.findViewById(R.id.btnPending)
+
         pendingListsButton.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.toPendingLists)
+        }
+
+        mapsButton.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.toMaps)
         }
 
         logoutButton.setOnClickListener {
             signOut()
             Navigation.findNavController(view).navigate(R.id.logout)
         }
+
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = Adapter(
