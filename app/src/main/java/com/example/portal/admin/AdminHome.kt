@@ -19,6 +19,7 @@ import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.SessionManager
 import com.example.portal.api.UserServe
+import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.DriverVehicleModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -83,15 +84,15 @@ class AdminHome : Fragment(), OnDeleteUserListener {
 
         val call2 = retrofitService.getAuthDrivers()
 
-        call2.enqueue(object : Callback<List<DriverVehicleModel>> {
-            override fun onResponse(call: Call<List<DriverVehicleModel>>, response: Response<List<DriverVehicleModel>>) {
+        call2.enqueue(object : Callback<List<DriverVecLocModel>> {
+            override fun onResponse(call: Call<List<DriverVecLocModel>>, response: Response<List<DriverVecLocModel>>) {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
                     adapter.updateData(items) // Update the adapter's data
                 }
             }
 
-            override fun onFailure(call: Call<List<DriverVehicleModel>>, t: Throwable) {
+            override fun onFailure(call: Call<List<DriverVecLocModel>>, t: Throwable) {
                 Log.e("AdminHome", "Error fetching data", t)
             }
         })

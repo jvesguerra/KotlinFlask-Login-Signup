@@ -347,12 +347,12 @@ class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
             val location = LatLng(lat, long)
             googleMap.addMarker(MarkerOptions().position(location).title("Me"))
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f))
-
+            val userId = sharedPreferences.getInt("userId", 0)
             val randomNumericId = generateRandomNumericId()
             val timestamp = System.currentTimeMillis()
             val newLocation = LocationModel(
                 locationId = 0,
-                userId = 99,
+                userId = userId,
                 latitude=lat.toFloat(),
                 longitude = long.toFloat(),
                 timestamp = timestamp
