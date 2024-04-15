@@ -21,6 +21,7 @@ import com.example.portal.api.UserServe
 import com.example.portal.api.OnQueueUserListener
 import com.example.portal.functions.UserDeletion
 import com.example.portal.functions.UserQueue
+import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.DriverVehicleModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -60,22 +61,21 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         )
         recyclerView.adapter = adapter
 
-
-        val call: Call<List<DriverVehicleModel>> = if (route == "Forestry"){
+        val call: Call<List<DriverVecLocModel>> = if (route == "Forestry"){
             retrofitService.getAvailableForestryDrivers()
         }else{
             retrofitService.getAvailableRuralDrivers()
         }
 
-        call.enqueue(object : Callback<List<DriverVehicleModel>> {
-            override fun onResponse(call: Call<List<DriverVehicleModel>>, response: Response<List<DriverVehicleModel>>) {
+        call.enqueue(object : Callback<List<DriverVecLocModel>> {
+            override fun onResponse(call: Call<List<DriverVecLocModel>>, response: Response<List<DriverVecLocModel>>) {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
                     adapter.updateData(items) // Update the adapter's data
                 }
             }
 
-            override fun onFailure(call: Call<List<DriverVehicleModel>>, t: Throwable) {
+            override fun onFailure(call: Call<List<DriverVecLocModel>>, t: Throwable) {
                 Log.e("UserHome2", "Error fetching data", t)
             }
         })

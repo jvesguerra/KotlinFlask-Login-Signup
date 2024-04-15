@@ -3,6 +3,7 @@ package com.example.portal.api
 import com.example.portal.GoogleSignInRequest
 import com.example.portal.LocationModel
 import com.example.portal.models.DriverSignUpRequest
+import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.DriverVehicleModel
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
@@ -31,16 +32,16 @@ interface UserServe {
     fun readyDriver(@Path("userId") userId: Int): Call<Void>
 
     @GET("/get_available_forestry_drivers")
-    fun getAvailableForestryDrivers(): Call<List<DriverVehicleModel>>
+    fun getAvailableForestryDrivers(): Call<List<DriverVecLocModel>>
 
     @GET("/get_available_rural_drivers")
-    fun getAvailableRuralDrivers(): Call<List<DriverVehicleModel>>
+    fun getAvailableRuralDrivers(): Call<List<DriverVecLocModel>>
 
     @GET("/get_auth_drivers")
-    fun getAuthDrivers(): Call<List<DriverVehicleModel>>
+    fun getAuthDrivers(): Call<List<DriverVecLocModel>>
 
     @GET("/get_pending_drivers")
-    fun getPendingDrivers(): Call<List<DriverVehicleModel>>
+    fun getPendingDrivers(): Call<List<DriverVecLocModel>>
 
     @GET("/get_incoming_passengers/{userId}")
     fun getIncomingPassengers(@Path("userId") userId: Int): Call<Int>
@@ -60,5 +61,7 @@ interface UserServe {
     fun getLocations(): Call<List<LocationModel>>
 
     @POST("/add_location")
-    fun addLocation(@Body newLocation: LocationModel): Call<Void>
+    fun addLocation(
+        @Body newLocation: LocationModel
+    ): Call<Void>
 }

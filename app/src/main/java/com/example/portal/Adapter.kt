@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.portal.models.DriverVehicleModel
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -14,6 +13,7 @@ import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.api.OnQueueUserListener
+import com.example.portal.models.DriverVecLocModel
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,7 +23,7 @@ class Adapter(
     private val onQueueUserListener: OnQueueUserListener?,
     private val context: Context,
     private val contextType: ContextType,
-    private var items: MutableList<DriverVehicleModel>
+    private var items: MutableList<DriverVecLocModel>
 ) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
     enum class ContextType {
@@ -65,7 +65,7 @@ class Adapter(
         notifyItemRemoved(position)
     }
 
-    fun updateData(newItems: List<DriverVehicleModel>) {
+    fun updateData(newItems: List<DriverVecLocModel>) {
         items.clear()
         items.addAll(newItems)
         notifyDataSetChanged()
@@ -121,7 +121,7 @@ class Adapter(
         builder.show()
     }
 
-    private fun showDriverDetailsDialog(user: DriverVehicleModel) {
+    private fun showDriverDetailsDialog(user: DriverVecLocModel) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_driver_detail, null)
 
         dialogView.findViewById<TextView>(R.id.fullNameTextView).text = "${user.firstName} ${user.lastName}"
@@ -174,7 +174,32 @@ class Adapter(
         private val isFullTextView: TextView = itemView.findViewById(R.id.IsFullTextView)
         private val hasDepartedTextView: TextView = itemView.findViewById(R.id.HasDepartedTextView)
 
-        fun bind(user: DriverVehicleModel) {
+        // determine if vehicle is in terminal
+        fun isPointInPolygon(point: Pair<Double, Double>, vertices: List<Pair<Double, Double>>): Boolean {
+            val (px, py) = point
+            var isInside = false
+            var i = 0
+            var j = vertices.size - 1
+
+            while (i < vertices.size) {
+                val (x_i, y_i) = vertices[i]
+                val (x_j, y_j) = vertices[j]
+
+                if ((y_i > py) != (y_j > py) &&
+                    (px < (x_j - x_i) * (py - y_i) / (y_j - y_i) + x_i)) {
+                    isInside = !isInside
+                }
+
+                j = i++
+            }
+
+            return isInside
+        }
+
+
+
+
+        fun bind(user: DriverVecLocModel) {
             val fullname = "${user.firstName} ${user.lastName}"
             itemView.findViewById<TextView>(R.id.itemNameTextView).text = fullname
             itemView.findViewById<TextView>(R.id.RouteTextView).text = user.plateNumber
@@ -194,7 +219,30 @@ class Adapter(
                 }
                 ContextType.USER_HOME2 -> {
                     val isFull = if(user.isFull) "Full" else "Not Full"
-                    val hasDeparted = if(user.hasDeparted) "Departed" else "Not Departed"
+
+
+
+                    val vertices = if (user.route == "Forestry") {
+                        // Vertices for forestry
+                        listOf(
+                            Pair(14.168132, 121.242189), // Top Left
+                            Pair(14.167896, 121.242343), // Bottom Left
+                            Pair(14.168105, 121.243113), // Bottom Right
+                            Pair(14.168517, 121.243002)  // Top Right
+                        )
+                    } else {
+                        // Vertices for other route
+                        listOf(
+                            Pair(14.169, 121.242), // Top Left
+                            Pair(14.167, 121.242), // Bottom Left
+                            Pair(14.169, 121.243), // Bottom Right
+                            Pair(14.167, 121.243)  // Top Right
+                        )
+                    }
+                    // check gps coordinates here
+                    val deviceLocation = Pair(user.latitude.toDouble(), user.latitude.toDouble())
+                    val isInside = isPointInPolygon(deviceLocation, vertices)
+                    val hasDeparted = if(isInside) "Not Departed" else "Departed"
                     isFullTextView.text = isFull
                     hasDepartedTextView.text = hasDeparted
 
