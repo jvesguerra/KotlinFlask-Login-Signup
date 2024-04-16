@@ -130,10 +130,6 @@ class LogInPage : Fragment() {
             val userType = it.userType
             val userId = it.userId
             saveLoginSession(userType,userId)
-            val checkId = "USER ID: $userId"
-            showToast(checkId)
-
-            val stringNumber: String = userType.toString()
 
             if (userType == 0) {
                 Navigation.findNavController(view).navigate(R.id.home)

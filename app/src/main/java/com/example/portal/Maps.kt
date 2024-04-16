@@ -241,3 +241,31 @@ class Maps : Fragment(),
 //        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
 //    }
 }
+
+//@OptIn(DelicateCoroutinesApi::class)
+//private fun updateMapLocation() {
+//    if (lastKnownLocation != null) {
+//        val latLng = lastKnownLocation!!.toLatLng()
+//        val lat = latLng.first
+//        val long = latLng.second
+//        // Update map with the latest location
+//        val location = LatLng(lat, long)
+//        googleMap.addMarker(MarkerOptions().position(location).title("Me"))
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f))
+//        val userId = sharedPreferences.getInt("userId", 0)
+//        val timestamp = System.currentTimeMillis()
+//        val checkId = "USER ID: $userId"
+//        showToast(checkId)
+//        val newLocation = LocationModel(
+//            locationId = 0,
+//            userId = userId,
+//            latitude=lat.toFloat(),
+//            longitude = long.toFloat(),
+//            timestamp = timestamp
+//        )
+//
+//        retrofitService.addLocation(newLocation).enqueueVoid {
+//            println("New Location added successfully")
+//        }
+//    }
+//}
