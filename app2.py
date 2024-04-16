@@ -369,7 +369,7 @@ def add_user():
 @app.route('/add_location', methods=['POST'])
 def add_location():
     data = request.get_json()
-
+    print("USER ID IN ADD LOCATION: ", data.get('userId'))
     locationId = generate_location_id()
     userId = data.get('userId')
     latitude = data.get('latitude')

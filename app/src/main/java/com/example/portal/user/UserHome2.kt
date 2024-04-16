@@ -19,10 +19,9 @@ import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.SessionManager
 import com.example.portal.api.UserServe
 import com.example.portal.api.OnQueueUserListener
-import com.example.portal.functions.UserDeletion
-import com.example.portal.functions.UserQueue
+import com.example.portal.utils.UserDeletion
+import com.example.portal.utils.UserQueue
 import com.example.portal.models.DriverVecLocModel
-import com.example.portal.models.DriverVehicleModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -2,6 +2,7 @@ package com.example.portal
 
 import android.content.Context
 import android.location.Location
+import android.widget.TextView
 import androidx.core.content.edit
 
 /**
@@ -20,6 +21,12 @@ fun Location?.toLatLng(): Pair<Double, Double> {
     } else {
         Pair(0.0, 0.0) // Default values if location is unknown
     }
+}
+
+
+fun logResultsToScreen(output: String, outputTextView: TextView) {
+    val outputWithPreviousLogs = "$output\n${outputTextView.text}"
+    outputTextView.text = outputWithPreviousLogs
 }
 
 /**

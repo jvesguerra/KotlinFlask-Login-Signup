@@ -6,7 +6,7 @@ class LocationModel (
     @SerializedName("locationId")
     val locationId: Long,
 
-    @SerializedName("id")
+    @SerializedName("userId")
     val userId: Int,
 
     @SerializedName("latitude")

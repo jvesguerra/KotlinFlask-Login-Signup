@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
@@ -16,31 +15,24 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
+import com.example.portal.utils.LocationHelper
+import com.example.portal.utils.PermissionHelper
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.DelicateCoroutinesApi
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.util.UUID
 
 private const val TAG = "MapsFragment"
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
-class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
-    OnMapReadyCallback {
-    private var userId: Int = 0 // temporary delete later
-
+class Maps : Fragment(),
+    SharedPreferences.OnSharedPreferenceChangeListener,
+    OnMapReadyCallback
+{
     private lateinit var googleMap: GoogleMap
     private var lastKnownLocation: Location? = null
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance().create(UserServe::class.java)
@@ -96,10 +88,10 @@ class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
             if (enabled) {
                 foregroundOnlyLocationService?.unsubscribeToLocationUpdates()
             } else {
-                if (foregroundPermissionApproved()) {
+                if (PermissionHelper.foregroundPermissionApproved(requireContext())) {
                     foregroundOnlyLocationService?.subscribeToLocationUpdates() ?: Log.d(TAG, "Service Not Bound")
                 } else {
-                    requestForegroundPermissions()
+                    PermissionHelper.requestForegroundPermissions(requireActivity(), REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE)
                 }
             }
         }
@@ -124,38 +116,9 @@ class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lagunaCoordinates, 12.0f))
 
         // Fetch initial location data and add markers
-        fetchLocations()
-    }
-
-    private fun fetchLocations() {
-        retrofitService.getLocations().enqueue(object : Callback<List<LocationModel>> {
-            override fun onResponse(call: Call<List<LocationModel>>, response: Response<List<LocationModel>>) {
-                if (response.isSuccessful) {
-                    locationList.addAll(response.body() ?: emptyList())
-
-                    // Add markers based on fetched locations
-                    if (locationList.isNotEmpty()) {
-                        locationList.forEach { location ->
-                            val latLng = LatLng(location.latitude.toDouble(), location.longitude.toDouble())
-                            val markerOptions = MarkerOptions().position(latLng).title("Marker")
-                            markerOptions.icon(
-                                BitmapDescriptorFactory.defaultMarker(
-                                    BitmapDescriptorFactory.HUE_BLUE
-                                )
-                            )
-                            googleMap.addMarker(markerOptions)
-                        }
-                    }
-                } else {
-                    println("Error: ${response.code()}")
-                    println("Error Body: ${response.errorBody()?.string()}")
-                }
-            }
-
-            override fun onFailure(call: Call<List<LocationModel>>, t: Throwable) {
-                println("Network request failed: ${t.message}")
-            }
-        })
+        LocationHelper.fetchLocations(retrofitService) { fetchedLocations ->
+            LocationHelper.handleFetchedLocations(googleMap, fetchedLocations)
+        }
     }
 
     override fun onResume() {
@@ -183,50 +146,6 @@ class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
 
         super.onStop()
     }
-
-
-
-    // TODO: Step 1.0, Review Permissions: Method checks if permissions approved.
-    private fun foregroundPermissionApproved(): Boolean {
-        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-    }
-
-    // TODO: Step 1.0, Review Permissions: Method requests permissions.
-    private fun requestForegroundPermissions() {
-        val provideRationale = foregroundPermissionApproved()
-
-        // If the user denied a previous request, but didn't check "Don't ask again", provide
-        // additional rationale.
-        if (provideRationale) {
-            Snackbar.make(
-                requireView(),
-                R.string.permission_rationale,
-                Snackbar.LENGTH_LONG
-            )
-                .setAction(R.string.ok) {
-                    // Request permission
-                    ActivityCompat.requestPermissions(
-                        requireActivity(),
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
-                    )
-                }
-                .show()
-        } else {
-            Log.d(TAG, "Request foreground only permission")
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
-            )
-        }
-    }
-
-
-    // TODO: Step 1.0, Review Permissions: Handles permission result.
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -274,7 +193,6 @@ class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
         }
     }
 
-
     private fun updateButtonState(trackingLocation: Boolean) {
         if (trackingLocation) {
             foregroundOnlyLocationButton.text = getString(R.string.stop_location_updates_button_text)
@@ -283,16 +201,7 @@ class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
         }
     }
 
-    private fun logResultsToScreen(output: String) {
-        val outputWithPreviousLogs = "$output\n${outputTextView.text}"
-        outputTextView.text = outputWithPreviousLogs
-    }
-
-    /**
-     * Receiver for location broadcasts from [ForegroundOnlyLocationService].
-     */
     private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
-
         override fun onReceive(context: Context, intent: Intent) {
             val location = intent.getParcelableExtra<Location>(
                 ForegroundOnlyLocationService.EXTRA_LOCATION
@@ -319,72 +228,16 @@ class Maps : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
                 }
 
                 // Now you can use latitude and longitude as needed
-                logResultsToScreen("Latitude: $latitude, Longitude: $longitude")
+                logResultsToScreen("Latitude: $latitude, Longitude: $longitude", outputTextView)
             } else {
                 // Handle case where location is unknown
-                logResultsToScreen("Unknown location")
+                logResultsToScreen("Unknown location", outputTextView)
             }
 
-            updateMapLocation()
+            //updateMapLocation()
         }
     }
 //    private fun showToast(message: String) {
 //        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
 //    }
-
-    private fun generateRandomNumericId(): Long {
-        val timestamp = System.currentTimeMillis()
-        val randomPart = UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE
-        return timestamp + randomPart
-    }
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun updateMapLocation() {
-        if (lastKnownLocation != null) {
-            val latLng = lastKnownLocation!!.toLatLng()
-            val lat = latLng.first
-            val long = latLng.second
-            // Update map with the latest location
-            val location = LatLng(lat, long)
-            googleMap.addMarker(MarkerOptions().position(location).title("Me"))
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f))
-            val userId = sharedPreferences.getInt("userId", 0)
-            val randomNumericId = generateRandomNumericId()
-            val timestamp = System.currentTimeMillis()
-            val newLocation = LocationModel(
-                locationId = 0,
-                userId = userId,
-                latitude=lat.toFloat(),
-                longitude = long.toFloat(),
-                timestamp = timestamp
-            )
-
-            retrofitService.addLocation(newLocation).enqueueVoid {
-                println("New Location added successfully")
-            }
-        }
-    }
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Maps().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
 }
-
-//fun <T> Call<T>.enqueue(callback: (response: T?) -> Unit) {
-//    this.enqueue(object : Callback<T> {
-//        override fun onResponse(call: Call<T>, response: Response<T>) {
-//            if (response.isSuccessful) {
-//                callback.invoke(response.body())
-//            } else {
-//                println("Error: ${response.code()}")
-//            }
-//        }
-//
-//        override fun onFailure(call: Call<T>, t: Throwable) {
-//            println("Network request failed: ${t.message}")
-//        }
-//    })
-//}
