@@ -54,6 +54,8 @@ class DriverHome2 : Fragment(),
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var scheduledExecutorService: ScheduledExecutorService
     private lateinit var handler: Handler
+    private var userId: Int = 0
+    private lateinit var incomingPassengersText: TextView
 
     // MAPS VARIABLES
     private lateinit var googleMap: GoogleMap
@@ -107,14 +109,12 @@ class DriverHome2 : Fragment(),
     ): View? {
         val view =  inflater.inflate(R.layout.driver_home2, container, false)
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("userId", 0)
+        userId = sharedPreferences.getInt("userId", 0)
+        incomingPassengersText = view.findViewById(R.id.incomingPassengersText)
 
-
-        val incomingPassengersText: TextView = view.findViewById(R.id.incomingPassengersText)
-
-        scheduledExecutorService.scheduleAtFixedRate({
-            fetchPassengerCount(userId, incomingPassengersText)
-        }, 0, 10, TimeUnit.SECONDS) // Fetch every 10 seconds, you can adjust this interval as needed
+//        scheduledExecutorService.scheduleAtFixedRate({
+//            fetchPassengerCount(userId, incomingPassengersText)
+//        }, 0, 10, TimeUnit.SECONDS) // Fetch every 10 seconds, you can adjust this interval as needed
 
         // MAPS
         foregroundOnlyLocationButton = view.findViewById(R.id.foreground_only_location_button)
@@ -191,6 +191,16 @@ class DriverHome2 : Fragment(),
         Handler(Looper.getMainLooper()).postDelayed({
             foregroundOnlyLocationButton.performClick()
         }, 1000)
+
+        startLocationUpdates()
+    }
+
+    private fun startLocationUpdates() {
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+        scheduledExecutorService.scheduleAtFixedRate({
+            foregroundOnlyLocationService?.requestLocationUpdates()
+            fetchPassengerCount(userId, incomingPassengersText)
+        }, 0, 10, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
     }
 
 
@@ -218,6 +228,8 @@ class DriverHome2 : Fragment(),
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
         super.onStop()
+
+        scheduledExecutorService.shutdown()
     }
 
     private fun updateButtonState(trackingLocation: Boolean) {
