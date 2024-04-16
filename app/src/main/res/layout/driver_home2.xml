@@ -44,15 +44,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/foreground_only_location_button" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/mapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        app:layout_constraintTop_toBottomOf="@id/foreground_only_location_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- TextView for incoming passengers -->
     <TextView

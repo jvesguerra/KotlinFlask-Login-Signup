@@ -47,8 +47,7 @@ import java.util.concurrent.TimeUnit
 private const val TAG = "DRIVER HOME 2"
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
 class DriverHome2 : Fragment(),
-    SharedPreferences.OnSharedPreferenceChangeListener,
-    OnMapReadyCallback {
+    SharedPreferences.OnSharedPreferenceChangeListener{
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
     private lateinit var sharedPreferences: SharedPreferences
@@ -166,16 +165,16 @@ class DriverHome2 : Fragment(),
     }
 
     // MAPS
-    override fun onMapReady(gMap: GoogleMap) {
-        googleMap = gMap
-        val lagunaCoordinates = LatLng(14.165104501414891, 121.24175774591879) // Coordinates for Laguna, Philippines
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lagunaCoordinates, 12.0f))
-
-        // Fetch initial location data and add markers
-        LocationHelper.fetchLocations(retrofitService) { fetchedLocations ->
-            LocationHelper.handleFetchedLocations(googleMap, fetchedLocations)
-        }
-    }
+//    override fun onMapReady(gMap: GoogleMap) {
+//        googleMap = gMap
+//        val lagunaCoordinates = LatLng(14.165104501414891, 121.24175774591879) // Coordinates for Laguna, Philippines
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lagunaCoordinates, 12.0f))
+//
+//        // Fetch initial location data and add markers
+//        LocationHelper.fetchLocations(retrofitService) { fetchedLocations ->
+//            LocationHelper.handleFetchedLocations(googleMap, fetchedLocations)
+//        }
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -185,8 +184,8 @@ class DriverHome2 : Fragment(),
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         val serviceIntent = Intent(requireContext(), ForegroundOnlyLocationService::class.java)
         requireActivity().bindService(serviceIntent, foregroundOnlyServiceConnection, Context.BIND_AUTO_CREATE)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+//        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+//        mapFragment.getMapAsync(this)
 
         Handler(Looper.getMainLooper()).postDelayed({
             foregroundOnlyLocationButton.performClick()
@@ -336,8 +335,8 @@ class DriverHome2 : Fragment(),
         val long = latLng.second
         // Update map with the latest location
         val location = LatLng(lat, long)
-        googleMap.addMarker(MarkerOptions().position(location).title("Me"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f))
+//        googleMap.addMarker(MarkerOptions().position(location).title("Me"))
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f))
         val userId = sharedPreferences.getInt("userId", 0)
         val timestamp = System.currentTimeMillis()
         val newLocation = LocationModel(
