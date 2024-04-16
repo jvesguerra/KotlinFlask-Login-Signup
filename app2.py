@@ -24,6 +24,7 @@ from pydantic import BaseModel
 import json
 from flask_login import UserMixin
 from datetime import timedelta
+from sqlalchemy import desc
 
 app = Flask(__name__)
 api = Api(app)
@@ -369,12 +370,20 @@ def add_user():
 @app.route('/add_location', methods=['POST'])
 def add_location():
     data = request.get_json()
-    print("USER ID IN ADD LOCATION: ", data.get('userId'))
     locationId = generate_location_id()
     userId = data.get('userId')
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     timestamp = datetime.now()
+
+    num_locations = Location.query.filter_by(userId=userId).count()
+
+    # If the number of locations is greater than 10, delete the oldest locations
+    if num_locations >= 5:
+        oldest_locations = Location.query.filter_by(userId=userId).order_by(desc(Location.timestamp)).offset(5).all()
+        for location in oldest_locations:
+            db.session.delete(location)
+        db.session.commit()
 
     new_location = Location(locationId=locationId, userId=userId, latitude=latitude, longitude=longitude,
                             timestamp=timestamp)
@@ -411,7 +420,7 @@ def get_incoming_passengers(userId):
     vehicle = Vehicle.query.filter_by(userId=user.userId).first()
     if vehicle:
         queued_users_count = len(json.loads(vehicle.queuedUsers))
-        print("Queued Users Count: ", queued_users_count)
+        #print("Queued Users Count: ", queued_users_count)
         #return jsonify({'queuedUsersCount': queued_users_count})
         return str(queued_users_count)
     else:
@@ -439,11 +448,11 @@ def get_incoming_passengers(userId):
 @app.route('/get_locations', methods=['GET'])
 def get_locations():
     locations = Location.query.all()
-    for loc in locations:
-        print("Location ID:", loc.locationId)
-        print("ID:", loc.userId)
-        print("Latitude:", loc.latitude)
-        print("Longitude:", loc.longitude)
+    # for loc in locations:
+    #     print("Location ID:", loc.locationId)
+    #     print("ID:", loc.userId)
+    #     print("Latitude:", loc.latitude)
+    #     print("Longitude:", loc.longitude)
     return jsonify(
         [{'locationId': loc.locationId, 'userId': loc.userId, 'latitude': loc.latitude, 'longitude': loc.longitude} for loc in
          locations])

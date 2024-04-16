@@ -88,6 +88,8 @@ class DriverHome2 : Fragment(),
             }
         }
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -106,6 +108,7 @@ class DriverHome2 : Fragment(),
         val view =  inflater.inflate(R.layout.driver_home2, container, false)
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("userId", 0)
+
 
         val incomingPassengersText: TextView = view.findViewById(R.id.incomingPassengersText)
 
@@ -129,6 +132,8 @@ class DriverHome2 : Fragment(),
                 }
             }
         }
+
+        foregroundOnlyLocationButton.visibility = View.INVISIBLE
 
         return view
     }
@@ -182,7 +187,12 @@ class DriverHome2 : Fragment(),
         requireActivity().bindService(serviceIntent, foregroundOnlyServiceConnection, Context.BIND_AUTO_CREATE)
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            foregroundOnlyLocationButton.performClick()
+        }, 1000)
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -264,6 +274,11 @@ class DriverHome2 : Fragment(),
             }
         }
     }
+
+
+
+
+
     private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val location = intent.getParcelableExtra<Location>(
@@ -276,6 +291,8 @@ class DriverHome2 : Fragment(),
             if (latLng != null) {
                 val latitude = latLng.first
                 val longitude = latLng.second
+
+                updateMapLocation()
 
                 // Main gate entry point
                 // put range
@@ -297,35 +314,30 @@ class DriverHome2 : Fragment(),
                 logResultsToScreen("Unknown location", outputTextView)
             }
 
-            updateMapLocation()
         }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun updateMapLocation() {
-        if (lastKnownLocation != null) {
-            val latLng = lastKnownLocation!!.toLatLng()
-            val lat = latLng.first
-            val long = latLng.second
-            // Update map with the latest location
-            val location = LatLng(lat, long)
-            googleMap.addMarker(MarkerOptions().position(location).title("Me"))
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f))
-            val userId = sharedPreferences.getInt("userId", 0)
-            val timestamp = System.currentTimeMillis()
-            val checkId = "USER ID: $userId"
-            showToast(checkId)
-            val newLocation = LocationModel(
-                locationId = 0,
-                userId = userId,
-                latitude=lat.toFloat(),
-                longitude = long.toFloat(),
-                timestamp = timestamp
-            )
+        val latLng = lastKnownLocation!!.toLatLng()
+        val lat = latLng.first
+        val long = latLng.second
+        // Update map with the latest location
+        val location = LatLng(lat, long)
+        googleMap.addMarker(MarkerOptions().position(location).title("Me"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f))
+        val userId = sharedPreferences.getInt("userId", 0)
+        val timestamp = System.currentTimeMillis()
+        val newLocation = LocationModel(
+            locationId = 0,
+            userId = userId,
+            latitude=lat.toFloat(),
+            longitude = long.toFloat(),
+            timestamp = timestamp
+        )
 
-            retrofitService.addLocation(newLocation).enqueueVoid {
-                println("New Location added successfully")
-            }
+        retrofitService.addLocation(newLocation).enqueueVoid {
+            println("New Location added successfully")
         }
     }
 
