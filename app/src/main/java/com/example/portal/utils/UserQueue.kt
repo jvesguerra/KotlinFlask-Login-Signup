@@ -1,4 +1,4 @@
-package com.example.portal.functions
+package com.example.portal.utils
 
 import android.content.Context
 import android.widget.Toast

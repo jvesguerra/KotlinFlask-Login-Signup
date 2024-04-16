@@ -130,11 +130,11 @@ class LogInPage : Fragment() {
             val userType = it.userType
             val userId = it.userId
             saveLoginSession(userType,userId)
+            val checkId = "USER ID: $userId"
+            showToast(checkId)
 
             val stringNumber: String = userType.toString()
-            //showToast("Login successful!")
-            showToast(stringNumber)
-            // admin homepage
+
             if (userType == 0) {
                 Navigation.findNavController(view).navigate(R.id.home)
             // user homepage
