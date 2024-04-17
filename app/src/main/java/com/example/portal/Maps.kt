@@ -10,7 +10,9 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.widget.Button
@@ -26,6 +28,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 private const val TAG = "MapsFragment"
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
@@ -44,6 +49,10 @@ class Maps : Fragment(),
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var foregroundOnlyLocationButton: Button
     private lateinit var outputTextView: TextView
+
+    private lateinit var scheduledExecutorService: ScheduledExecutorService
+    private lateinit var handler: Handler
+
     private val foregroundOnlyServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -95,6 +104,8 @@ class Maps : Fragment(),
                 }
             }
         }
+
+        foregroundOnlyLocationButton.visibility = View.INVISIBLE
         return view
     }
 
@@ -108,6 +119,10 @@ class Maps : Fragment(),
         requireActivity().bindService(serviceIntent, foregroundOnlyServiceConnection, Context.BIND_AUTO_CREATE)
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            foregroundOnlyLocationButton.performClick()
+        }, 10000)
     }
 
     override fun onMapReady(gMap: GoogleMap) {
@@ -115,11 +130,23 @@ class Maps : Fragment(),
         val lagunaCoordinates = LatLng(14.165104501414891, 121.24175774591879) // Coordinates for Laguna, Philippines
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lagunaCoordinates, 12.0f))
 
-        // Fetch initial location data and add markers
+        startFetchingLocations()
+    }
+
+    private fun startFetchingLocations() {
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+        scheduledExecutorService.scheduleAtFixedRate({
+            foregroundOnlyLocationService?.requestLocationUpdates()
+            fetchLocations()
+        }, 0, 10, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
+    }
+
+    private fun fetchLocations() {
         LocationHelper.fetchLocations(retrofitService) { fetchedLocations ->
             LocationHelper.handleFetchedLocations(googleMap, fetchedLocations)
         }
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -145,6 +172,8 @@ class Maps : Fragment(),
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
         super.onStop()
+
+        scheduledExecutorService.shutdown()
     }
     override fun onRequestPermissionsResult(
         requestCode: Int,
