@@ -427,35 +427,18 @@ def get_incoming_passengers(userId):
     else:
         return jsonify({'error': 'Vehicle not found'})
 
-
-# Endpoint to fetch all locations
-# @app.route('/locations', methods=['GET'])
-# def get_locations():
-#     locations = Location.query.all()
-#     location_list = []
-#
-#     for location in locations:
-#         location_data = {
-#             'locationId': location.locationId,
-#             'id': location.id,
-#             'latitude': location.latitude,
-#             'longitude': location.longitude,
-#             'timestamp': location.timestamp.timestamp()  # Convert datetime to timestamp in seconds
-#         }
-#         location_list.append(location_data)
-#
-#     print(location_list)
-#     return jsonify({'locations': location_list})
 @app.route('/get_locations', methods=['GET'])
 def get_locations():
     # Subquery to get the latest timestamp for each user with user type 2
     latest_timestamps = db.session.query(Location.userId, func.max(Location.timestamp).label('max_timestamp')) \
                                     .join(User, Location.userId == User.userId) \
+                                    .join(Vehicle, Vehicle.userId == User.userId) \
                                     .filter(User.userType == 2) \
+                                    .filter(Vehicle.isAvailable == True) \
                                     .group_by(Location.userId) \
                                     .subquery()
 
-    # Query to get the latest location for each user with user type 2
+    # Query to get the latest location for each user with user type 2 and isAvailable vehicles
     latest_locations = db.session.query(Location) \
                                  .join(latest_timestamps,
                                        (Location.userId == latest_timestamps.c.userId) &
