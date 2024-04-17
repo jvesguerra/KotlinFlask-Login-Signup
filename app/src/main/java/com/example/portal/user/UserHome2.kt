@@ -30,7 +30,6 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: Adapter
-
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
 
@@ -40,10 +39,9 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     ): View? {
         val view = inflater.inflate(R.layout.user_home2, container, false)
         val route = arguments?.getString("route")
-
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
-        val logoutButton: Button = view.findViewById(R.id.btnLogout)
 
+        val logoutButton: Button = view.findViewById(R.id.btnLogout)
         logoutButton.setOnClickListener {
             signOut()
             Navigation.findNavController(view).navigate(R.id.logout)
@@ -70,7 +68,10 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
             override fun onResponse(call: Call<List<DriverVecLocModel>>, response: Response<List<DriverVecLocModel>>) {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
+                    Log.d("UserHome2", "Received items: $items") // Log the received items
                     adapter.updateData(items) // Update the adapter's data
+                }else{
+                    Log.e("UserHome2", "Unsuccessful response: ${response.code()}")
                 }
             }
 
@@ -93,15 +94,5 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     override fun onQueueUser(userId: Int, position: Int, vehicleId: Int) {
         val userQueue = UserQueue(requireContext(), adapter)
         userQueue.addQueuedUser(retrofitService, userId, position, vehicleId)
-    }
-
-
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            UserHome2().apply {
-
-            }
     }
 }
