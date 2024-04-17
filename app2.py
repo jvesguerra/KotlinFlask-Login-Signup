@@ -427,23 +427,24 @@ def get_incoming_passengers(userId):
     else:
         return jsonify({'error': 'Vehicle not found'})
 
+
 @app.route('/get_locations', methods=['GET'])
 def get_locations():
     # Subquery to get the latest timestamp for each user with user type 2
     latest_timestamps = db.session.query(Location.userId, func.max(Location.timestamp).label('max_timestamp')) \
-                                    .join(User, Location.userId == User.userId) \
-                                    .join(Vehicle, Vehicle.userId == User.userId) \
-                                    .filter(User.userType == 2) \
-                                    .filter(Vehicle.isAvailable == True) \
-                                    .group_by(Location.userId) \
-                                    .subquery()
+        .join(User, Location.userId == User.userId) \
+        .join(Vehicle, Vehicle.userId == User.userId) \
+        .filter(User.userType == 2) \
+        .filter(Vehicle.isAvailable == True) \
+        .group_by(Location.userId) \
+        .subquery()
 
     # Query to get the latest location for each user with user type 2 and isAvailable vehicles
     latest_locations = db.session.query(Location) \
-                                 .join(latest_timestamps,
-                                       (Location.userId == latest_timestamps.c.userId) &
-                                       (Location.timestamp == latest_timestamps.c.max_timestamp)) \
-                                 .all()
+        .join(latest_timestamps,
+              (Location.userId == latest_timestamps.c.userId) &
+              (Location.timestamp == latest_timestamps.c.max_timestamp)) \
+        .all()
 
     # Construct JSON response
     response_data = [{'locationId': loc.locationId,
@@ -507,7 +508,7 @@ def get_available_rural_drivers():
         'isAvailable': vehicle.isAvailable,
         'hasDeparted': vehicle.hasDeparted,
         'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers,
+        'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else []
     } for user, vehicle in drivers]
 
     print(drivers_dict)

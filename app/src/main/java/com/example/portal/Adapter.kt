@@ -175,7 +175,7 @@ class Adapter(
         private val hasDepartedTextView: TextView = itemView.findViewById(R.id.HasDepartedTextView)
 
         // determine if vehicle is in terminal
-        fun isPointInPolygon(point: Pair<Double, Double>, vertices: List<Pair<Double, Double>>): Boolean {
+        private fun isPointInPolygon(point: Pair<Double, Double>, vertices: List<Pair<Double, Double>>): Boolean {
             val (px, py) = point
             var isInside = false
             var i = 0
@@ -219,9 +219,6 @@ class Adapter(
                 }
                 ContextType.USER_HOME2 -> {
                     val isFull = if(user.isFull) "Full" else "Not Full"
-
-
-
                     val vertices = if (user.route == "Forestry") {
                         // Vertices for forestry
                         listOf(
@@ -231,12 +228,12 @@ class Adapter(
                             Pair(14.168517, 121.243002)  // Top Right
                         )
                     } else {
-                        // Vertices for other route
+                        // Vertices for rural
                         listOf(
-                            Pair(14.169, 121.242), // Top Left
-                            Pair(14.167, 121.242), // Bottom Left
-                            Pair(14.169, 121.243), // Bottom Right
-                            Pair(14.167, 121.243)  // Top Right
+                            Pair(14.166140, 121.243435), // Top Left
+                            Pair(14.165353, 121.244118), // Bottom Left
+                            Pair(14.166247, 121.244094), // Bottom Right
+                            Pair(14.165501, 121.244475)  // Top Right
                         )
                     }
                     // check gps coordinates here
