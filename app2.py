@@ -414,14 +414,15 @@ def ready_driver(userId):
             return jsonify({'message': 'No vehicle found for this user'}), 404
     return jsonify({'message': 'Driver set to ready successfully'})
 
+
 @app.route('/get_incoming_passengers/<int:userId>', methods=['GET'])
 def get_incoming_passengers(userId):
     user = User.query.get(userId)
     vehicle = Vehicle.query.filter_by(userId=user.userId).first()
     if vehicle:
         queued_users_count = len(json.loads(vehicle.queuedUsers))
-        #print("Queued Users Count: ", queued_users_count)
-        #return jsonify({'queuedUsersCount': queued_users_count})
+        # print("Queued Users Count: ", queued_users_count)
+        # return jsonify({'queuedUsersCount': queued_users_count})
         return str(queued_users_count)
     else:
         return jsonify({'error': 'Vehicle not found'})
@@ -447,15 +448,27 @@ def get_incoming_passengers(userId):
 #     return jsonify({'locations': location_list})
 @app.route('/get_locations', methods=['GET'])
 def get_locations():
-    locations = Location.query.all()
-    # for loc in locations:
-    #     print("Location ID:", loc.locationId)
-    #     print("ID:", loc.userId)
-    #     print("Latitude:", loc.latitude)
-    #     print("Longitude:", loc.longitude)
-    return jsonify(
-        [{'locationId': loc.locationId, 'userId': loc.userId, 'latitude': loc.latitude, 'longitude': loc.longitude} for loc in
-         locations])
+    # Subquery to get the latest timestamp for each user with user type 2
+    latest_timestamps = db.session.query(Location.userId, func.max(Location.timestamp).label('max_timestamp')) \
+                                    .join(User, Location.userId == User.userId) \
+                                    .filter(User.userType == 2) \
+                                    .group_by(Location.userId) \
+                                    .subquery()
+
+    # Query to get the latest location for each user with user type 2
+    latest_locations = db.session.query(Location) \
+                                 .join(latest_timestamps,
+                                       (Location.userId == latest_timestamps.c.userId) &
+                                       (Location.timestamp == latest_timestamps.c.max_timestamp)) \
+                                 .all()
+
+    # Construct JSON response
+    response_data = [{'locationId': loc.locationId,
+                      'userId': loc.userId,
+                      'latitude': loc.latitude,
+                      'longitude': loc.longitude} for loc in latest_locations]
+
+    return jsonify(response_data)
 
 
 @app.route('/get_available_forestry_drivers', methods=['GET'])

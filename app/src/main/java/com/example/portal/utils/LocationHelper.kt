@@ -34,7 +34,7 @@ object LocationHelper {
         // Add markers based on fetched locations
         locations.forEach { location ->
             val latLng = LatLng(location.latitude.toDouble(), location.longitude.toDouble())
-            val markerOptions = MarkerOptions().position(latLng).title("Marker")
+            val markerOptions = MarkerOptions().position(latLng).title(location.userId.toString())
             markerOptions.icon(
                 BitmapDescriptorFactory.defaultMarker(
                     BitmapDescriptorFactory.HUE_BLUE
