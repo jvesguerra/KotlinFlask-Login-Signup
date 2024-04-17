@@ -122,7 +122,7 @@ class Maps : Fragment(),
 
         Handler(Looper.getMainLooper()).postDelayed({
             foregroundOnlyLocationButton.performClick()
-        }, 10000)
+        }, 3000)
     }
 
     override fun onMapReady(gMap: GoogleMap) {
@@ -173,7 +173,14 @@ class Maps : Fragment(),
 
         super.onStop()
 
-        scheduledExecutorService.shutdown()
+        // Shutdown the ScheduledExecutorService if it's not already shutdown
+        if (!scheduledExecutorService.isShutdown) {
+            try {
+                scheduledExecutorService.shutdown()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error shutting down ScheduledExecutorService: ${e.message}")
+            }
+        }
     }
     override fun onRequestPermissionsResult(
         requestCode: Int,

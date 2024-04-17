@@ -76,9 +76,9 @@ def generate_location_id():
     return max_id + 1 if max_id is not None else 1
 
 
-def generate_vehicle_id():
-    timestamp = int(time.time())
-    return timestamp
+# def generate_vehicle_id():
+#     timestamp = int(time.time())
+#     return timestamp
 
 
 # MODELS
@@ -247,7 +247,7 @@ def register_driver():
                     email=user_data['email'], contactNumber=user_data['contactNumber'], password=hashed_password,
                     rating=user_data['rating'], userType=user_data['userType'], isActive=user_data['isActive'])
 
-    vehicleId = generate_vehicle_id()
+    vehicleId = generate_location_id
     new_vehicle = Vehicle(vehicleId=vehicleId,
                           userId=userId,
                           plateNumber=vehicle_data['plateNumber'],
@@ -333,10 +333,11 @@ def logout():
 
 @app.route('/add_queued_user/<int:vehicleId>/<int:userId>', methods=['POST'])
 def add_queued_user(vehicleId, userId):
-    print("Session contents:", session)
     try:
         vehicle = Vehicle.query.get(vehicleId)
 
+        print("Vehicle ID: ", vehicleId)
+        print("User ID: ", userId)
         if vehicle is None:
             return jsonify({'error': f'Vehicle with ID {vehicleId} not found'}), 404
 
@@ -496,6 +497,7 @@ def get_available_rural_drivers():
 
     drivers_dict = [{
         'userId': user.userId,
+        'vehicleId': vehicle.vehicleId,
         'firstName': user.firstName,
         'lastName': user.lastName,
         'contactNumber': user.contactNumber,
@@ -536,7 +538,7 @@ def get_auth_drivers():
         'isAvailable': vehicle.isAvailable,
         'hasDeparted': vehicle.hasDeparted,
         'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers,
+        'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else []
     } for user, vehicle in drivers]
 
     print(drivers_dict)
@@ -566,7 +568,7 @@ def get_pending_drivers():
         'isAvailable': vehicle.isAvailable,
         'hasDeparted': vehicle.hasDeparted,
         'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers,
+        'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else []
 
     } for user, vehicle in drivers]
 
