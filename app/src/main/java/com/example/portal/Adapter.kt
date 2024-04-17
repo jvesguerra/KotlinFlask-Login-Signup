@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.SharedPreferences
+import android.util.Log
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
@@ -31,12 +34,16 @@ class Adapter(
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
+
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         holder.bind(item)
+
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("userId", 0)
 
         holder.deleteButton.setOnClickListener {
             showDeleteConfirmationDialog(item.userId, position)
@@ -51,7 +58,13 @@ class Adapter(
         }
 
         holder.queueButton.setOnClickListener {
-            showQueueConfirmationDialog(item.userId, position, item.vehicleId)
+            val route = item.route
+            val vehicleId = item.longitude
+            val contactNumber = item.contactNumber
+            Log.d("VEHICLE", "Route: $route")
+            Log.d("VEHICLE", "Contact Number: $contactNumber") // Omitting vehicle ID for privacy
+            Log.d("VEHICLE", "Vehicle ID: $vehicleId") // Omitting vehicle ID for privacy
+            showQueueConfirmationDialog(userId, position, item.vehicleId)
         }
 
     }

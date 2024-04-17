@@ -68,7 +68,7 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
             override fun onResponse(call: Call<List<DriverVecLocModel>>, response: Response<List<DriverVecLocModel>>) {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
-                    Log.d("UserHome2", "Received items: $items") // Log the received items
+                    Log.d("UserHome2", "Received items: $items.vehicleId") // Log the received items
                     adapter.updateData(items) // Update the adapter's data
                 }else{
                     Log.e("UserHome2", "Unsuccessful response: ${response.code()}")
