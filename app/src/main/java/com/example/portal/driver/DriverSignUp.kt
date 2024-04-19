@@ -140,7 +140,7 @@ class DriverSignUp : Fragment() {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
                         println("User and Vehicle registered successfully")
-                        Navigation.findNavController(view).navigate(R.id.toDriverHome)
+                        Navigation.findNavController(view).navigate(R.id.toUnauthorized)
                     } else {
                         println("Failed to register user and vehicle")
                         // Handle error

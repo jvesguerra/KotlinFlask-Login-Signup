@@ -69,6 +69,12 @@ interface UserServe {
         @Path("userId") userId: Int
     ): Call<Boolean>
 
+    @GET("is_authorized/{userId}")
+    fun isAuthorized(
+        @Path("userId") userId: Int
+    ): Call<Boolean>
+
+
     @PUT("update_authorized/{userId}")
     fun updateAuthorizedStatus(@Path("userId") userId: Int): Call<Void>
 

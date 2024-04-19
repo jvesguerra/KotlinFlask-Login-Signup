@@ -139,7 +139,28 @@ class LogInPage : Fragment() {
                 Navigation.findNavController(view).navigate(R.id.userHome)
             // driver homepage
             }else if(userType == 2){
-                Navigation.findNavController(view).navigate(R.id.toDriverHome)
+                var isAuthorized: Boolean = false
+                retrofitService.isAuthorized(userId).enqueue(object : Callback<Boolean> {
+                    override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                        if (response.isSuccessful && response.body() != null) {
+                            isAuthorized = response.body()!!
+                            if (isAuthorized) {
+                                Navigation.findNavController(view).navigate(R.id.toDriverHome)
+                            } else {
+                                Navigation.findNavController(view).navigate(R.id.unauthorized)
+                            }
+                        } else {
+                            // Handle error case
+                            // For example, if there's a network issue or server error
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                        // Handle failure case
+                        // For example, if the request failed due to a network issue
+                    }
+                })
+
             }
 
         } ?: showToast("Failed to retrieve user details")
