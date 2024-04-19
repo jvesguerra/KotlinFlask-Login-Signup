@@ -105,6 +105,7 @@ class LogInPage : Fragment() {
             userType = 0,
             isActive = true,
             authorized = false,
+            isQueued = false,
         )
 
         val call = retrofitService.signIn(newUser)
