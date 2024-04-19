@@ -369,9 +369,13 @@ def remove_queued_user(vehicleId, userId):
         print("Vehicle ID: ", vehicleId)
         print("User ID: ", userId)
         vehicle = Vehicle.query.get(vehicleId)
+        user = User.query.get(userId)
 
         if vehicle is None:
             return {'error': f'Vehicle with ID {vehicleId} not found'}, 404
+
+        if user is None:
+            return {'error': f'User with ID {userId} not found'}, 404
 
         # Convert queuedUsers from JSON string to list
         queued_users_list = json.loads(vehicle.queuedUsers)
@@ -384,7 +388,7 @@ def remove_queued_user(vehicleId, userId):
 
         # Convert the list back to JSON string
         vehicle.queuedUsers = json.dumps(queued_users_list)
-
+        user.isQueued = not user.isQueued
         db.session.commit()
 
         return {'message': f'User {userId} removed from the queued users list of vehicle {vehicleId} and is no longer queued'}, 200

@@ -117,21 +117,6 @@ class Adapter(
         builder.setTitle("Cancel Queue")
         builder.setMessage("Are you sure you want to cancel your queue?")
         builder.setPositiveButton("Yes") { dialogInterface: DialogInterface, i: Int ->
-            retrofitService.changeisQueued(userId).enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) {
-                        Log.d("ChangeIsQueued", "User's queued status changed successfully")
-                    } else {
-                        val errorMessage = "Failed to change user's queued status. Error code: ${response.code()}"
-                        Log.e("ChangeIsQueued", errorMessage)
-                    }
-                }
-
-                override fun onFailure(call: Call<Void>, t: Throwable) {
-                    val errorMessage = "Failed to change user's queued status. Error: ${t.message}"
-                    Log.e("ChangeIsQueued", errorMessage, t)
-                }
-            })
             removeUserQueue(userId, position, vehicleId)
             dialogInterface.dismiss()
         }
