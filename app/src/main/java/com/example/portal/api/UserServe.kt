@@ -54,6 +54,21 @@ interface UserServe {
         @Path("userId") userId: Int
     ): Call<Void>
 
+    @PUT("/remove_queued_user/{vehicleId}/{userId}")
+    fun removeQueuedUser(
+        @Path("vehicleId") vehicleId: Int,
+        @Path("userId") userId: Int
+    ): Call<Void>
+
+    @PUT("/change_is_queued/{userId}")
+    fun changeisQueued(
+        @Path("userId") userId: Int
+    ): Call<Void>
+    @GET("get_is_queued/{userId}")
+    fun getisQueued(
+        @Path("userId") userId: Int
+    ): Call<Boolean>
+
     @PUT("update_authorized/{userId}")
     fun updateAuthorizedStatus(@Path("userId") userId: Int): Call<Void>
 

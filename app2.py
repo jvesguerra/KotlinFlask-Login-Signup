@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 from sqlalchemy.orm import Mapped
 from sqlalchemy.testing.schema import mapped_column
 import mysql.connector
-import time
+import time, logging
 import uuid
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_
@@ -95,6 +95,7 @@ class User(db.Model):
     userType = db.Column(db.Integer)  # 0 = admin, 1 = driver, 2 = student
     isActive = db.Column(db.Boolean, default=False)
     authorized = db.Column(db.Boolean, default=False)
+    isQueued = db.Column(db.Boolean, default=False)
 
     def is_active(self):
         return self.is_active
@@ -312,6 +313,7 @@ def sign_in():
                         'contactNumber': user.contactNumber,
                         'password': user.password,
                         'userType': user.userType,
+                        'isQueued': user.isQueued,
                     }
                 })
             else:
@@ -335,13 +337,22 @@ def logout():
 def add_queued_user(vehicleId, userId):
     try:
         vehicle = Vehicle.query.get(vehicleId)
+        user = User.query.get(userId)
 
         print("Vehicle ID: ", vehicleId)
         print("User ID: ", userId)
+
         if vehicle is None:
             return jsonify({'error': f'Vehicle with ID {vehicleId} not found'}), 404
 
-        # Add the user to the queued users list
+        if user is None:
+            return jsonify({'error': f'User with ID {userId} not found'}), 404
+
+            # Check if the user is already queued
+        if user.isQueued:
+            return jsonify({'error': f'User {userId} is already queued to another vehicle'}), 400
+
+        user.isQueued = True
         vehicle.add_queued_user(userId)
         db.session.commit()
 
@@ -350,6 +361,72 @@ def add_queued_user(vehicleId, userId):
         print(f"Error occurred while processing vehicle with ID {vehicleId}: {e}")
         # Handle any unexpected errors
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
+
+@app.route('/remove_queued_user/<int:vehicleId>/<int:userId>', methods=['PUT', 'DELETE'])
+def remove_queued_user(vehicleId, userId):
+    try:
+        print("Vehicle ID: ", vehicleId)
+        print("User ID: ", userId)
+        vehicle = Vehicle.query.get(vehicleId)
+
+        if vehicle is None:
+            return {'error': f'Vehicle with ID {vehicleId} not found'}, 404
+
+        # Convert queuedUsers from JSON string to list
+        queued_users_list = json.loads(vehicle.queuedUsers)
+
+        if userId not in queued_users_list:
+            return {'error': f'User {userId} is not queued for vehicle {vehicleId}'}, 404
+
+        # Remove userId from the list
+        queued_users_list.remove(userId)
+
+        # Convert the list back to JSON string
+        vehicle.queuedUsers = json.dumps(queued_users_list)
+
+        db.session.commit()
+
+        return {'message': f'User {userId} removed from the queued users list of vehicle {vehicleId} and is no longer queued'}, 200
+    except ValueError:
+        return {'error': 'Invalid vehicleId or userId. Please provide integer values.'}, 400
+    except Exception as e:
+        logging.error(f'An error occurred: {str(e)}')
+        return {'error': 'An unexpected error occurred.'}, 500
+
+
+@app.route('/change_is_queued/<int:userId>', methods=['PUT'])
+def change_is_queued(userId):
+    try:
+        user = User.query.get(userId)
+
+        if user is None:
+            return {'error': f'User with ID {userId} not found'}, 404
+
+        # Toggle the value of isQueued
+        user.isQueued = not user.isQueued
+        db.session.commit()
+        return {
+                   'message': f'User {userId} has changed is queued value'}, 200
+
+    except Exception as e:
+        return {'error': f'An error occurred: {str(e)}'}, 500
+
+
+@app.route('/get_is_queued/<int:userId>', methods=['GET'])
+def get_is_queued(userId):
+    try:
+        user = User.query.get(userId)
+
+        if user is None:
+            return {'error': f'User with ID {userId} not found'}, 404
+
+        if user.isQueued:
+            return jsonify(True)
+        else:
+            return jsonify(False)
+    except Exception as e:
+        return {'error': f'An error occurred: {str(e)}'}, 500
 
 
 @app.route('/add_user', methods=['POST'])

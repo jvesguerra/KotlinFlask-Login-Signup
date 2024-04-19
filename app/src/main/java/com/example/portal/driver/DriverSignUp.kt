@@ -120,6 +120,7 @@ class DriverSignUp : Fragment() {
                 rating = 0,
                 isActive = true,
                 authorized = false,
+                isQueued = false,
             )
 
             val newVehicle = VehicleModel(

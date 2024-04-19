@@ -32,6 +32,9 @@ class UserModel (
 
     @SerializedName("authorized")
     val authorized: Boolean,
+
+    @SerializedName("isQueued")
+    val isQueued: Boolean,
 )
 
 data class UserResponse(

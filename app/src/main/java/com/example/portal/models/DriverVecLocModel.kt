@@ -30,6 +30,9 @@ class DriverVecLocModel (
         @SerializedName("authorized")
         val authorized: Boolean,
 
+        @SerializedName("isQueued")
+        val isQueued: Boolean,
+
         @SerializedName("plateNumber")
         val plateNumber: String,
 
