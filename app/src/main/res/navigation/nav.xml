@@ -22,6 +22,9 @@
         <action
             android:id="@+id/signup"
             app:destination="@id/signUpPage" />
+        <action
+            android:id="@+id/toUnauthorized"
+            app:destination="@id/unauthorized" />
     </fragment>
 
     <!-- Admin -->
@@ -71,6 +74,15 @@
         <action
             android:id="@+id/toDriverHome"
             app:destination="@id/driverHome" />
+        <action
+            android:id="@+id/toUnauthorized"
+            app:destination="@id/unauthorized" />
+
+    <fragment
+        android:id="@+id/unauthorized"
+        android:name="com.example.portal.Unauthorized"
+        android:label="unauthorized"
+        tools:layout="@layout/unauthorized" />
 
     <fragment
         android:id="@+id/driverHome"

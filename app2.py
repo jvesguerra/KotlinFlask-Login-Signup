@@ -248,7 +248,7 @@ def register_driver():
                     email=user_data['email'], contactNumber=user_data['contactNumber'], password=hashed_password,
                     rating=user_data['rating'], userType=user_data['userType'], isActive=user_data['isActive'])
 
-    vehicleId = generate_location_id
+    vehicleId = generate_location_id()
     new_vehicle = Vehicle(vehicleId=vehicleId,
                           userId=userId,
                           plateNumber=vehicle_data['plateNumber'],
@@ -413,6 +413,17 @@ def change_is_queued(userId):
         return {
                    'message': f'User {userId} has changed is queued value'}, 200
 
+    except Exception as e:
+        return {'error': f'An error occurred: {str(e)}'}, 500
+
+@app.route('/is_authorized/<int:userId>', methods=['GET'])
+def is_authorized(userId):
+    try:
+        user = User.query.get(userId)
+        if user.authorized:
+            return jsonify(True)
+        else:
+            return jsonify(False)
     except Exception as e:
         return {'error': f'An error occurred: {str(e)}'}, 500
 
