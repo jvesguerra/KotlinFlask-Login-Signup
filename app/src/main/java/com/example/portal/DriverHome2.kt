@@ -342,8 +342,8 @@ class DriverHome2 : Fragment(),
         val newLocation = LocationModel(
             locationId = 0,
             userId = userId,
-            latitude=lat.toFloat(),
-            longitude = long.toFloat(),
+            latitude=lat,
+            longitude = long,
             timestamp = timestamp
         )
 

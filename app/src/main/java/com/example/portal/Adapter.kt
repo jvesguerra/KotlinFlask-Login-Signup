@@ -206,37 +206,25 @@ class Adapter(
         private val isFullTextView: TextView = itemView.findViewById(R.id.IsFullTextView)
         private val hasDepartedTextView: TextView = itemView.findViewById(R.id.HasDepartedTextView)
 
-        // determine if vehicle is in terminal
-        private fun isPointInPolygon(point: Pair<Double, Double>, vertices: List<Pair<Double, Double>>): Boolean {
-            val (px, py) = point
+        private fun isPointInsidePolygon(point: Pair<Double, Double>, vertices: List<Pair<Double, Double>>): Boolean {
             var isInside = false
+            val x = point.first
+            val y = point.second
 
-            var i = 0
             var j = vertices.size - 1
+            for (i in vertices.indices) {
+                val xi = vertices[i].first
+                val yi = vertices[i].second
+                val xj = vertices[j].first
+                val yj = vertices[j].second
 
-            while (i < vertices.size) {
-                val (vertexI_x, vertexI_y) = vertices[i]
-                val (vertexJ_x, vertexJ_y) = vertices[j]
-
-                if ((vertexI_y > py) != (vertexJ_y > py) &&
-                    px < (vertexJ_x - vertexI_x) * (py - vertexI_y) / (vertexJ_y - vertexI_y) + vertexI_x
-                ) {
-                    isInside = !isInside
-                }
-
-                j = i++
+                val intersect = ((yi > y) != (yj > y)) &&
+                        (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
+                if (intersect) isInside = !isInside
+                j = i
             }
-
             return isInside
         }
-
-        fun isWithinSquare(lat: Double, long: Double, topLeftLat: Double, topLeftLong: Double, bottomRightLat: Double, bottomRightLong: Double): Boolean {
-            return (topLeftLat >= lat && lat >= bottomRightLat) && (topLeftLong <= long && long <= bottomRightLong)
-        }
-
-
-
-
         fun bind(user: DriverVecLocModel) {
             val fullname = "${user.firstName} ${user.lastName}"
             itemView.findViewById<TextView>(R.id.itemNameTextView).text = fullname
@@ -262,16 +250,12 @@ class Adapter(
                     var vertices = listOf<Pair<Double, Double>,>()
                     if (user.route == "Forestry") {
                         vertices = listOf(
-                            Pair(14.168132, 121.242189), // Top Left
-                            Pair(14.167896, 121.242343), // Bottom Left
-                            Pair(14.168105, 121.243113), // Bottom Right
-                            Pair(14.168517, 121.243002)  // Top Right
+                            Pair(14.168251396978187, 121.24161688458322),  // Top Right
+                            Pair(14.167382788504096, 121.2420138515174), // Bottom Right
+                            Pair(14.167954926196032, 121.24323693882818), // Bottom Left
+                            Pair(14.168984770407006, 121.24287215840216) // Top Left
                         )
                         Log.d("VERTICES", "Forestry")
-                        val checkInside = isWithinSquare(user.latitude,
-                            user.longitude,14.168132,121.242189,
-                            14.168105,121.243113)
-                        Log.d("isInside", "LAT: ${user.latitude} LONG: ${user.longitude} = $checkInside")
                     } else {
                         vertices = listOf(
                             Pair(14.166140, 121.243435), // Top Left
@@ -283,8 +267,10 @@ class Adapter(
                     }
                     // check gps coordinates here
                     val deviceLocation = Pair(user.latitude, user.longitude)
-                    val isInside = isPointInPolygon(deviceLocation, vertices)
-                    Log.d("LocationCheck", "isInside Terminal: $isInside")
+                    Log.d("VERTICES", "${user.latitude} ${user.longitude}")
+                    Log.d("VERTICES", "isInside Terminal: $vertices")
+                    val isInside = isPointInsidePolygon(Pair(user.latitude, user.longitude), vertices)
+                    Log.d("VERTICES", "isInside Terminal: $isInside")
                     val hasDeparted = if(isInside) "Not Departed" else "Departed"
                     isFullTextView.text = isFull
                     hasDepartedTextView.text = hasDeparted
