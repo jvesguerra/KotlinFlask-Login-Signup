@@ -52,8 +52,8 @@ class DriverVecLocModel (
         val queuedUsers: List<String>,
 
         @SerializedName("latitude")
-        val latitude: Float,
+        val latitude: Double,
 
         @SerializedName("longitude")
-        val longitude: Float,
+        val longitude: Double,
     )

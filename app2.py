@@ -550,7 +550,7 @@ def get_locations():
 
 @app.route('/get_available_forestry_drivers', methods=['GET'])
 def get_available_forestry_drivers():
-    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+    drivers = db.session.query(User, Vehicle, Location).join(Vehicle, User.userId == Vehicle.userId).join(Location, User.userId == Location.userId).filter(
         User.userType == 2,
         User.authorized.is_(True),
         Vehicle.route == 'Forestry',
@@ -571,8 +571,10 @@ def get_available_forestry_drivers():
         'isAvailable': vehicle.isAvailable,
         'hasDeparted': vehicle.hasDeparted,
         'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else []
-    } for user, vehicle in drivers]
+        'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else [],
+        'latitude': location.latitude,
+        'longitude': location.longitude
+    } for user, vehicle, location in drivers]
 
     print(drivers_dict)
 
@@ -581,7 +583,7 @@ def get_available_forestry_drivers():
 
 @app.route('/get_available_rural_drivers', methods=['GET'])
 def get_available_rural_drivers():
-    drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
+    drivers = db.session.query(User, Vehicle, Location).join(Vehicle, User.userId == Vehicle.userId).join(Location, User.userId == Location.userId).filter(
         User.userType == 2,
         User.authorized.is_(True),
         Vehicle.route == 'Rural',
@@ -602,8 +604,10 @@ def get_available_rural_drivers():
         'isAvailable': vehicle.isAvailable,
         'hasDeparted': vehicle.hasDeparted,
         'isFull': vehicle.isFull,
-        'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else []
-    } for user, vehicle in drivers]
+        'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else [],
+        'latitude': location.latitude,
+        'longitude': location.longitude
+    } for user, vehicle, location in drivers]
 
     print(drivers_dict)
 

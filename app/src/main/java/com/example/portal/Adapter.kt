@@ -210,15 +210,17 @@ class Adapter(
         private fun isPointInPolygon(point: Pair<Double, Double>, vertices: List<Pair<Double, Double>>): Boolean {
             val (px, py) = point
             var isInside = false
+
             var i = 0
             var j = vertices.size - 1
 
             while (i < vertices.size) {
-                val (x_i, y_i) = vertices[i]
-                val (x_j, y_j) = vertices[j]
+                val (vertexI_x, vertexI_y) = vertices[i]
+                val (vertexJ_x, vertexJ_y) = vertices[j]
 
-                if ((y_i > py) != (y_j > py) &&
-                    (px < (x_j - x_i) * (py - y_i) / (y_j - y_i) + x_i)) {
+                if ((vertexI_y > py) != (vertexJ_y > py) &&
+                    px < (vertexJ_x - vertexI_x) * (py - vertexI_y) / (vertexJ_y - vertexI_y) + vertexI_x
+                ) {
                     isInside = !isInside
                 }
 
@@ -226,6 +228,10 @@ class Adapter(
             }
 
             return isInside
+        }
+
+        fun isWithinSquare(lat: Double, long: Double, topLeftLat: Double, topLeftLong: Double, bottomRightLat: Double, bottomRightLong: Double): Boolean {
+            return (topLeftLat >= lat && lat >= bottomRightLat) && (topLeftLong <= long && long <= bottomRightLong)
         }
 
 
@@ -252,26 +258,33 @@ class Adapter(
                 }
                 ContextType.USER_HOME2 -> {
                     val isFull = if(user.isFull) "Full" else "Not Full"
-                    val vertices = if (user.route == "Forestry") {
-                        // Vertices for forestry
-                        listOf(
+
+                    var vertices = listOf<Pair<Double, Double>,>()
+                    if (user.route == "Forestry") {
+                        vertices = listOf(
                             Pair(14.168132, 121.242189), // Top Left
                             Pair(14.167896, 121.242343), // Bottom Left
                             Pair(14.168105, 121.243113), // Bottom Right
                             Pair(14.168517, 121.243002)  // Top Right
                         )
+                        Log.d("VERTICES", "Forestry")
+                        val checkInside = isWithinSquare(user.latitude,
+                            user.longitude,14.168132,121.242189,
+                            14.168105,121.243113)
+                        Log.d("isInside", "LAT: ${user.latitude} LONG: ${user.longitude} = $checkInside")
                     } else {
-                        // Vertices for rural
-                        listOf(
+                        vertices = listOf(
                             Pair(14.166140, 121.243435), // Top Left
                             Pair(14.165353, 121.244118), // Bottom Left
                             Pair(14.166247, 121.244094), // Bottom Right
                             Pair(14.165501, 121.244475)  // Top Right
                         )
+                        Log.d("VERTICES", "Rural")
                     }
                     // check gps coordinates here
-                    val deviceLocation = Pair(user.latitude.toDouble(), user.latitude.toDouble())
+                    val deviceLocation = Pair(user.latitude, user.longitude)
                     val isInside = isPointInPolygon(deviceLocation, vertices)
+                    Log.d("LocationCheck", "isInside Terminal: $isInside")
                     val hasDeparted = if(isInside) "Not Departed" else "Departed"
                     isFullTextView.text = isFull
                     hasDepartedTextView.text = hasDeparted
