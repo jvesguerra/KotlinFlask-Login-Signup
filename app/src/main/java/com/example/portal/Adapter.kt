@@ -11,12 +11,14 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.util.Log
+import android.widget.EditText
 import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.api.OnQueueUserListener
 import com.example.portal.models.DriverVecLocModel
+import com.example.portal.models.EditUserModel
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
@@ -59,15 +61,10 @@ class Adapter(
             showDriverDetailsDialog(item)
         }
 
-//        holder.queueButton.setOnClickListener {
-//            val route = item.route
-//            val vehicleId = item.longitude
-//            val contactNumber = item.contactNumber
-//            Log.d("VEHICLE", "Route: $route")
-//            Log.d("VEHICLE", "Contact Number: $contactNumber") // Omitting vehicle ID for privacy
-//            Log.d("VEHICLE", "Vehicle ID: $vehicleId") // Omitting vehicle ID for privacy
-//            showQueueConfirmationDialog(userId, position, item.vehicleId)
-//        }
+        holder.editButton.setOnClickListener {
+            showEditDialog(item.userId, position, item.vehicleId)
+        }
+
 
     }
 
@@ -96,6 +93,50 @@ class Adapter(
 
     private fun removeUserQueue(userId: Int, position: Int, vehicleId: Int) {
         onQueueUserListener?.onRemoveUserQueue(userId, position, vehicleId)
+    }
+
+    private fun showEditDialog(userId: Int, position: Int, vehicleId: Int) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Edit Driver Details")
+
+        // Inflate the layout containing the form fields
+        val inflater = LayoutInflater.from(context)
+        val dialogLayout = inflater.inflate(R.layout.edit_user_dialog_layout, null)
+
+        // Find the EditText fields in the layout
+        val emailEditText = dialogLayout.findViewById<EditText>(R.id.editTextEmail)
+        val firstNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextFirstName)
+        val lastNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextLastName)
+        // Add more EditText fields for other user details as needed
+
+        builder.setView(dialogLayout)
+
+        builder.setPositiveButton("Save") { dialogInterface: DialogInterface, i: Int ->
+            // Retrieve the edited values from the EditText fields
+            val editedEmail = emailEditText.text.toString()
+            val editedFirstName = firstNameEditText.text.toString()
+            val editedLastName = lastNameEditText.text.toString()
+            // Retrieve other edited values as needed
+
+            // Construct a UserModel with the edited values
+            val editedUser = EditUserModel(
+                email = editedEmail,
+                firstName = editedFirstName,
+                lastName = editedLastName
+                // Set other properties as needed
+            )
+
+            // Perform the update operation with the edited user details
+            //updateUserDetails(editedUser)
+
+            dialogInterface.dismiss()
+        }
+
+        builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
+            dialogInterface.dismiss()
+        }
+
+        builder.show()
     }
 
     private fun showQueueConfirmationDialog(userId: Int, position: Int, vehicleId: Int) {
@@ -201,6 +242,7 @@ class Adapter(
         val authorizeButton: Button = itemView.findViewById(R.id.authorizeButton)
         val showDriverDetails: Button = itemView.findViewById(R.id.showDriverDetails)
         val queueButton: Button = itemView.findViewById(R.id.queueButton)
+        val editButton: Button = itemView.findViewById(R.id.editButton)
         private var isUserQueued: Boolean = false
 
         private val isFullTextView: TextView = itemView.findViewById(R.id.IsFullTextView)
@@ -237,9 +279,11 @@ class Adapter(
                 ContextType.ADMIN_HOME -> {
                     deleteButton.visibility = View.VISIBLE
                     showDriverDetails.visibility = View.VISIBLE
+                    editButton.visibility = View.VISIBLE
 
                     authorizeButton.visibility = View.GONE
                     queueButton.visibility = View.GONE
+
 
                     isFullTextView.visibility = View.GONE
                     hasDepartedTextView.visibility = View.GONE
@@ -278,10 +322,12 @@ class Adapter(
                     queueButton.visibility = View.VISIBLE
                     isFullTextView.visibility = View.VISIBLE
                     hasDepartedTextView.visibility = View.VISIBLE
+                    showDriverDetails.visibility = View.VISIBLE
 
                     authorizeButton.visibility = View.GONE
                     deleteButton.visibility = View.GONE
-                    showDriverDetails.visibility = View.VISIBLE
+                    editButton.visibility = View.GONE
+
 
                     retrofitService.getisQueued(userId).enqueue(object : Callback<Boolean> {
                         override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
@@ -320,7 +366,7 @@ class Adapter(
                     showDriverDetails.visibility = View.VISIBLE
 
                     queueButton.visibility = View.GONE
-
+                    editButton.visibility = View.GONE
                     isFullTextView.visibility = View.GONE
                     hasDepartedTextView.visibility = View.GONE
                 }
