@@ -10,10 +10,10 @@ class LocationModel (
     val userId: Int,
 
     @SerializedName("latitude")
-    val latitude: Float,
+    val latitude: Double,
 
     @SerializedName("longitude")
-    val longitude: Float,
+    val longitude: Double,
 
     @SerializedName("timestamp")
     val timestamp: Long

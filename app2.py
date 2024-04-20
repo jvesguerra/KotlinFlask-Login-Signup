@@ -550,11 +550,13 @@ def get_locations():
 
 @app.route('/get_available_forestry_drivers', methods=['GET'])
 def get_available_forestry_drivers():
+    subquery = db.session.query(Location.userId, func.max(Location.timestamp).label('latest_timestamp')).group_by(Location.userId).subquery()
     drivers = db.session.query(User, Vehicle, Location).join(Vehicle, User.userId == Vehicle.userId).join(Location, User.userId == Location.userId).filter(
         User.userType == 2,
         User.authorized.is_(True),
         Vehicle.route == 'Forestry',
-        Vehicle.isAvailable.is_(True)).all()
+        Vehicle.isAvailable.is_(True),
+        Location.timestamp == subquery.c.latest_timestamp).all()
 
     drivers_dict = [{
         'userId': user.userId,
