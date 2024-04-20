@@ -5,6 +5,7 @@ import com.example.portal.LocationModel
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.DriverVehicleModel
+import com.example.portal.models.EditUserModel
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
 import retrofit2.Call
@@ -85,4 +86,10 @@ interface UserServe {
     fun addLocation(
         @Body newLocation: LocationModel
     ): Call<Void>
+
+    @PUT("/edit_user/{userId}")
+    fun editUser(
+        @Path("id") userId: Int,
+        @Body user: EditUserModel
+    ): Call<EditUserModel>
 }

@@ -143,6 +143,19 @@
                     android:singleLine="true" />
 
                 <Button
+                    android:id="@+id/editButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Edit"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:background="@drawable/rounded_button"
+                    android:paddingVertical="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:singleLine="true" />
+
+                <Button
                     android:id="@+id/authorizeButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
