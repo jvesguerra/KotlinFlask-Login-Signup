@@ -680,6 +680,7 @@ def admin_delete_user(userId):
     try:
         # Step 1: Delete associated vehicle records
         Vehicle.query.filter_by(userId=userId).delete()
+        Location.query.filter_by(userId=userId).delete()
         # Step 2: Delete the user record
         user = User.query.get(userId)
         db.session.delete(user)
