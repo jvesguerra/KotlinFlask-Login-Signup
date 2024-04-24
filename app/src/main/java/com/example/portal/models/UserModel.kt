@@ -39,8 +39,20 @@ class UserModel (
 
 data class UserResponse(
     @SerializedName("message") val message: String?,
-    @SerializedName("user") val user: UserModel?
+    @SerializedName("user") val user: UserModel?,
 )
+
+data class LoginResponse(
+    @SerializedName("accessToken") val accessToken: String
+)
+
+data class Credentials(
+    @SerializedName("email") val email: String,
+    @SerializedName("password") val password: String)
+
+data class Data(
+    @SerializedName("logged_in_as") val logged_in_as: String,
+    @SerializedName("data") val data: String)
 
 data class DriverSignUpRequest(
     val user: UserModel,

@@ -124,7 +124,7 @@ class Adapter(
             )
 
             Log.d("EditUser", "Email: $editedEmail, First Name: $editedFirstName, Last Name: $editedLastName")
-            editUser(userId, position,editedUser)
+            //editUser(userId, position,editedUser)
             dialogInterface.dismiss()
         }
 

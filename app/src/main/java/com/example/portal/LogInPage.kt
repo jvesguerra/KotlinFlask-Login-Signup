@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
+import com.example.portal.models.Credentials
+import com.example.portal.models.LoginResponse
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -43,6 +45,7 @@ class LogInPage : Fragment() {
 
     private lateinit var view: View
     private lateinit var sharedPreferences: SharedPreferences
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,7 +89,7 @@ class LogInPage : Fragment() {
     }
 
     private fun saveLoginSession(userType: Int,userId: Int) {
-        val editor = sharedPreferences.edit()
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)
         editor.putInt("userType", userType) // Save user type in SharedPreferences
         editor.putInt("userId", userId) // Save user type in SharedPreferences
@@ -94,32 +97,38 @@ class LogInPage : Fragment() {
     }
 
     private fun signIn(email: String, password: String) {
-        val newUser = UserModel(
-            userId = 0,
-            firstName = "admin",
-            lastName = "admin",
-            email = email,
-            contactNumber = "",
-            password = password,
-            rating = 0,
-            userType = 0,
-            isActive = true,
-            authorized = false,
-            isQueued = false,
-        )
-
-        val call = retrofitService.signIn(newUser)
-        call.enqueue(object : Callback<UserResponse> {
-            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+        val call = retrofitService.login(Credentials(email, password))
+        call.enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {
-                    val userResponse = response.body()
-                    userResponse?.let { handleSignInSuccess(it) }
+                    val loginResponse = response.body()
+                    val accessToken = loginResponse?.accessToken
+                    val editor = sharedPreferences.edit()
+                    editor?.putString("accessToken", accessToken) // Save user type in SharedPreferences
+                    editor?.apply()
+
+                    val dataCall = retrofitService.fetchData("Bearer $accessToken")
+                    dataCall.enqueue(object : Callback<UserResponse> {
+                        override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                            if (response.isSuccessful) {
+                                val userResponse = response.body()
+                                userResponse?.let { handleSignInSuccess(it) }
+                                // Handle received user data
+                            } else {
+                                // Failed to fetch user data
+                            }
+                        }
+
+                        override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                            // Error handling
+                        }
+                    })
                 } else {
                     showToast("Failed to sign in: ${response.code()}")
                 }
             }
 
-            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 showToast("Failed to sign in: ${t.message}")
             }
         })
@@ -202,6 +211,11 @@ class LogInPage : Fragment() {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
+
+private fun <T> Call<T>.enqueue(callback: Callback<LoginResponse>) {
+
+}
+
 fun Call<Void>.enqueueVoid(callback: () -> Unit) {
     this.enqueue(object : Callback<Void> {
         override fun onResponse(call: Call<Void>, response: Response<Void>) {

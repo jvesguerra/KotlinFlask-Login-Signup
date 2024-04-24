@@ -25,10 +25,12 @@ import json
 from flask_login import UserMixin
 from datetime import timedelta
 from sqlalchemy import desc
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
+jwt = JWTManager(app)
 
 # Configure your MySQL database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost/travelbetter-dev'
@@ -294,15 +296,13 @@ def register():
 @cross_origin(supports_credentials=True)
 def sign_in():
     form = LoginForm()
-    print("Form data:", form.email.data, form.password.data)
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 session['user_id'] = user.userId
+                access_token = create_access_token(identity=user.userId)
                 login_user(user)
-                print("Session contents:", session)
-                print("SESSION USER ID: ", session.get('user_id'))
                 return jsonify({
                     'message': 'User logged in successfully',
                     'user': {
@@ -310,18 +310,64 @@ def sign_in():
                         'firstName': user.firstName,
                         'lastName': user.lastName,
                         'email': user.email,
-                        'contactNumber': user.contactNumber,
-                        'password': user.password,
-                        'userType': user.userType,
-                        'isQueued': user.isQueued,
-                    }
+                    },
+                    'accessToken': access_token
                 })
             else:
-                print("FAILED TO LOG IN")
                 return jsonify({'error': 'Invalid username or password'}), 401
     else:
-        print("INVALID FORM DATA:", form.errors)  # Debug statement
         return jsonify({'error': 'Invalid username or password'}), 401
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    email = request.json.get('email')
+    password = request.json.get('password')
+    print("EMAIL: ", email)
+    user = User.query.filter_by(email=email).first()
+    if user:
+        if bcrypt.check_password_hash(user.password, password):
+            session['user_id'] = user.userId
+            access_token = create_access_token(identity=user.userId)
+            login_user(user)
+            return jsonify({
+                'accessToken': access_token
+            })
+        else:
+            return jsonify({'error': 'Invalid password'}), 401
+    else:
+        return jsonify({'error': 'User not found'}), 404
+
+
+@app.route('/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    # Access protected resource
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
+
+
+@app.route('/data', methods=['GET'])
+@jwt_required()
+def get_data():
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(userId=current_user).first()
+    if user:
+        return jsonify({
+            'message': 'User logged in successfully',
+            'user': {
+                'userId': user.userId,
+                'firstName': user.firstName,
+                'lastName': user.lastName,
+                'email': user.email,
+                'contactNumber': user.contactNumber,
+                'password': user.password,
+                'userType': user.userType,
+                'isQueued': user.isQueued,
+            }
+        })
+    else:
+        return jsonify({'error'}), 401
 
 
 @app.route("/logout")
@@ -391,7 +437,8 @@ def remove_queued_user(vehicleId, userId):
         user.isQueued = not user.isQueued
         db.session.commit()
 
-        return {'message': f'User {userId} removed from the queued users list of vehicle {vehicleId} and is no longer queued'}, 200
+        return {
+                   'message': f'User {userId} removed from the queued users list of vehicle {vehicleId} and is no longer queued'}, 200
     except ValueError:
         return {'error': 'Invalid vehicleId or userId. Please provide integer values.'}, 400
     except Exception as e:
@@ -415,6 +462,7 @@ def change_is_queued(userId):
 
     except Exception as e:
         return {'error': f'An error occurred: {str(e)}'}, 500
+
 
 @app.route('/is_authorized/<int:userId>', methods=['GET'])
 def is_authorized(userId):
@@ -550,8 +598,10 @@ def get_locations():
 
 @app.route('/get_available_forestry_drivers', methods=['GET'])
 def get_available_forestry_drivers():
-    subquery = db.session.query(Location.userId, func.max(Location.timestamp).label('latest_timestamp')).group_by(Location.userId).subquery()
-    drivers = db.session.query(User, Vehicle, Location).join(Vehicle, User.userId == Vehicle.userId).join(Location, User.userId == Location.userId).filter(
+    subquery = db.session.query(Location.userId, func.max(Location.timestamp).label('latest_timestamp')).group_by(
+        Location.userId).subquery()
+    drivers = db.session.query(User, Vehicle, Location).join(Vehicle, User.userId == Vehicle.userId).join(Location,
+                                                                                                          User.userId == Location.userId).filter(
         User.userType == 2,
         User.authorized.is_(True),
         Vehicle.route == 'Forestry',
@@ -578,14 +628,13 @@ def get_available_forestry_drivers():
         'longitude': location.longitude
     } for user, vehicle, location in drivers]
 
-    print(drivers_dict)
-
     return jsonify(drivers_dict)
 
 
 @app.route('/get_available_rural_drivers', methods=['GET'])
 def get_available_rural_drivers():
-    drivers = db.session.query(User, Vehicle, Location).join(Vehicle, User.userId == Vehicle.userId).join(Location, User.userId == Location.userId).filter(
+    drivers = db.session.query(User, Vehicle, Location).join(Vehicle, User.userId == Vehicle.userId).join(Location,
+                                                                                                          User.userId == Location.userId).filter(
         User.userType == 2,
         User.authorized.is_(True),
         Vehicle.route == 'Rural',
@@ -610,8 +659,6 @@ def get_available_rural_drivers():
         'latitude': location.latitude,
         'longitude': location.longitude
     } for user, vehicle, location in drivers]
-
-    print(drivers_dict)
 
     return jsonify(drivers_dict)
 
@@ -638,8 +685,6 @@ def get_auth_drivers():
         'isFull': vehicle.isFull,
         'queuedUsers': vehicle.queuedUsers if isinstance(vehicle.queuedUsers, list) else []
     } for user, vehicle in drivers]
-
-    print(drivers_dict)
 
     return jsonify(drivers_dict)
 
@@ -670,8 +715,6 @@ def get_pending_drivers():
 
     } for user, vehicle in drivers]
 
-    print(drivers_dict)
-
     return jsonify(drivers_dict)
 
 
@@ -693,6 +736,7 @@ def admin_delete_user(userId):
         db.session.rollback()
         return f"An error occurred: {str(e)}"
 
+
 @app.route('/edit_user/<int:userId>', methods=['PUT'])
 def edit_user(userId):
     # Assuming you have some function to retrieve the user from the database
@@ -711,6 +755,7 @@ def edit_user(userId):
     db.session.commit()
 
     return jsonify({'message': 'User updated successfully'})
+
 
 if __name__ == '__main__':
     print("Flask Server")

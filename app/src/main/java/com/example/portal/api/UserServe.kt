@@ -2,16 +2,21 @@ package com.example.portal.api
 
 import com.example.portal.GoogleSignInRequest
 import com.example.portal.LocationModel
+import com.example.portal.models.Credentials
+import com.example.portal.models.Data
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.DriverVehicleModel
 import com.example.portal.models.EditUserModel
+import com.example.portal.models.LoginResponse
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -22,6 +27,14 @@ interface UserServe {
 
     @POST("/signin")
     fun signIn(@Body newUser: UserModel): Call<UserResponse>
+
+    @POST("/login")
+    fun login(@Body credentials: Credentials): Call<LoginResponse>
+
+    @GET("/data")
+    fun fetchData(
+        @Header("Authorization") token: String,
+    ): Call<UserResponse>
 
     @POST("/register")
     fun register(@Body newUser: UserModel): Call<UserModel>
