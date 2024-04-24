@@ -16,11 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.portal.Adapter
 import com.example.portal.api.OnDeleteUserListener
+import com.example.portal.api.OnQueueUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.SessionManager
 import com.example.portal.api.UserServe
 import com.example.portal.models.DriverVecLocModel
-import com.example.portal.models.DriverVehicleModel
+import com.example.portal.models.EditUserModel
+import com.example.portal.utils.UserEdit
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,7 +30,7 @@ import retrofit2.Response
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class AdminHome : Fragment(), OnDeleteUserListener {
+class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     private var param1: String? = null
     private var param2: String? = null
 
@@ -152,6 +154,19 @@ class AdminHome : Fragment(), OnDeleteUserListener {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onQueueUser(userId: Int, position: Int, vehicleId: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onRemoveUserQueue(userId: Int, position: Int, vehicleId: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun editUser(userId: Int, position: Int, userModel: EditUserModel) {
+        val editUser = UserEdit(requireContext(), adapter)
+        editUser.editUser(retrofitService, userId, position, userModel)
     }
 }
 
