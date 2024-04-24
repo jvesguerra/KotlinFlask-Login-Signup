@@ -12,7 +12,6 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.EditText
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
@@ -22,6 +21,7 @@ import com.example.portal.models.EditUserModel
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
+
 
 class Adapter(
     private val onDeleteUserListener: OnDeleteUserListener?,
@@ -62,7 +62,7 @@ class Adapter(
         }
 
         holder.editButton.setOnClickListener {
-            showEditDialog(item.userId, position, item.vehicleId)
+            showEditDialog(context, item.userId, position, item.vehicleId)
         }
 
 
@@ -95,40 +95,36 @@ class Adapter(
         onQueueUserListener?.onRemoveUserQueue(userId, position, vehicleId)
     }
 
-    private fun showEditDialog(userId: Int, position: Int, vehicleId: Int) {
+    private fun editUser(userId: Int, position: Int, userModel: EditUserModel) {
+        onQueueUserListener?.editUser(userId, position, userModel)
+    }
+
+    private fun showEditDialog(context: Context,userId: Int, position: Int, vehicleId: Int) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Edit Driver Details")
 
-        // Inflate the layout containing the form fields
         val inflater = LayoutInflater.from(context)
         val dialogLayout = inflater.inflate(R.layout.edit_user_dialog_layout, null)
 
-        // Find the EditText fields in the layout
         val emailEditText = dialogLayout.findViewById<EditText>(R.id.editTextEmail)
         val firstNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextFirstName)
         val lastNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextLastName)
-        // Add more EditText fields for other user details as needed
 
         builder.setView(dialogLayout)
 
         builder.setPositiveButton("Save") { dialogInterface: DialogInterface, i: Int ->
-            // Retrieve the edited values from the EditText fields
             val editedEmail = emailEditText.text.toString()
             val editedFirstName = firstNameEditText.text.toString()
             val editedLastName = lastNameEditText.text.toString()
-            // Retrieve other edited values as needed
 
-            // Construct a UserModel with the edited values
             val editedUser = EditUserModel(
                 email = editedEmail,
                 firstName = editedFirstName,
                 lastName = editedLastName
-                // Set other properties as needed
             )
 
-            // Perform the update operation with the edited user details
-            //updateUserDetails(editedUser)
-
+            Log.d("EditUser", "Email: $editedEmail, First Name: $editedFirstName, Last Name: $editedLastName")
+            editUser(userId, position,editedUser)
             dialogInterface.dismiss()
         }
 
