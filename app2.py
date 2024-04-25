@@ -98,6 +98,7 @@ class User(db.Model):
     isActive = db.Column(db.Boolean, default=False)
     authorized = db.Column(db.Boolean, default=False)
     isQueued = db.Column(db.Boolean, default=False)
+    isPetitioned = db.Column(db.Integer, default=0)
 
     def is_active(self):
         return self.is_active
@@ -134,6 +135,17 @@ class Vehicle(db.Model):
         if user_id in queued_users:
             queued_users.remove(user_id)
             self.queuedUsers = json.dumps(queued_users)
+
+
+class Petition(db.Model):
+    id = db.Column(db.Integer, primary_key=True)  # id = 1 (Forestry) ; id = 2; Rural
+    forestryPetitionCount = db.Column(db.String(255), default="[]")  # Store as JSON string
+    ruralPetitionCount = db.Column(db.String(255), default="[]")  # Store as JSON string
+
+    def add_forestry_user(self, user_id):
+        forestryPetitionCount = json.loads(self.forestryPetitionCount)
+        forestryPetitionCount.append(user_id)
+        self.forestryPetitionCount = json.dumps(forestryPetitionCount)
 
 
 # FORMS
@@ -755,6 +767,35 @@ def edit_user(userId):
     db.session.commit()
 
     return jsonify({'message': 'User updated successfully'})
+
+
+# PETITION
+@app.route('/add_forestry_petition', methods=['PUT'])
+@jwt_required()
+def add_forestry_petition():
+    try:
+        userId = get_jwt_identity()
+        user = User.query.get(userId)
+        petition = Petition.query.filter_by(id=1).first()
+
+        if user is None:
+            return jsonify({'error': f'User with ID {userId} not found'}), 404
+
+        if user.isPetitioned == 1:  # Assuming isPetitioned is an attribute of the User model
+            return jsonify({'error': f'User {userId} is already petitioned to another route'}), 400
+
+        if petition:
+            forestry_petition_counts = json.loads(petition.forestryPetitionCount)
+            forestry_petition_counts.append(userId)
+            petition.forestryPetitionCount = json.dumps(forestry_petition_counts)
+            db.session.commit()
+            return jsonify({'message': f'User {userId} added to forestry petition'}), 200
+        else:
+            return jsonify({'error': 'Forestry petition not found'}), 404
+    except Exception as e:
+        print(f"Error occurred while processing: {str(e)}")
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
 
 
 if __name__ == '__main__':

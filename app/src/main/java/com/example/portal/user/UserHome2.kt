@@ -34,6 +34,7 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     private lateinit var adapter: Adapter
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
+    private lateinit var btnPetition: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,12 +42,19 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     ): View? {
         val view = inflater.inflate(R.layout.user_home2, container, false)
         val route = arguments?.getString("route")
+        val bundle = Bundle()
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
 
+        btnPetition = view.findViewById(R.id.btnPetition)
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
         logoutButton.setOnClickListener {
             signOut()
             Navigation.findNavController(view).navigate(R.id.logout)
+        }
+
+        btnPetition.setOnClickListener {
+            bundle.putString("route", route)
+            Navigation.findNavController(view).navigate(R.id.toPetition, bundle)
         }
 
         recyclerView = view.findViewById(R.id.recyclerView)

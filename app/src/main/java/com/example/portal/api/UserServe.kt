@@ -9,6 +9,7 @@ import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.DriverVehicleModel
 import com.example.portal.models.EditUserModel
 import com.example.portal.models.LoginResponse
+import com.example.portal.models.PetitionModel
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
 import okhttp3.ResponseBody
@@ -105,4 +106,25 @@ interface UserServe {
         @Path("id") userId: Int,
         @Body user: EditUserModel
     ): Call<EditUserModel>
+
+    // Petition
+    @PUT("/add_forestry_petition")
+    fun addForestryPetition(
+        @Header("Authorization") token: String,
+    ): Call<Void>
+
+    @PUT("/add_rural_petition")
+    fun addRuralPetition(
+        @Header("Authorization") token: String,
+    ): Call<Void>
+
+    @GET("/get_forestry_petition")
+    fun getForestryPetition(
+        @Header("Authorization") token: String,
+    ): Call<Int>
+
+    @GET("/get_rural_petition")
+    fun getRuralPetition(
+        @Header("Authorization") token: String,
+    ): Call<Int>
 }

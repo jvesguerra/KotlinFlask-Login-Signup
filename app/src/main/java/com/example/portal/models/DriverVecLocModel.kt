@@ -56,4 +56,7 @@ class DriverVecLocModel (
 
         @SerializedName("longitude")
         val longitude: Double,
+
+        @SerializedName("isPetitioned")
+        val isPetitioned: Int,
     )
