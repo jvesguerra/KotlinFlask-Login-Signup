@@ -130,6 +130,9 @@
         android:name="com.example.portal.Petition"
         android:label="petition"
         tools:layout="@layout/petition" />
+        <action
+            android:id="@+id/petitionReload"
+            app:destination="@id/petition" />
 
 
 </navigation>
