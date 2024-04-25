@@ -14,11 +14,8 @@ class UserHome1 : Fragment() {
 
     private lateinit var btnForestry: Button
     private lateinit var btnRural: Button
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
     }
 
     override fun onCreateView(
@@ -42,14 +39,5 @@ class UserHome1 : Fragment() {
         }
 
         return view
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            UserHome1().apply {
-                arguments = Bundle().apply {
-                }
-            }
     }
 }

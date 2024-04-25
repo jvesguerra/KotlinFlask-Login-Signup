@@ -28,6 +28,18 @@
         app:layout_constraintBottom_toTopOf="@id/btnLogout"
         android:padding="16dp"/>
 
+    <!-- Petition Button -->
+    <Button
+        android:id="@+id/btnPetition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Petition"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"/>
+
+
     <!-- Sign Out Button -->
     <Button
         android:id="@+id/btnLogout"

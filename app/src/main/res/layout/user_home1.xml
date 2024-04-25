@@ -15,7 +15,7 @@
         android:textSize="24sp"
         android:layout_centerHorizontal="true" />
 
-    <!-- Button for action 1 -->
+    <!-- Button for forestry -->
     <Button
         android:id="@+id/btnForestry"
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         android:layout_below="@id/textViewRoutes"
         android:layout_marginTop="16dp" />
 
-    <!-- Button for action 2 -->
+    <!-- Button for rural -->
     <Button
         android:id="@+id/btnRural"
         android:layout_width="match_parent"
@@ -32,5 +32,7 @@
         android:text="Rural"
         android:layout_below="@id/btnForestry"
         android:layout_marginTop="16dp" />
+
+
 
 </RelativeLayout>

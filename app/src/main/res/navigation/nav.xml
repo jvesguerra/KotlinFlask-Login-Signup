@@ -117,13 +117,19 @@
         <action
             android:id="@+id/toAvailableVehicles"
             app:destination="@id/userHome2" />
-
     <fragment
         android:id="@+id/userHome2"
         android:name="com.example.portal.user.UserHome2"
         android:label="user_home2"
         tools:layout="@layout/user_home2" />
-
+        <action
+            android:id="@+id/toPetition"
+            app:destination="@id/petition" />
+    <fragment
+        android:id="@+id/petition"
+        android:name="com.example.portal.Petition"
+        android:label="petition"
+        tools:layout="@layout/petition" />
 
 
 </navigation>

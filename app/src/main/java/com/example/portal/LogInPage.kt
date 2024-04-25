@@ -106,6 +106,7 @@ class LogInPage : Fragment() {
                     val editor = sharedPreferences.edit()
                     editor?.putString("accessToken", accessToken) // Save user type in SharedPreferences
                     editor?.apply()
+                    Log.d("AccessToken1", accessToken ?: "AccessToken is null") // Log the accessToken
 
                     val dataCall = retrofitService.fetchData("Bearer $accessToken")
                     dataCall.enqueue(object : Callback<UserResponse> {
