@@ -1,6 +1,5 @@
 package com.example.portal.driver
 
-import android.R.layout.simple_spinner_item
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +14,6 @@ import androidx.navigation.Navigation
 import com.example.portal.R
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
-import com.example.portal.enqueue
-import com.example.portal.enqueueVoid
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.UserModel
 import com.example.portal.models.VehicleModel
@@ -121,6 +118,7 @@ class DriverSignUp : Fragment() {
                 isActive = true,
                 authorized = false,
                 isQueued = false,
+                isPetitioned = 0
             )
 
             val newVehicle = VehicleModel(

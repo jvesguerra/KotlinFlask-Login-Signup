@@ -376,6 +376,7 @@ def get_data():
                 'password': user.password,
                 'userType': user.userType,
                 'isQueued': user.isQueued,
+                'isPetitioned': user.isPetitioned,
             }
         })
     else:
@@ -788,6 +789,7 @@ def add_forestry_petition():
             forestry_petition_counts = json.loads(petition.forestryPetitionCount)
             forestry_petition_counts.append(userId)
             petition.forestryPetitionCount = json.dumps(forestry_petition_counts)
+            user.isPetitioned = 1
             db.session.commit()
             return jsonify({'message': f'User {userId} added to forestry petition'}), 200
         else:
@@ -796,6 +798,56 @@ def add_forestry_petition():
         print(f"Error occurred while processing: {str(e)}")
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
+
+@app.route('/delete_forestry_petition', methods=['DELETE'])
+@jwt_required()
+def delete_forestry_petition():
+    try:
+        userId = get_jwt_identity()
+        user = User.query.get(userId)
+        petition = Petition.query.filter_by(id=1).first()
+
+        if user is None:
+            return jsonify({'error': f'User with ID {userId} not found'}), 404
+
+        if petition:
+            forestry_petition_counts = json.loads(petition.forestryPetitionCount)
+            if userId in forestry_petition_counts:
+                forestry_petition_counts.remove(userId)  # Remove the user ID from the list
+                petition.forestryPetitionCount = json.dumps(forestry_petition_counts)
+                user.isPetitioned = 0
+                db.session.commit()
+                return jsonify({'message': f'User {userId} removed from forestry petition'}), 200
+            else:
+                return jsonify({'error': f'User {userId} not found in forestry petition'}), 404
+        else:
+            return jsonify({'error': 'Forestry petition not found'}), 404
+    except Exception as e:
+        print(f"Error occurred while processing: {str(e)}")
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
+
+@app.route('/get_forestry_petition', methods=['GET'])
+@jwt_required()
+def get_forestry_petition():
+    try:
+        userId = get_jwt_identity()
+        user = User.query.get(userId)
+        petition = Petition.query.filter_by(id=1).first()
+
+        if user is None:
+            return jsonify({'error': f'User with ID {userId} not found'}), 404
+
+        if petition:
+            forestry_petition_counts = json.loads(petition.forestryPetitionCount)
+            count = len(forestry_petition_counts)  # Get count of items in the array
+            print("COUNT: ", count)
+            return str(count), 200 
+        else:
+            return jsonify({'error': 'Forestry petition not found'}), 404
+    except Exception as e:
+        print(f"Error occurred while processing: {str(e)}")
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
 
 if __name__ == '__main__':

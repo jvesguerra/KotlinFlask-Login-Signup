@@ -2,7 +2,7 @@ package com.example.portal.models
 
 import com.google.gson.annotations.SerializedName
 
-class UserModel (
+class UserModel(
     @SerializedName("userId")
     val userId: Int,
 
@@ -35,7 +35,11 @@ class UserModel (
 
     @SerializedName("isQueued")
     val isQueued: Boolean,
-)
+
+    @SerializedName("isPetitioned")
+    val isPetitioned: Int,
+
+    )
 
 data class UserResponse(
     @SerializedName("message") val message: String?,
