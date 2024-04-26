@@ -132,4 +132,9 @@ interface UserServe {
     fun deleteForestryPetition(
         @Header("Authorization") token: String,
     ): Call<Void>
+
+    @DELETE("/delete_rural_petition")
+    fun deleteRuralPetition(
+        @Header("Authorization") token: String,
+    ): Call<Void>
 }
