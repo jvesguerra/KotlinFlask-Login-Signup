@@ -128,13 +128,8 @@ interface UserServe {
         @Header("Authorization") token: String,
     ): Call<Int>
 
-    @DELETE("/delete_forestry_petition")
-    fun deleteForestryPetition(
-        @Header("Authorization") token: String,
-    ): Call<Void>
-
-    @DELETE("/delete_rural_petition")
-    fun deleteRuralPetition(
+    @DELETE("/delete_petition")
+    fun deletePetition(
         @Header("Authorization") token: String,
     ): Call<Void>
 }

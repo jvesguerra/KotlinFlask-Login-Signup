@@ -23,9 +23,10 @@ class Petition : Fragment() {
     private lateinit var petitionTitle: TextView
     private lateinit var petitionCount: TextView
     private lateinit var btnSignPetition: Button
-    private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
-        .create(UserServe::class.java)
+    private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance().create(UserServe::class.java)
     private lateinit var sharedPreferences: SharedPreferences
+    private var isPetitioned: Int? = null
+    private var accessToken: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -36,100 +37,99 @@ class Petition : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.petition, container, false)
         val route = arguments?.getString("route")
-        var isPetitioned: Int? = null
-        var petitionItemCount: Int = 0
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         petitionTitle = view.findViewById(R.id.petition)
         petitionCount = view.findViewById(R.id.petition_count)
         btnSignPetition = view.findViewById(R.id.signPetition)
         petitionTitle.text = route
+        accessToken = sharedPreferences.getString("accessToken", null)
+        fetchUserDetails()
+        fetchPetitionCount(route)
+        setupButtonListener(route)
 
-        val accessToken = sharedPreferences.getString("accessToken", null);
+        return view
+    }
 
-        val dataCall = retrofitService.fetchData("Bearer $accessToken")
-        dataCall.enqueue(object : Callback<UserResponse> {
+    private fun fetchUserDetails() {
+        val call = retrofitService.fetchData("Bearer $accessToken")
+        call.enqueue(object : Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful) {
-                    val userResponse = response.body()
-                    val user = userResponse?.user
-                    isPetitioned = user?.isPetitioned
-                    // Check if isPetitioned is either 1 or 2
-                    if (isPetitioned == 1 || isPetitioned == 2) {
-                        btnSignPetition.text = "Cancel"
-
-                    }
+                    isPetitioned = response.body()?.user?.isPetitioned
+                    updateButtonText()
+                } else {
+                    Log.e("PetitionFragment", "Error fetching user details: ${response.errorBody()?.string()}")
                 }
             }
+
             override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                Log.e("PetitionFragment", "Failed to fetch user details", t)
             }
         })
+    }
 
-        // PETITION COUNT
-        var call2: Call<Int>
-        if (route == "Forestry") {
-            call2 = retrofitService.getForestryPetition("Bearer $accessToken")
-        } else {
-            call2 = retrofitService.getRuralPetition("Bearer $accessToken")
+    private fun updateButtonText() {
+        isPetitioned?.let {
+            if (it == 1 || it == 2) {
+                btnSignPetition.text = "Cancel Petition"
+            } else {
+                btnSignPetition.text = "Sign Petition"
+            }
         }
+    }
 
-
-        call2.enqueue(object : Callback<Int> {
+    private fun fetchPetitionCount(route: String?) {
+        val call = when (route) {
+            "Forestry" -> retrofitService.getForestryPetition("Bearer $accessToken")
+            "Rural" -> retrofitService.getRuralPetition("Bearer $accessToken")
+            else -> return
+        }
+        call.enqueue(object : Callback<Int> {
             override fun onResponse(call: Call<Int>, response: Response<Int>) {
                 if (response.isSuccessful) {
-                    val count = response.body()
-                    if (count != null) {
-                        // Use the count value
-                        petitionCount.text = count.toString()
-                        val petitionCountText = "$count people in petition"
-                        petitionCount.text = petitionCountText
-                    } else {
-                        // Handle null response
-                        Log.d("Response", "Response body is null")
+                    response.body()?.let {
+                        petitionCount.text = "$it people in petition"
                     }
                 } else {
-                    // Handle unsuccessful response
-                    Log.d("Response", "Unsuccessful response: ${response.code()}")
+                    Log.d("PetitionFragment", "Unsuccessful response: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<Int>, t: Throwable) {
-                // Handle failure
-                Log.e("Error", "Failed to fetch forestry petition count: ${t.message}", t)
+                Log.e("PetitionFragment", "Failed to fetch petition count", t)
             }
         })
+    }
 
+    private fun setupButtonListener(route: String?) {
         btnSignPetition.setOnClickListener {
-            Log.d("AccessToken2", accessToken ?: "AccessToken is null") // Log the accessToken
+            if (isPetitioned == null || accessToken == null || route == null) {
+                Toast.makeText(context, "Missing data, cannot proceed.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val call = if (isPetitioned == 0) {
                 if (route == "Forestry") retrofitService.addForestryPetition("Bearer $accessToken")
                 else retrofitService.addRuralPetition("Bearer $accessToken")
             } else {
-                if (route == "Forestry") retrofitService.deleteForestryPetition("Bearer $accessToken")
-                else retrofitService.deleteRuralPetition("Bearer $accessToken")
+                if (route == "Forestry") retrofitService.deletePetition("Bearer $accessToken")
+                else retrofitService.deletePetition("Bearer $accessToken")
             }
-
-
             call.enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
-                        //adapter.removeItemAt(position)
-                        Toast.makeText(context, "Petitioned successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Petition update successful", Toast.LENGTH_SHORT).show()
+                        fetchPetitionCount(route)
+                        isPetitioned = 1 - (isPetitioned ?: 0) // Toggle isPetitioned status
+                        updateButtonText()
                     } else {
-                        // Handle error, could use response.code() to tailor the message
-                        Toast.makeText(context, "Failed to petition", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Failed to update petition", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<Void>, t: Throwable) {
-                    // Handle failure
                     Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
-//            val bundle = Bundle()
-//            bundle.putString("route", route)
-//            Navigation.findNavController(view).navigate(R.id.petitionReload, bundle)
         }
-
-        return view
     }
 }
