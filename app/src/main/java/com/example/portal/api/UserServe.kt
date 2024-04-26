@@ -103,7 +103,7 @@ interface UserServe {
 
     @PUT("/edit_user/{userId}")
     fun editUser(
-        @Path("id") userId: Int,
+        @Path("userId") userId: Int,
         @Body user: EditUserModel
     ): Call<EditUserModel>
 

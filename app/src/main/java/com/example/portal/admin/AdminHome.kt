@@ -23,6 +23,8 @@ import com.example.portal.api.UserServe
 import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.EditUserModel
 import com.example.portal.utils.UserEdit
+import com.example.portal.utils.UserQueue
+import com.example.portal.utils.UserRemoveQueue
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -157,11 +159,13 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     }
 
     override fun onQueueUser(userId: Int, position: Int, vehicleId: Int) {
-        TODO("Not yet implemented")
+        val userQueue = UserQueue(requireContext(), adapter)
+        userQueue.addQueuedUser(retrofitService, userId, position, vehicleId)
     }
 
     override fun onRemoveUserQueue(userId: Int, position: Int, vehicleId: Int) {
-        TODO("Not yet implemented")
+        val userRemoveQueue = UserRemoveQueue(requireContext(), adapter)
+        userRemoveQueue.removeQueuedUser(retrofitService, userId, position, vehicleId)
     }
 
     override fun editUser(userId: Int, position: Int, userModel: EditUserModel) {

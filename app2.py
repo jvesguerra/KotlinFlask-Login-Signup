@@ -753,15 +753,15 @@ def admin_delete_user(userId):
 @app.route('/edit_user/<int:userId>', methods=['PUT'])
 def edit_user(userId):
     # Assuming you have some function to retrieve the user from the database
-    user = get_user_by_id(userId)
+    user = User.query.get(userId)
 
     # Update attributes if provided in the request
-    if 'name' in request.json:
-        user.name = request.json['name']
-    if 'email' in request.json:
+    if request.json['firstName'] != '':
+        user.firstName = request.json['firstName']
+    if request.json['lastName'] != '':
+        user.lastName = request.json['lastName']
+    if request.json['email'] != '':
         user.email = request.json['email']
-    if 'age' in request.json:
-        user.age = request.json['age']
 
     # Save the updated user to the database
     # Assuming you have some function to save the user

@@ -18,6 +18,9 @@ import com.example.portal.models.UserResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 class Petition : Fragment() {
     private lateinit var petitionTitle: TextView
@@ -27,6 +30,9 @@ class Petition : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private var isPetitioned: Int? = null
     private var accessToken: String? = null
+    private lateinit var scheduledExecutor: ScheduledExecutorService
+    private val INITIAL_DELAY: Long = 0 // Delay before the first execution
+    private val INTERVAL: Long = 3 // Interval between executions
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -46,6 +52,12 @@ class Petition : Fragment() {
         fetchUserDetails()
         fetchPetitionCount(route)
         setupButtonListener(route)
+
+        scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
+        scheduledExecutor.scheduleAtFixedRate({
+            fetchUserDetails()
+            fetchPetitionCount(route)
+        }, INITIAL_DELAY, INTERVAL, TimeUnit.SECONDS)
 
         return view
     }

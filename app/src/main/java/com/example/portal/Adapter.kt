@@ -18,9 +18,16 @@ import com.example.portal.api.UserServe
 import com.example.portal.api.OnQueueUserListener
 import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.EditUserModel
+import kotlinx.coroutines.DelicateCoroutinesApi
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class Adapter(
@@ -35,6 +42,8 @@ class Adapter(
         .create(UserServe::class.java)
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
     val userId = sharedPreferences.getInt("userId", 0)
+    private val viewModelScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
 
     enum class ContextType {
         ADMIN_HOME, PENDING_LISTS, USER_HOME2
@@ -62,7 +71,7 @@ class Adapter(
         }
 
         holder.editButton.setOnClickListener {
-            showEditDialog(context, item.userId, position, item.vehicleId)
+            showEditDialog(item.userId, position, item.vehicleId)
         }
 
 
@@ -99,41 +108,68 @@ class Adapter(
         onQueueUserListener?.editUser(userId, position, userModel)
     }
 
-    private fun showEditDialog(context: Context,userId: Int, position: Int, vehicleId: Int) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Edit Driver Details")
+    private fun showEditDialog(userId: Int, position: Int, vehicleId: Int){
+                val builder = AlertDialog.Builder(context)
+                builder.setTitle("Edit Driver Details")
 
-        val inflater = LayoutInflater.from(context)
-        val dialogLayout = inflater.inflate(R.layout.edit_user_dialog_layout, null)
+                val inflater = LayoutInflater.from(context)
+                val dialogLayout = inflater.inflate(R.layout.edit_user_dialog_layout, null)
 
-        val emailEditText = dialogLayout.findViewById<EditText>(R.id.editTextEmail)
-        val firstNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextFirstName)
-        val lastNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextLastName)
+                val emailEditText = dialogLayout.findViewById<EditText>(R.id.editTextEmail)
+                val firstNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextFirstName)
+                val lastNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextLastName)
 
-        builder.setView(dialogLayout)
+                builder.setView(dialogLayout)
 
-        builder.setPositiveButton("Save") { dialogInterface: DialogInterface, i: Int ->
-            val editedEmail = emailEditText.text.toString()
-            val editedFirstName = firstNameEditText.text.toString()
-            val editedLastName = lastNameEditText.text.toString()
+                builder.setPositiveButton("Save") { dialogInterface: DialogInterface, i: Int ->
+                    val editedEmail = emailEditText.text.toString()
+                    val editedFirstName = firstNameEditText.text.toString()
+                    val editedLastName = lastNameEditText.text.toString()
 
-            val editedUser = EditUserModel(
-                email = editedEmail,
-                firstName = editedFirstName,
-                lastName = editedLastName
-            )
+                    val editedUser = EditUserModel(
+                        email = editedEmail,
+                        firstName = editedFirstName,
+                        lastName = editedLastName
+                    )
 
-            Log.d("EditUser", "Email: $editedEmail, First Name: $editedFirstName, Last Name: $editedLastName")
-            //editUser(userId, position,editedUser)
-            dialogInterface.dismiss()
+                    // Assuming editUser is a suspend function that performs network call etc.
+                    //editUser(userId, position, editedUser)
+                    val call = retrofitService.editUser(userId, editedUser)
+                    call.enqueue(object : Callback<EditUserModel> {
+                        override fun onResponse(call: Call<EditUserModel>, response: Response<EditUserModel>) {
+                            if (response.isSuccessful) {
+                                // Update local data if needed
+                                // For example, find the corresponding DriverVehicle object in items list and update its authorized value
+                            } else {
+                                // Handle API error
+                                val errorMessage = response.message() // Get the error message from the response
+                                // Handle the error message appropriately, such as displaying it to the user or logging it
+                                Log.e("API Error", "Error message: $errorMessage")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<EditUserModel>, t: Throwable) {
+                            try {
+                                // Handle network error
+                                Log.e("Network Error", "Error: ${t.message}", t)
+                                // You can display a user-friendly message here
+                            } catch (e: Exception) {
+                                // Handle any other unexpected exceptions
+                                Log.e("Error", "Unexpected error: ${e.message}", e)
+                            }
+                        }
+                    })
+
+                    dialogInterface.dismiss()
+
+                }
+
+                builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
+                    dialogInterface.dismiss()
+                }
+
+                builder.show()
         }
-
-        builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
-            dialogInterface.dismiss()
-        }
-
-        builder.show()
-    }
 
     private fun showQueueConfirmationDialog(userId: Int, position: Int, vehicleId: Int) {
         val builder = AlertDialog.Builder(context)
