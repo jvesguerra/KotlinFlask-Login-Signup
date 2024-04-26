@@ -108,6 +108,10 @@ interface UserServe {
     ): Call<EditUserModel>
 
     // Petition
+    @PUT("/take_passengers")
+    fun takePassengers(
+        @Header("Authorization") token: String,
+    ): Call<Void>
     @PUT("/add_forestry_petition")
     fun addForestryPetition(
         @Header("Authorization") token: String,
@@ -125,6 +129,11 @@ interface UserServe {
 
     @GET("/get_rural_petition")
     fun getRuralPetition(
+        @Header("Authorization") token: String,
+    ): Call<Int>
+
+    @GET("/get_petition")
+    fun getPetition(
         @Header("Authorization") token: String,
     ): Call<Int>
 

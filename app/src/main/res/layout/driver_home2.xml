@@ -58,4 +58,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
+    <TextView
+        android:id="@+id/petitionCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Passengers in petition: 0"
+        android:textSize="24sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@id/incomingPassengersText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/takePassengers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take Passengers"
+        android:textSize="24sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@id/petitionCount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

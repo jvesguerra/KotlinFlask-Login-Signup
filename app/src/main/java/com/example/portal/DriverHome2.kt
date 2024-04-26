@@ -55,7 +55,7 @@ class DriverHome2 : Fragment(),
     private lateinit var handler: Handler
     private var userId: Int = 0
     private lateinit var incomingPassengersText: TextView
-
+    private var accessToken: String? = null
     // MAPS VARIABLES
     private lateinit var googleMap: GoogleMap
     private var lastKnownLocation: Location? = null
@@ -65,7 +65,10 @@ class DriverHome2 : Fragment(),
     private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
     private lateinit var foregroundOnlyBroadcastReceiver: ForegroundOnlyBroadcastReceiver
     private lateinit var foregroundOnlyLocationButton: Button
+    private lateinit var takePassengersButton: Button
     private lateinit var outputTextView: TextView
+    private lateinit var petitionCountText: TextView
+
     private val foregroundOnlyServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             val binder = service as ForegroundOnlyLocationService.LocalBinder
@@ -110,14 +113,13 @@ class DriverHome2 : Fragment(),
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getInt("userId", 0)
         incomingPassengersText = view.findViewById(R.id.incomingPassengersText)
-
-//        scheduledExecutorService.scheduleAtFixedRate({
-//            fetchPassengerCount(userId, incomingPassengersText)
-//        }, 0, 10, TimeUnit.SECONDS) // Fetch every 10 seconds, you can adjust this interval as needed
-
+        accessToken = sharedPreferences.getString("accessToken", null)
         // MAPS
         foregroundOnlyLocationButton = view.findViewById(R.id.foreground_only_location_button)
+        takePassengersButton = view.findViewById(R.id.takePassengers)
         outputTextView = view.findViewById(R.id.output_text_view)
+        petitionCountText = view.findViewById(R.id.petitionCount)
+
 
         foregroundOnlyLocationButton.setOnClickListener {
             val enabled = sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
@@ -132,9 +134,57 @@ class DriverHome2 : Fragment(),
             }
         }
 
+        takePassengersButton.setOnClickListener {
+            takePassengers()
+        }
+
         foregroundOnlyLocationButton.visibility = View.INVISIBLE
 
         return view
+    }
+
+    private fun takePassengers() {
+        val call3 = retrofitService.takePassengers("Bearer $accessToken")
+        call3.enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+
+                } else {
+                    // Handle error, could use response.code() to tailor the message
+                    Log.d("Error", "DriverHome2 - takePassengers")
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                // Handle failure
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+    private fun fetchPetitionCount(textView: TextView) {
+        val call2 = retrofitService.getPetition("Bearer $accessToken")
+        call2.enqueue(object : Callback<Int> {
+            override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                if (response.isSuccessful) {
+                    val incomingPassengersCount: Int? = response.body()
+                    incomingPassengersCount?.let {
+                        handler.post {
+                            val text = "Passengers in Petition: $it"
+                            textView.text = text
+                            Log.d("Petition Count", "Passengers in Petition: $it")
+                        }
+                    }
+                } else {
+                    // Handle error, could use response.code() to tailor the message
+                    Log.d("Error", "DriverHome2 - fetchPetitionCount")
+                }
+            }
+
+            override fun onFailure(call: Call<Int>, t: Throwable) {
+                // Handle failure
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun fetchPassengerCount(userId: Int, textView: TextView) {
@@ -199,6 +249,7 @@ class DriverHome2 : Fragment(),
         scheduledExecutorService.scheduleAtFixedRate({
             foregroundOnlyLocationService?.requestLocationUpdates()
             fetchPassengerCount(userId, incomingPassengersText)
+            fetchPetitionCount(petitionCountText)
         }, 0, 10, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
     }
 
