@@ -23,6 +23,7 @@ import com.example.portal.utils.UserDeletion
 import com.example.portal.utils.UserQueue
 import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.EditUserModel
+import com.example.portal.utils.UserEdit
 import com.example.portal.utils.UserRemoveQueue
 import retrofit2.Call
 import retrofit2.Callback
@@ -112,7 +113,8 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     }
 
     override fun editUser(userId: Int, position: Int, userModel: EditUserModel) {
-        TODO("Not yet implemented")
+        val editUser = UserEdit(requireContext(), adapter)
+        editUser.editUser(retrofitService, userId, position, userModel)
     }
 
 }
