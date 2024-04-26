@@ -138,7 +138,7 @@ class Vehicle(db.Model):
 
 
 class Petition(db.Model):
-    id = db.Column(db.Integer, primary_key=True)  # id = 1 (Forestry) ; id = 2; Rural
+    id = db.Column(db.Integer, primary_key=True)
     forestryPetitionCount = db.Column(db.String(255), default="[]")  # Store as JSON string
     ruralPetitionCount = db.Column(db.String(255), default="[]")  # Store as JSON string
 
@@ -771,6 +771,44 @@ def edit_user(userId):
 
 
 # PETITION
+@app.route('/take_passengers', methods=['PUT'])
+@jwt_required()
+def take_passengers():
+    try:
+        userId = get_jwt_identity()
+        user = User.query.get(userId)
+        petition = Petition.query.filter_by(id=1).first()
+        vehicle = Vehicle.query.filter_by(userId=userId).first()
+
+        if user is None:
+            return jsonify({'error': f'User with ID {userId} not found'}), 404
+
+        if petition:
+            if vehicle.route == 'Forestry':
+                forestry_petition_count_array = json.loads(petition.forestryPetitionCount)
+                array_to_transfer = forestry_petition_count_array
+                petition.forestryPetitionCount = json.dumps([])  # Setting an empty array
+                User.query.filter_by(isPetitioned=1).update({'isPetitioned': 0}, synchronize_session=False)
+            else:
+                rural_petition_count_array = json.loads(petition.ruralPetitionCount)
+                array_to_transfer = rural_petition_count_array
+                petition.ruralPetitionCount = json.dumps([])  # Setting an empty array
+                User.query.filter_by(isPetitioned=2).update({'isPetitioned': 0}, synchronize_session=False)
+
+            # Convert the array to a JSON string
+            queued_users_json = json.dumps(array_to_transfer)
+
+            # Update the queuedUsers field in the Vehicle model
+            vehicle.queuedUsers = queued_users_json
+            db.session.commit()
+            return jsonify({'message': f'User {userId} added to forestry petition'}), 200
+        else:
+            return jsonify({'error': 'Forestry petition not found'}), 404
+    except Exception as e:
+        print(f"Error occurred while processing: {str(e)}")
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
+
 @app.route('/add_forestry_petition', methods=['PUT'])
 @jwt_required()
 def add_forestry_petition():
@@ -903,8 +941,35 @@ def get_rural_petition():
             return jsonify({'error': f'User with ID {userId} not found'}), 404
 
         if petition:
-            rural_petition_counts = json.loads(petition.ruralPetitionCount)
-            count = len(rural_petition_counts)  # Get count of items in the array
+            if user.route == 'Forestry':
+                forestry_petition_counts = json.loads(petition.forestryPetitionCount)
+                count = len(forestry_petition_counts)  # Get count of items in the array
+            else:
+                rural_petition_counts = json.loads(petition.ruralPetitionCount)
+                count = len(rural_petition_counts)  # Get count of items in the array
+            print("COUNT: ", count)
+            return str(count), 200
+        else:
+            return jsonify({'error': 'Forestry petition not found'}), 404
+    except Exception as e:
+        print(f"Error occurred while processing: {str(e)}")
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
+
+@app.route('/get_petition', methods=['GET'])
+@jwt_required()
+def get_petition():
+    try:
+        userId = get_jwt_identity()
+        user = User.query.get(userId)
+        petition = Petition.query.filter_by(id=1).first()
+
+        if user is None:
+            return jsonify({'error': f'User with ID {userId} not found'}), 404
+
+        if petition:
+            forestry_petition_counts = json.loads(petition.forestryPetitionCount)
+            count = len(forestry_petition_counts)  # Get count of items in the array
             print("COUNT: ", count)
             return str(count), 200
         else:
