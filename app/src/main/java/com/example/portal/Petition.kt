@@ -65,10 +65,14 @@ class Petition : Fragment() {
         })
 
         // PETITION COUNT
-        var call2: Call<Int> = retrofitService.getForestryPetition("Bearer $accessToken")
-        if(isPetitioned==2){
+        var call2: Call<Int>
+        if (route == "Forestry") {
+            call2 = retrofitService.getForestryPetition("Bearer $accessToken")
+        } else {
             call2 = retrofitService.getRuralPetition("Bearer $accessToken")
         }
+
+
         call2.enqueue(object : Callback<Int> {
             override fun onResponse(call: Call<Int>, response: Response<Int>) {
                 if (response.isSuccessful) {
@@ -96,11 +100,14 @@ class Petition : Fragment() {
 
         btnSignPetition.setOnClickListener {
             Log.d("AccessToken2", accessToken ?: "AccessToken is null") // Log the accessToken
-            val call: Call<Void> = if (isPetitioned == 0) {
-                retrofitService.addForestryPetition("Bearer $accessToken")
-            }else{
-                retrofitService.deleteForestryPetition("Bearer $accessToken")
+            val call = if (isPetitioned == 0) {
+                if (route == "Forestry") retrofitService.addForestryPetition("Bearer $accessToken")
+                else retrofitService.addRuralPetition("Bearer $accessToken")
+            } else {
+                if (route == "Forestry") retrofitService.deleteForestryPetition("Bearer $accessToken")
+                else retrofitService.deleteRuralPetition("Bearer $accessToken")
             }
+
 
             call.enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -118,9 +125,9 @@ class Petition : Fragment() {
                     Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
-            val bundle = Bundle()
-            bundle.putString("route", route)
-            Navigation.findNavController(view).navigate(R.id.petitionReload, bundle)
+//            val bundle = Bundle()
+//            bundle.putString("route", route)
+//            Navigation.findNavController(view).navigate(R.id.petitionReload, bundle)
         }
 
         return view
