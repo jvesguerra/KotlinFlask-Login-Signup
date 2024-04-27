@@ -3,14 +3,14 @@ package com.example.portal.models
 import com.google.gson.annotations.SerializedName
 
 class EditUserModel (
-    @SerializedName("email")
-    val email: String? = null, // Nullable
-
     @SerializedName("firstName")
     val firstName: String? = null, // Nullable
 
     @SerializedName("lastName")
     val lastName: String? = null, // Nullable
+
+    @SerializedName("email")
+    val email: String? = null, // Nullable
 
     @SerializedName("contactNumber")
     val contactNumber: String? = null, // Nullable
@@ -18,6 +18,9 @@ class EditUserModel (
     @SerializedName("password")
     val password: String? = null, // Nullable
 
-    @SerializedName("authorized")
-    val authorized: Boolean? = null, // Nullable
+    @SerializedName("plateNumber")
+    val plateNumber: String? = null, // Nullable
+
+    @SerializedName("route")
+    val route: String? = null, // Nullable
 )

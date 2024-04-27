@@ -115,24 +115,35 @@ class Adapter(
                 val inflater = LayoutInflater.from(context)
                 val dialogLayout = inflater.inflate(R.layout.edit_user_dialog_layout, null)
 
-                val emailEditText = dialogLayout.findViewById<EditText>(R.id.editTextEmail)
                 val firstNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextFirstName)
                 val lastNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextLastName)
+                val emailEditText = dialogLayout.findViewById<EditText>(R.id.editTextEmail)
+                val contactNumberEditText = dialogLayout.findViewById<EditText>(R.id.editTextContactNumber)
+                val passwordEditText = dialogLayout.findViewById<EditText>(R.id.editTextPassword)
+                val plateNumberEditText = dialogLayout.findViewById<EditText>(R.id.editTextPlateNumber)
+                val routeEditText = dialogLayout.findViewById<EditText>(R.id.editTextRoute)
 
                 builder.setView(dialogLayout)
 
                 builder.setPositiveButton("Save") { dialogInterface: DialogInterface, i: Int ->
-                    val editedEmail = emailEditText.text.toString()
                     val editedFirstName = firstNameEditText.text.toString()
                     val editedLastName = lastNameEditText.text.toString()
+                    val editedEmail = emailEditText.text.toString()
+                    val editedContactNumber = contactNumberEditText.text.toString()
+                    val editedPassword = passwordEditText.text.toString()
+                    val editedPlateNumber = plateNumberEditText.text.toString()
+                    val editedRoute = routeEditText.text.toString()
 
                     val editedUser = EditUserModel(
-                        email = editedEmail,
                         firstName = editedFirstName,
-                        lastName = editedLastName
+                        lastName = editedLastName,
+                        email = editedEmail,
+                        contactNumber = editedContactNumber,
+                        password = editedPassword,
+                        plateNumber = editedPlateNumber,
+                        route = editedRoute,
                     )
 
-                    // Assuming editUser is a suspend function that performs network call etc.
                     //editUser(userId, position, editedUser)
                     val call = retrofitService.editUser(userId, editedUser)
                     call.enqueue(object : Callback<EditUserModel> {
@@ -141,9 +152,7 @@ class Adapter(
                                 // Update local data if needed
                                 // For example, find the corresponding DriverVehicle object in items list and update its authorized value
                             } else {
-                                // Handle API error
                                 val errorMessage = response.message() // Get the error message from the response
-                                // Handle the error message appropriately, such as displaying it to the user or logging it
                                 Log.e("API Error", "Error message: $errorMessage")
                             }
                         }
@@ -152,7 +161,6 @@ class Adapter(
                             try {
                                 // Handle network error
                                 Log.e("Network Error", "Error: ${t.message}", t)
-                                // You can display a user-friendly message here
                             } catch (e: Exception) {
                                 // Handle any other unexpected exceptions
                                 Log.e("Error", "Unexpected error: ${e.message}", e)
@@ -161,9 +169,7 @@ class Adapter(
                     })
 
                     dialogInterface.dismiss()
-
                 }
-
                 builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
                     dialogInterface.dismiss()
                 }

@@ -6,12 +6,6 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/editTextEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email" />
-
-    <EditText
         android:id="@+id/editTextFirstName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,6 +17,35 @@
         android:layout_height="wrap_content"
         android:hint="Last Name" />
 
-    <!-- Add more EditText fields for other user details as needed -->
+    <EditText
+        android:id="@+id/editTextEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email" />
+
+    <EditText
+        android:id="@+id/editTextContactNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Contact Number" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:hint="Password" />
+
+    <EditText
+        android:id="@+id/editTextPlateNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Plate Number" />
+
+    <EditText
+        android:id="@+id/editTextRoute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Route" />
 
 </LinearLayout>
