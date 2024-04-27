@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, abort
 from sqlalchemy import text, DateTime, func
 from flask_cors import CORS, cross_origin
 from flask_restful import Api, Resource
@@ -231,6 +231,24 @@ class RegisterFormDriver(FlaskForm):
         if not ph_number_pattern.match(contactNumber.data):
             raise ValidationError(
                 'Invalid Philippine contact number format. Please use formats like 09171234567 or +639171234567.')
+
+
+# VALIDATION
+def is_valid_password(password):
+    # Password must be at least 8 characters long
+    # Password must contain at least one uppercase letter, one lowercase letter, and one digit
+    return bool(re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$', password))
+
+
+def is_valid_email(email):
+    # Regular expression for email validation
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return bool(re.match(email_regex, email))
+
+
+# Define a function to validate input strings
+def contains_digits(input_string):
+    return bool(re.search(r'\d', input_string))
 
 
 # ROUTES
@@ -758,26 +776,48 @@ def edit_user(userId):
 
     # Update attributes if provided in the request
     if request.json['firstName'] != '':
+        if contains_digits(request.json['firstName']):
+            return jsonify({"message": "Invalid First Name"}), 400
         user.firstName = request.json['firstName']
+
     if request.json['lastName'] != '':
+        if contains_digits(request.json['lastName']):
+            return jsonify({"message": "Invalid Last Name"}), 400
         user.lastName = request.json['lastName']
+
     if request.json['email'] != '':
-        user.email = request.json['email']
+        if is_valid_email(request.json['email']):
+            user.email = request.json['email']
+        else:
+            return jsonify({"message": "Invalid Email"}), 400
+
     if request.json['contactNumber'] != '':
-        user.contactNumber = request.json['contactNumber']
+        contact_number = request.json['contactNumber']
+        if re.match(r'^(\+?\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{4}$', contact_number):
+            user.contactNumber = contact_number
+        else:
+            return jsonify({"message": "Invalid Contact Number"}), 400
+
     if request.json['password'] != '':
-        hashed_password = bcrypt.generate_password_hash(request.json['password'])
-        user.password = hashed_password
+        if is_valid_password(request.json['password']):
+            hashed_password = bcrypt.generate_password_hash(request.json['password'])
+            user.password = hashed_password
+        else:
+            return jsonify({"message": "Invalid Password"}), 400
+
     if request.json['plateNumber'] != '':
-        vehicle.plateNumber = request.json['plateNumber']
+        plate_number = request.json['plateNumber']
+        if re.match(r'^[A-Z0-9]{3}\s\d{3,4}$', plate_number):
+            vehicle.plateNumber = plate_number
+        else:
+            return jsonify({"message": "Invalid Plate Number"}), 400
+
     if request.json['route'] != '':
         vehicle.route = request.json['route']
 
-    # Save the updated user to the database
-    # Assuming you have some function to save the user
     db.session.commit()
 
-    return jsonify({'message': 'User updated successfully'})
+    return jsonify({"message": "User successfully edited"}), 200
 
 
 # PETITION

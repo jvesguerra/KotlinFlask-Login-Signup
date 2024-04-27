@@ -12,6 +12,7 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.EditText
+import android.widget.Toast
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
@@ -23,11 +24,14 @@ import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
 import androidx.lifecycle.viewModelScope
+import com.example.portal.models.EditUserResponse
+import com.example.portal.models.MessageResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 
 class Adapter(
@@ -146,18 +150,25 @@ class Adapter(
 
                     //editUser(userId, position, editedUser)
                     val call = retrofitService.editUser(userId, editedUser)
-                    call.enqueue(object : Callback<EditUserModel> {
-                        override fun onResponse(call: Call<EditUserModel>, response: Response<EditUserModel>) {
+                    call.enqueue(object : Callback<EditUserResponse> {
+                        override fun onResponse(call: Call<EditUserResponse>, response: Response<EditUserResponse>) {
                             if (response.isSuccessful) {
-                                // Update local data if needed
-                                // For example, find the corresponding DriverVehicle object in items list and update its authorized value
+                                Log.e("Success", "User successfully edited")
+                                val message = "User successfully edited"
+                                showToast(message)
                             } else {
-                                val errorMessage = response.message() // Get the error message from the response
-                                Log.e("API Error", "Error message: $errorMessage")
+                                val errorJson = response.errorBody()?.string()
+                                    ?.let { JSONObject(it) }
+                                val errorMessage = errorJson?.getString("message")
+                                // Display error message
+                                Log.e("Error", "Response error: $errorMessage")
+                                if (errorMessage != null) {
+                                    showToast(errorMessage)
+                                }
                             }
                         }
 
-                        override fun onFailure(call: Call<EditUserModel>, t: Throwable) {
+                        override fun onFailure(call: Call<EditUserResponse>, t: Throwable) {
                             try {
                                 // Handle network error
                                 Log.e("Network Error", "Error: ${t.message}", t)
@@ -275,6 +286,9 @@ class Adapter(
         })
     }
 
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
         val authorizeButton: Button = itemView.findViewById(R.id.authorizeButton)

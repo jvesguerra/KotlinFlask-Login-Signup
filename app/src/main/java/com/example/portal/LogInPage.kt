@@ -208,7 +208,7 @@ class LogInPage : Fragment() {
             }
         }
     }
-    private fun showToast(message: String) {
+    public fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
