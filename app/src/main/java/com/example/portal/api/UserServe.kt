@@ -6,7 +6,9 @@ import com.example.portal.models.Credentials
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.EditUserModel
+import com.example.portal.models.EditUserResponse
 import com.example.portal.models.LoginResponse
+import com.example.portal.models.MessageResponse
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
 import retrofit2.Call
@@ -101,7 +103,7 @@ interface UserServe {
     fun editUser(
         @Path("userId") userId: Int,
         @Body user: EditUserModel
-    ): Call<EditUserModel>
+    ): Call<EditUserResponse>
 
     // Petition
     @PUT("/take_passengers")

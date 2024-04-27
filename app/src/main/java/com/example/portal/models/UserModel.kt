@@ -46,6 +46,12 @@ data class UserResponse(
     @SerializedName("user") val user: UserModel?,
 )
 
+data class MessageResponse(
+    @SerializedName("message") val message: String?,
+)
+
+data class EditUserResponse(val message: String)
+
 data class LoginResponse(
     @SerializedName("accessToken") val accessToken: String
 )
