@@ -1,6 +1,6 @@
 package com.example.portal.utils
 
-import com.example.portal.LocationModel
+import com.example.portal.models.LocationModel
 import com.example.portal.api.UserServe
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory

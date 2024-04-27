@@ -1,18 +1,14 @@
 package com.example.portal.api
 
 import com.example.portal.GoogleSignInRequest
-import com.example.portal.LocationModel
+import com.example.portal.models.LocationModel
 import com.example.portal.models.Credentials
-import com.example.portal.models.Data
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.DriverVecLocModel
-import com.example.portal.models.DriverVehicleModel
 import com.example.portal.models.EditUserModel
 import com.example.portal.models.LoginResponse
-import com.example.portal.models.PetitionModel
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE

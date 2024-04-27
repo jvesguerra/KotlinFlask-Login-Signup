@@ -20,6 +20,7 @@ import android.widget.TextView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
+import com.example.portal.models.LocationModel
 import com.example.portal.utils.LocationHelper
 import com.example.portal.utils.PermissionHelper
 import com.google.android.gms.maps.CameraUpdateFactory

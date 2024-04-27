@@ -1,4 +1,4 @@
-package com.example.portal
+package com.example.portal.models
 
 import com.google.gson.annotations.SerializedName
 import java.util.Date

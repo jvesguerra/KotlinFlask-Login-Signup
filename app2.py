@@ -754,6 +754,7 @@ def admin_delete_user(userId):
 def edit_user(userId):
     # Assuming you have some function to retrieve the user from the database
     user = User.query.get(userId)
+    vehicle = Vehicle.query.filter_by(userId=userId).first()
 
     # Update attributes if provided in the request
     if request.json['firstName'] != '':
@@ -762,6 +763,15 @@ def edit_user(userId):
         user.lastName = request.json['lastName']
     if request.json['email'] != '':
         user.email = request.json['email']
+    if request.json['contactNumber'] != '':
+        user.contactNumber = request.json['contactNumber']
+    if request.json['password'] != '':
+        hashed_password = bcrypt.generate_password_hash(request.json['password'])
+        user.password = hashed_password
+    if request.json['plateNumber'] != '':
+        vehicle.plateNumber = request.json['plateNumber']
+    if request.json['route'] != '':
+        vehicle.route = request.json['route']
 
     # Save the updated user to the database
     # Assuming you have some function to save the user
