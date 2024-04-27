@@ -61,6 +61,24 @@
                 android:hint="@string/first_name"
                 android:inputType="text" />
 
+            <LinearLayout
+                android:id="@+id/linearLayoutErrorContainer2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextFirstName"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/firstNameError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:padding="0dp"
+                    android:textColor="@android:color/holo_red_light"
+                    android:text=""  />
+            </LinearLayout>
+
+
             <EditText
                 android:id="@+id/editTextLastName"
                 android:layout_width="match_parent"
@@ -71,6 +89,23 @@
                 android:hint="@string/last_name"
                 android:inputType="text" />
 
+            <LinearLayout
+                android:id="@+id/linearLayoutErrorContainer3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextLastName"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/lastNameError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:padding="0dp"
+                    android:textColor="@android:color/holo_red_light"
+                    android:text=""  />
+            </LinearLayout>
+
             <EditText
                 android:id="@+id/editTextContactNumber"
                 android:layout_width="match_parent"
@@ -80,6 +115,22 @@
                 android:padding="12dp"
                 android:hint="@string/contact_number"
                 android:inputType="phone" />
+            <LinearLayout
+                android:id="@+id/linearLayoutErrorContainer4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextContactNumber"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/contactNumberError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:padding="0dp"
+                    android:textColor="@android:color/holo_red_light"
+                    android:text=""  />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/editTextPassword"
@@ -90,6 +141,22 @@
                 android:padding="12dp"
                 android:hint="@string/password"
                 android:inputType="textPassword" />
+            <LinearLayout
+                android:id="@+id/linearLayoutErrorContainer5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextPassword"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/passwordError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:padding="0dp"
+                    android:textColor="@android:color/holo_red_light"
+                    android:text=""  />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout"
@@ -122,6 +189,22 @@
                 android:layout_marginBottom="8dp"
                 android:hint="@string/plate_number"
                 android:inputType="text" />
+            <LinearLayout
+                android:id="@+id/linearLayoutErrorContainer6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editTextPlateNumber"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/plateNumberError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:padding="0dp"
+                    android:textColor="@android:color/holo_red_light"
+                    android:text=""  />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/buttonSignUp"

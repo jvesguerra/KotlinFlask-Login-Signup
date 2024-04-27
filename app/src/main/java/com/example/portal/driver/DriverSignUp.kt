@@ -22,6 +22,7 @@ import com.example.portal.models.VehicleModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.regex.Pattern
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -43,6 +44,11 @@ class DriverSignUp : Fragment() {
     private lateinit var buttonSignUp: Button
 
     private lateinit var emailErrorText: TextView
+    private lateinit var firstNameErrorText: TextView
+    private lateinit var lastNameErrorText: TextView
+    private lateinit var contactNumberErrorText: TextView
+    private lateinit var passwordErrorText: TextView
+    private lateinit var plateNumberErrorText: TextView
 
     private lateinit var routeEditText: Spinner
     var selectedItem: String = ""
@@ -70,8 +76,13 @@ class DriverSignUp : Fragment() {
         plateNumberEditText = view.findViewById(R.id.editTextPlateNumber)
         buttonSignUp = view.findViewById(R.id.buttonSignUp)
 
-        // error messages
+        // ERROR MESSAGES
         emailErrorText = view.findViewById(R.id.emailError)
+        firstNameErrorText = view.findViewById(R.id.firstNameError)
+        lastNameErrorText = view.findViewById(R.id.lastNameError)
+        contactNumberErrorText = view.findViewById(R.id.contactNumberError)
+        passwordErrorText = view.findViewById(R.id.passwordError)
+        plateNumberErrorText = view.findViewById(R.id.plateNumberError)
 
         routeEditText = view.findViewById(R.id.editTextRoute)
         // Create an ArrayAdapter using a string array and a default spinner layout
@@ -105,12 +116,74 @@ class DriverSignUp : Fragment() {
             val route = selectedItem
             val plateNumber = plateNumberEditText.text.toString()
 
-            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                showToast("Invalid email format")
-                emailErrorText.text = "Invalid email format"
-            }else{
-                signUp(email, firstName, lastName, contactNumber, password, route, plateNumber)
+            // Check for missing data first
+            val missingFields = mutableListOf<String>()
+            if (firstName.isEmpty()) {
+                missingFields.add("First Name")
             }
+            if (lastName.isEmpty()) {
+                missingFields.add("Last Name")
+            }
+            if (email.isEmpty()) {
+                missingFields.add("Email")
+            }
+            if (contactNumber.isEmpty()) {
+                missingFields.add("Contact Number")
+            }
+            if (password.isEmpty()) {
+                missingFields.add("Password")
+            }
+            if (route.isEmpty()) {
+                missingFields.add("Route") // Assuming route is required
+            }
+            if (plateNumber.isEmpty()) {
+                missingFields.add("Plate Number") // Assuming plate number is required
+            }
+
+            if (missingFields.isNotEmpty()) {
+                val errorMessage = "Please fill in the following fields: ${missingFields.joinToString(", ")}"
+                showToast(errorMessage)
+//                firstNameErrorText.text = ""
+//                lastNameErrorText.text = ""
+//                emailErrorText.text = ""
+//                contactNumberErrorText.text = ""
+//                passwordErrorText.text = ""
+//                plateNumberErrorText.text = ""  // Assuming plate number error text exists
+            }else{
+                if(containsDigits(firstName)){
+                    showToast("Invalid First Name format")
+                    firstNameErrorText.text = "Invalid First name format"
+                }else{
+                    if(containsDigits(lastName)) {
+                        showToast("Invalid Last Name format")
+                        lastNameErrorText.text = "Invalid Last name format"
+                    }else{
+                        if (isValidContactNumber(contactNumber)) {
+                            if (isValidPassword(password)) {
+                                if (isValidPlateNumber(plateNumber)) {
+                                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                                        showToast("Invalid email format")
+                                        emailErrorText.text = "Invalid email format"
+                                    }else{
+                                        signUp(email, firstName, lastName, contactNumber, password, route, plateNumber)
+                                    }
+                                } else {
+                                    showToast("Invalid plate number format")
+                                    plateNumberErrorText.text = "Invalid plate number format"
+                                }
+                            } else {
+                                showToast("Invalid password format")
+                                passwordErrorText.text = "Invalid password format"
+                            }
+                        } else {
+                            showToast("Invalid contact number format")
+                            contactNumberErrorText.text = "Invalid contact number format"
+                        }
+                    }
+                }
+            }
+
+
         }
 
         return view
@@ -120,6 +193,28 @@ class DriverSignUp : Fragment() {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
+    private fun isValidContactNumber(contactNumber: String): Boolean {
+        val pattern = Pattern.compile("^(09|\\+639|\\+63 9)[0-9]{2}-?[0-9]{3}-?[0-9]{4}\$")
+        val matcher = pattern.matcher(contactNumber)
+        return matcher.matches()
+    }
+
+    fun isValidPlateNumber(plateNumber: String): Boolean {
+        val pattern = Pattern.compile("^[a-zA-Z0-9]{3}\\s\\d{3,4}\$")
+        val matcher = pattern.matcher(plateNumber)
+        return matcher.matches()
+    }
+
+    fun isValidPassword(password: String): Boolean {
+        val pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*-])[A-Za-z\\d!@#$%^&*-]+$")
+        val matcher = pattern.matcher(password)
+        return matcher.matches()
+    }
+
+    fun containsDigits(name: String): Boolean {
+        val regex = Regex("\\d")  // Raw string for digit pattern
+        return regex.containsMatchIn(name)
+    }
     private fun signUp(email: String, firstName: String, lastName: String, contactNumber: String, password: String, route: String, plateNumber: String) {
             val newUser = UserModel(
                 userId = 0,
