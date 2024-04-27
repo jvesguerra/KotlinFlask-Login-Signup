@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.portal.R
@@ -40,6 +42,8 @@ class DriverSignUp : Fragment() {
     private lateinit var passwordEditText: EditText
     private lateinit var buttonSignUp: Button
 
+    private lateinit var emailErrorText: TextView
+
     private lateinit var routeEditText: Spinner
     var selectedItem: String = ""
 
@@ -65,6 +69,9 @@ class DriverSignUp : Fragment() {
 
         plateNumberEditText = view.findViewById(R.id.editTextPlateNumber)
         buttonSignUp = view.findViewById(R.id.buttonSignUp)
+
+        // error messages
+        emailErrorText = view.findViewById(R.id.emailError)
 
         routeEditText = view.findViewById(R.id.editTextRoute)
         // Create an ArrayAdapter using a string array and a default spinner layout
@@ -98,12 +105,20 @@ class DriverSignUp : Fragment() {
             val route = selectedItem
             val plateNumber = plateNumberEditText.text.toString()
 
-            signUp(email, firstName, lastName, contactNumber, password, route, plateNumber)
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                showToast("Invalid email format")
+                emailErrorText.text = "Invalid email format"
+            }else{
+                signUp(email, firstName, lastName, contactNumber, password, route, plateNumber)
+            }
         }
 
         return view
     }
 
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
 
     private fun signUp(email: String, firstName: String, lastName: String, contactNumber: String, password: String, route: String, plateNumber: String) {
             val newUser = UserModel(
