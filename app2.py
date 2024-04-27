@@ -260,20 +260,6 @@ def register_driver():
     user_data = data.get('user', {})
     vehicle_data = data.get('vehicle', {})
 
-    # form = RegisterFormDriver()
-    # if form.validate_on_submit():
-    #     userId = generate_new_user_id()
-    #     hashed_password = bcrypt.generate_password_hash(form.password.data)
-    #     new_user = User(userId=userId, firstName=form.firstName.data, lastName=form.lastName.data,
-    #                     email=form.email.data, contactNumber=form.contactNumber.data, password=hashed_password,
-    #                     rating=form.rating.data, userType=form.userType.data, isActive=form.isActive.data)
-    #
-    #     vehicleId = generate_vehicle_id()
-    #     new_vehicle = Vehicle(vehicleId=vehicleId,
-    #                           userId=userId,
-    #                           plateNumber=form.plateNumber.data,
-    #                           route=form.route.data)
-
     userId = generate_new_user_id()
     hashed_password = bcrypt.generate_password_hash(user_data['password'])
     new_user = User(userId=userId, firstName=user_data['firstName'], lastName=user_data['lastName'],
@@ -291,9 +277,6 @@ def register_driver():
 
     db.session.commit()
     return jsonify({'message': 'User registered successfully'})
-    # else:
-    #     print(form.errors)
-    #     return jsonify({'error': 'Invalid registration data'}), 400
 
 
 @app.route('/register', methods=['POST'])
