@@ -160,7 +160,7 @@ class LoginForm(FlaskForm):
 def is_valid_password(password):
     # Password must be at least 8 characters long
     # Password must contain at least one uppercase letter, one lowercase letter, and one digit
-    return bool(re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$', password))
+    return bool(re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*-])[A-Za-z\d!@#$%^&*-]+$', password))
 
 
 def is_valid_email(email):
@@ -224,6 +224,15 @@ def register_driver():
         print("Invalid Plate Number")
         return jsonify({"message": "Invalid Plate Number"}), 400
 
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({'message': 'Email already registered'}), 400
+
+    existing_plate_number = Vehicle.query.filter_by(plateNumber=adjustedPlateNumber).first()
+    if existing_plate_number:
+        print('Plate number already registered')
+        return jsonify({'message': 'Plate number already registered'}), 400
+
     adjusted_firstName = firstName.capitalize()
     adjusted_lastName = lastName.capitalize()
     hashed_password = bcrypt.generate_password_hash(password)
@@ -275,6 +284,13 @@ def register_user():
     if not is_valid_password(password):
         return jsonify({"message": "Invalid Password"}), 400
 
+    # check if email is unique
+    email = email.lower()
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({'message': 'Email already registered'}), 400
+
+
     userId = generate_new_user_id()
     hashed_password = bcrypt.generate_password_hash(password)
     adjusted_firstName = firstName.capitalize()
@@ -309,6 +325,11 @@ def edit_user(userId):
 
     if request.json['email'] != '':
         if is_valid_email(request.json['email']):
+            # check if email is unique
+            email = request.json['email'].lower()
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
+                return jsonify({'message': 'Email already registered'}), 400
             user.email = request.json['email']
         else:
             return jsonify({"message": "Invalid Email"}), 400
