@@ -17,6 +17,7 @@ import com.example.portal.R
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.models.DriverSignUpRequest
+import com.example.portal.models.EditUserResponse
 import com.example.portal.models.UserModel
 import com.example.portal.models.VehicleModel
 import retrofit2.Call
@@ -244,8 +245,8 @@ class DriverSignUp : Fragment() {
 
             val request = DriverSignUpRequest(newUser, newVehicle)
 
-            retrofitService.registerDriver(request).enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+            retrofitService.registerDriver(request).enqueue(object : Callback<EditUserResponse> {
+                override fun onResponse(call: Call<EditUserResponse>, response: Response<EditUserResponse>) {
                     if (response.isSuccessful) {
                         println("User and Vehicle registered successfully")
                         Navigation.findNavController(view).navigate(R.id.toUnauthorized)
@@ -255,7 +256,7 @@ class DriverSignUp : Fragment() {
                     }
                 }
 
-                override fun onFailure(call: Call<Void>, t: Throwable) {
+                override fun onFailure(call: Call<EditUserResponse>, t: Throwable) {
                     println("Failed to register user and vehicle: ${t.message}")
                     // Handle failure
                 }

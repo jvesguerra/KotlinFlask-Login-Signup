@@ -35,11 +35,12 @@ interface UserServe {
         @Header("Authorization") token: String,
     ): Call<UserResponse>
 
-    @POST("/register")
-    fun register(@Body newUser: UserModel): Call<UserModel>
+    // POST
+    @POST("/register_user")
+    fun registerUser(@Body newUser: UserModel): Call<EditUserResponse>
 
     @POST("/register_driver")
-    fun registerDriver(@Body request: DriverSignUpRequest): Call<Void>
+    fun registerDriver(@Body request: DriverSignUpRequest): Call<EditUserResponse>
 
     @PUT("ready_driver/{userId}")
     fun readyDriver(@Path("userId") userId: Int): Call<Void>

@@ -196,43 +196,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-class RegisterFormDriver(FlaskForm):
-    email = StringField('Email', validators=[InputRequired(), Email(), Length(min=4, max=120)],
-                        render_kw={"placeholder": "Email"})
-    firstName = StringField('First Name', validators=[InputRequired(), Length(min=2, max=255)],
-                            render_kw={"placeholder": "First Name"})
-    lastName = StringField('Last Name', validators=[InputRequired(), Length(min=2, max=255)],
-                           render_kw={"placeholder": "Last Name"})
-    contactNumber = StringField('Contact Number', validators=[InputRequired()],
-                                render_kw={"placeholder": "Contact Number"})
-    password = PasswordField(validators=[
-        InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
-    rating = IntegerField('Rating')
-    userType = IntegerField('User Type')
-    isActive = BooleanField('Is Active', validators=[InputRequired()],
-                            render_kw={"placeholder": "Is Active"})
-    plateNumber = StringField('Last Name', validators=[InputRequired(), Length(min=2, max=255)],
-                              render_kw={"placeholder": "Plate Number"})
-    route = StringField('Last Name', validators=[InputRequired(), Length(min=2, max=255)],
-                        render_kw={"placeholder": "Route"})
-
-    submit = SubmitField('Register')
-
-    def validate_email(self, email):
-        existing_user_email = User.query.filter_by(
-            email=email.data).first()
-        if existing_user_email:
-            raise ValidationError(
-                'That email already exists. Please choose a different one.')
-
-    def validate_contactNumber(self, contactNumber):
-        # Adjust the pattern if necessary to match specific formats
-        ph_number_pattern = re.compile(r'^(09|\+639|\+63 9)[0-9]{2}-?[0-9]{3}-?[0-9]{4}$')
-        if not ph_number_pattern.match(contactNumber.data):
-            raise ValidationError(
-                'Invalid Philippine contact number format. Please use formats like 09171234567 or +639171234567.')
-
-
 # VALIDATION
 def is_valid_password(password):
     # Password must be at least 8 characters long
@@ -279,30 +242,99 @@ def register_driver():
     return jsonify({'message': 'User registered successfully'})
 
 
-@app.route('/register', methods=['POST'])
-def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        userId = generate_new_user_id()
-        hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(userId=userId, firstName=form.firstName.data, lastName=form.lastName.data,
-                        email=form.email.data, contactNumber=form.contactNumber.data, password=hashed_password,
-                        rating=form.rating.data, userType=form.userType.data, isActive=form.isActive.data)
+@app.route('/register_user', methods=['POST'])
+def register_user():
+    # Check for empty fields
+    firstName = request.json['firstName']
+    lastName = request.json['lastName']
+    email = request.json['email']
+    contactNumber = request.json['contactNumber']
+    password = request.json['password']
 
-        if form.userType.data == 2:
-            vehicleId = generate_vehicle_id()
-            new_vehicle = Vehicle(vehicleId=vehicleId,
-                                  userId=userId,
-                                  plateNumber=form.plateNumber.data,
-                                  route=form.route.data, )
-            db.session.add(new_vehicle)
+    if not firstName:
+        return jsonify({"message": "Please enter your First Name"}), 400
+    if not lastName:
+        return jsonify({"message": "Please enter your Last Name"}), 400
+    if not email:
+        return jsonify({"message": "Please enter your Email"}), 400
+    if not contactNumber:
+        return jsonify({"message": "Please enter your Contact Number"}), 400
+    if not password:
+        return jsonify({"message": "Please enter your Password"}), 400
 
-        db.session.add(new_user)
-        db.session.commit()
-        return jsonify({'message': 'User registered successfully'})
-    else:
-        print(form.errors)
-        return jsonify({'error': 'Invalid registration data'}), 400
+    # Validate user input here
+    if contains_digits(firstName):
+        return jsonify({"message": "Invalid First Name"}), 400
+    if contains_digits(lastName):
+        return jsonify({"message": "Invalid Last Name"}), 400
+    if not is_valid_email(email):
+        return jsonify({"message": "Invalid Email"}), 400
+    if not re.match(r'^(\+?\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{4}$', contactNumber):
+        return jsonify({"message": "Invalid Contact Number"}), 400
+    if not is_valid_password(password):
+        return jsonify({"message": "Invalid Password"}), 400
+
+    userId = generate_new_user_id()
+    hashed_password = bcrypt.generate_password_hash(password)
+    new_user = User(userId=userId, firstName=firstName, lastName=lastName,
+                    email=email, contactNumber=contactNumber, password=hashed_password,
+                    rating=0, userType=1, isActive=0)
+
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User registered successfully'})
+
+
+@app.route('/edit_user/<int:userId>', methods=['PUT'])
+def edit_user(userId):
+    # Assuming you have some function to retrieve the user from the database
+    user = User.query.get(userId)
+    vehicle = Vehicle.query.filter_by(userId=userId).first()
+
+    # Update attributes if provided in the request
+    if request.json['firstName'] != '':
+        if contains_digits(request.json['firstName']):
+            return jsonify({"message": "Invalid First Name"}), 400
+        user.firstName = request.json['firstName']
+
+    if request.json['lastName'] != '':
+        if contains_digits(request.json['lastName']):
+            return jsonify({"message": "Invalid Last Name"}), 400
+        user.lastName = request.json['lastName']
+
+    if request.json['email'] != '':
+        if is_valid_email(request.json['email']):
+            user.email = request.json['email']
+        else:
+            return jsonify({"message": "Invalid Email"}), 400
+
+    if request.json['contactNumber'] != '':
+        contact_number = request.json['contactNumber']
+        if re.match(r'^(\+?\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{4}$', contact_number):
+            user.contactNumber = contact_number
+        else:
+            return jsonify({"message": "Invalid Contact Number"}), 400
+
+    if request.json['password'] != '':
+        if is_valid_password(request.json['password']):
+            hashed_password = bcrypt.generate_password_hash(request.json['password'])
+            user.password = hashed_password
+        else:
+            return jsonify({"message": "Invalid Password"}), 400
+
+    if request.json['plateNumber'] != '':
+        plate_number = request.json['plateNumber']
+        if re.match(r'^[A-Z0-9]{3}\s\d{3,4}$', plate_number):
+            vehicle.plateNumber = plate_number
+        else:
+            return jsonify({"message": "Invalid Plate Number"}), 400
+
+    if request.json['route'] != '':
+        vehicle.route = request.json['route']
+
+    db.session.commit()
+
+    return jsonify({"message": "User successfully edited"}), 200
 
 
 @app.route('/signin', methods=['POST'])
@@ -749,58 +781,6 @@ def admin_delete_user(userId):
     except Exception as e:
         db.session.rollback()
         return f"An error occurred: {str(e)}"
-
-
-@app.route('/edit_user/<int:userId>', methods=['PUT'])
-def edit_user(userId):
-    # Assuming you have some function to retrieve the user from the database
-    user = User.query.get(userId)
-    vehicle = Vehicle.query.filter_by(userId=userId).first()
-
-    # Update attributes if provided in the request
-    if request.json['firstName'] != '':
-        if contains_digits(request.json['firstName']):
-            return jsonify({"message": "Invalid First Name"}), 400
-        user.firstName = request.json['firstName']
-
-    if request.json['lastName'] != '':
-        if contains_digits(request.json['lastName']):
-            return jsonify({"message": "Invalid Last Name"}), 400
-        user.lastName = request.json['lastName']
-
-    if request.json['email'] != '':
-        if is_valid_email(request.json['email']):
-            user.email = request.json['email']
-        else:
-            return jsonify({"message": "Invalid Email"}), 400
-
-    if request.json['contactNumber'] != '':
-        contact_number = request.json['contactNumber']
-        if re.match(r'^(\+?\d{1,3})?\s?\d{3}\s?\d{3}\s?\d{4}$', contact_number):
-            user.contactNumber = contact_number
-        else:
-            return jsonify({"message": "Invalid Contact Number"}), 400
-
-    if request.json['password'] != '':
-        if is_valid_password(request.json['password']):
-            hashed_password = bcrypt.generate_password_hash(request.json['password'])
-            user.password = hashed_password
-        else:
-            return jsonify({"message": "Invalid Password"}), 400
-
-    if request.json['plateNumber'] != '':
-        plate_number = request.json['plateNumber']
-        if re.match(r'^[A-Z0-9]{3}\s\d{3,4}$', plate_number):
-            vehicle.plateNumber = plate_number
-        else:
-            return jsonify({"message": "Invalid Plate Number"}), 400
-
-    if request.json['route'] != '':
-        vehicle.route = request.json['route']
-
-    db.session.commit()
-
-    return jsonify({"message": "User successfully edited"}), 200
 
 
 # PETITION
