@@ -243,6 +243,14 @@ class DriverSignUp : Fragment() {
                         showToast(message)
                         Navigation.findNavController(view).navigate(R.id.toUnauthorized)
                     } else {
+                        val errorJson = response.errorBody()?.string()
+                            ?.let { JSONObject(it) }
+                        val errorMessage = errorJson?.getString("message")
+                        // Display error message
+                        Log.e("Error", "Response error: $errorMessage")
+                        if (errorMessage != null) {
+                            showToast(errorMessage)
+                        }
                     }
                 }
 
