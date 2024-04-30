@@ -87,8 +87,8 @@ class UserSignUp : Fragment() {
                 if (response.isSuccessful) {
                     Log.e("Success", "User successfully registered")
                     val message = "User successfully registered"
-                    Navigation.findNavController(view).navigate(R.id.toUserHome1)
                     showToast(message)
+                    Navigation.findNavController(view).navigate(R.id.toUserHome1)
                 } else {
                     val errorJson = response.errorBody()?.string()
                         ?.let { JSONObject(it) }

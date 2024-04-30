@@ -1,6 +1,7 @@
 package com.example.portal.driver
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.EditUserResponse
 import com.example.portal.models.UserModel
 import com.example.portal.models.VehicleModel
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,9 +31,6 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 class DriverSignUp : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
-
     private lateinit var view: View
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
@@ -56,10 +55,6 @@ class DriverSignUp : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -144,12 +139,6 @@ class DriverSignUp : Fragment() {
             if (missingFields.isNotEmpty()) {
                 val errorMessage = "Please fill in the following fields: ${missingFields.joinToString(", ")}"
                 showToast(errorMessage)
-//                firstNameErrorText.text = ""
-//                lastNameErrorText.text = ""
-//                emailErrorText.text = ""
-//                contactNumberErrorText.text = ""
-//                passwordErrorText.text = ""
-//                plateNumberErrorText.text = ""  // Assuming plate number error text exists
             }else{
                 if(containsDigits(firstName)){
                     showToast("Invalid First Name format")
@@ -200,19 +189,19 @@ class DriverSignUp : Fragment() {
         return matcher.matches()
     }
 
-    fun isValidPlateNumber(plateNumber: String): Boolean {
+    private fun isValidPlateNumber(plateNumber: String): Boolean {
         val pattern = Pattern.compile("^[a-zA-Z0-9]{3}\\s\\d{3,4}\$")
         val matcher = pattern.matcher(plateNumber)
         return matcher.matches()
     }
 
-    fun isValidPassword(password: String): Boolean {
+    private fun isValidPassword(password: String): Boolean {
         val pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*-])[A-Za-z\\d!@#$%^&*-]+$")
         val matcher = pattern.matcher(password)
         return matcher.matches()
     }
 
-    fun containsDigits(name: String): Boolean {
+    private fun containsDigits(name: String): Boolean {
         val regex = Regex("\\d")  // Raw string for digit pattern
         return regex.containsMatchIn(name)
     }
@@ -245,31 +234,27 @@ class DriverSignUp : Fragment() {
 
             val request = DriverSignUpRequest(newUser, newVehicle)
 
-            retrofitService.registerDriver(request).enqueue(object : Callback<EditUserResponse> {
+            val call = retrofitService.registerDriver(request)
+            call.enqueue(object : Callback<EditUserResponse> {
                 override fun onResponse(call: Call<EditUserResponse>, response: Response<EditUserResponse>) {
                     if (response.isSuccessful) {
-                        println("User and Vehicle registered successfully")
+                        Log.e("Success", "Driver successfully registered")
+                        val message = "Driver successfully registered"
+                        showToast(message)
                         Navigation.findNavController(view).navigate(R.id.toUnauthorized)
                     } else {
-                        println("Failed to register user and vehicle")
-                        // Handle error
                     }
                 }
 
                 override fun onFailure(call: Call<EditUserResponse>, t: Throwable) {
-                    println("Failed to register user and vehicle: ${t.message}")
-                    // Handle failure
+                    try {
+                        // Handle network error
+                        Log.e("Network Error", "Error: ${t.message}", t)
+                    } catch (e: Exception) {
+                        // Handle any other unexpected exceptions
+                        Log.e("Error", "Unexpected error: ${e.message}", e)
+                    }
                 }
             })
-    }
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DriverSignUp().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }
