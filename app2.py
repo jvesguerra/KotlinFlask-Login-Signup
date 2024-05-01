@@ -290,7 +290,6 @@ def register_user():
     if existing_user:
         return jsonify({'message': 'Email already registered'}), 400
 
-
     userId = generate_new_user_id()
     hashed_password = bcrypt.generate_password_hash(password)
     adjusted_firstName = firstName.capitalize()
@@ -382,6 +381,71 @@ def login():
             return jsonify({'error': 'Invalid password'}), 401
     else:
         return jsonify({'error': 'User not found'}), 404
+
+# @app.route('/google-sign-in-endpoint', methods=['POST'])
+# def google_sign_in():
+#     YOUR_WEB_CLIENT_ID = "AIzaSyD9BAhnNb62l_L_Htwtf3uJ1Q-saSoFFtw"
+#     token = request.json.get('idToken')
+#     try:
+#         # Validate the received ID token
+#         idinfo = id_token.verify_oauth2_token(token, requests.Request(), YOUR_WEB_CLIENT_ID)
+#
+#         # Extract user information
+#         user_id = idinfo['sub']
+#         user_email = idinfo['email']
+#         # You can extract more user information as needed
+#
+#         # Process the user data (e.g., create a session, store in database)
+#         # Example: session['user_id'] = user_id
+#         session['user_id'] = new_user.id
+#         access_token = create_access_token(identity=user.userId)
+#
+#         # Respond with a success message or user data
+#         return jsonify({'accessToken': access_token}), 200
+#
+#     except ValueError:
+#         # Invalid token
+#         return jsonify({'error': 'Invalid token'}), 401
+
+@app.route('/google-sign-up-endpoint', methods=['POST'])
+def google_sign_up():
+    YOUR_WEB_CLIENT_ID = "562377295927-26r2kaucq403vbpo01pd5bjq9volo46n.apps.googleusercontent.com"
+    print("SIGN UP THROUGH GOOGLE")
+    token = request.json.get('accessToken')
+
+    try:
+        # Validate the received ID token
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), YOUR_WEB_CLIENT_ID)
+
+        # Extract user information
+        user_email = idinfo['email']
+
+        # Check if the user already exists in your database
+        existing_user = User.query.filter_by(email=user_email).first()
+
+        if existing_user:
+            # If the user already exists, return an error or redirect to sign-in page
+            return jsonify({'error': 'User already exists'}), 400
+        else:
+            # Create a new user account
+            print("NEW USER THROUGH GOOGLE")
+            new_user = User(email=user_email)
+            # You can also set other user attributes here
+            # For example: new_user.name = idinfo['name']
+
+            # Save the new user to the database
+            db.session.add(new_user)
+            db.session.commit()
+
+            # Log in the new user
+            session['user_id'] = new_user.id
+            access_token = create_access_token(identity=user.userId)
+
+            return jsonify({'accessToken': access_token}), 200
+
+    except ValueError:
+        # Invalid token
+        return jsonify({'error': 'Invalid token'}), 401
 
 
 @app.route('/protected', methods=['GET'])

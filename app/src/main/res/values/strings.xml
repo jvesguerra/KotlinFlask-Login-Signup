@@ -14,13 +14,13 @@
     <string name="last_name">Last Name</string>
     <string name="contact_number">Contact Number</string>
     <string name="password">Password</string>
-    <string name="sign_up">Sign Up</string>
+    <string name="sign_up">Create account</string>
     <string name="user_sign_up">User Sign Up</string>
     <string name="driver_sign_up">Driver Sign Up</string>
 
     <string name="driver">DRIVER</string>
     <string name="user">USER</string>
-    <string name="sign_in">Sign In</string>
+    <string name="sign_in">Sign in</string>
     <string name="sign_in_with_google">Sign In with Google</string>
     <string name="plate_number">Plate Number</string>
     <string name="route">Route</string>
@@ -48,4 +48,6 @@
     <string name="no_location_text">No current location</string>
 
     <string name="google_map_api_key">AIzaSyD9BAhnNb62l_L_Htwtf3uJ1Q-saSoFFtw</string>
+    <string name="default_web_client_id">562377295927-26r2kaucq403vbpo01pd5bjq9volo46n.apps.googleusercontent.com</string>
+    <string name="logo_description">traveLBetter</string>
 </resources>

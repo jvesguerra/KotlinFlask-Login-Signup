@@ -21,6 +21,7 @@ import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.Dispatchers
@@ -35,13 +36,17 @@ import retrofit2.await
 class LogInPage : Fragment() {
     private val RC_SIGN_IN = 123 // Replace with any unique request code
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance().create(UserServe::class.java)
-    private var yourWebClientId: String = "562377295927-0rk3t4op4e7kb0mufqif63o0s7gob42i.apps.googleusercontent.com"
+    private var yourWebClientId: String = "562377295927-26r2kaucq403vbpo01pd5bjq9volo46n.apps.googleusercontent.com"
 
     // Login and Sign up variables
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var signInButton: Button
     private lateinit var signUpButton: Button
+
+    private lateinit var signInButtonGoogle: Button
+    private lateinit var signUpButtonGoogle: Button
+
 
     private lateinit var view: View
     private lateinit var sharedPreferences: SharedPreferences
@@ -61,6 +66,8 @@ class LogInPage : Fragment() {
         passwordEditText = view.findViewById(R.id.editTextPassword)
         signInButton = view.findViewById(R.id.buttonSignIn)
         signUpButton = view.findViewById(R.id.buttonSignUp)
+        signInButtonGoogle = view.findViewById(R.id.signInButtonGoogle)
+        signUpButtonGoogle = view.findViewById(R.id.signUpButtonGoogle)
 
         // REMOVE
         val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
@@ -76,6 +83,32 @@ class LogInPage : Fragment() {
             Navigation.findNavController(view).navigate(R.id.signup)
         }
 
+        signInButtonGoogle.setOnClickListener {
+            // Start Google Sign-In process for sign-up
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id)) // Replace with your web client ID
+                .requestEmail()
+                .build()
+
+            val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
+
+        }
+
+        signUpButtonGoogle.setOnClickListener {
+            // Start Google Sign-In process for sign-up
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id)) // Replace with your web client ID
+                .requestEmail()
+                .build()
+
+            val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
+
+        }
+
         return view
     }
 
@@ -85,6 +118,57 @@ class LogInPage : Fragment() {
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
+        }
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+            val idToken = account?.idToken
+
+            if (idToken != null) {
+                sendIdTokenToBackend(idToken, "signUp")
+            } else {
+                Log.e("LogInPage", "Google ID token is null")
+            }
+
+        } catch (e: ApiException) {
+            Log.e("LogInPage", "signInResult:failed code=${e.statusCode}")
+        }
+    }
+
+    private fun sendIdTokenToBackend(idToken: String, action: String) {
+        val retrofitService = RetrofitInstance.getRetrofitInstance().create(UserServe::class.java)
+
+        when (action) {
+            "signIn" -> {
+                val call = retrofitService.signInWithGoogle(LoginResponse(idToken))
+                call.enqueue(object : Callback<LoginResponse> {
+                    override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                        // Handle successful sign-in response from the backend
+                    }
+
+                    override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                        // Handle failure to send ID token to the backend for sign-in
+                    }
+                })
+            }
+            "signUp" -> {
+                val call = retrofitService.signUpWithGoogle(LoginResponse(idToken))
+                call.enqueue(object : Callback<LoginResponse> {
+                    override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                        // Handle successful sign-in response from the backend
+                        Navigation.findNavController(requireView()).navigate(R.id.userHome)
+                    }
+
+                    override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                        // Handle failure to send ID token to the backend for sign-in
+                    }
+                })
+            }
+            else -> {
+                // Invalid action
+            }
         }
     }
 
@@ -104,26 +188,10 @@ class LogInPage : Fragment() {
                     val loginResponse = response.body()
                     val accessToken = loginResponse?.accessToken
                     val editor = sharedPreferences.edit()
-                    editor?.putString("accessToken", accessToken) // Save user type in SharedPreferences
+                    editor?.putString("accessToken", accessToken)
                     editor?.apply()
-                    Log.d("AccessToken1", accessToken ?: "AccessToken is null") // Log the accessToken
-
-                    val dataCall = retrofitService.fetchData("Bearer $accessToken")
-                    dataCall.enqueue(object : Callback<UserResponse> {
-                        override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                            if (response.isSuccessful) {
-                                val userResponse = response.body()
-                                userResponse?.let { handleSignInSuccess(it) }
-                                // Handle received user data
-                            } else {
-                                // Failed to fetch user data
-                            }
-                        }
-
-                        override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                            // Error handling
-                        }
-                    })
+                    Log.d("LogInPage", "AccessToken: $accessToken")
+                    fetchUserData(accessToken)
                 } else {
                     showToast("Failed to sign in: ${response.code()}")
                 }
@@ -135,79 +203,62 @@ class LogInPage : Fragment() {
         })
     }
 
+    private fun fetchUserData(accessToken: String?) {
+        if (accessToken != null) {
+            val dataCall = retrofitService.fetchData("Bearer $accessToken")
+            dataCall.enqueue(object : Callback<UserResponse> {
+                override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                    if (response.isSuccessful) {
+                        val userResponse = response.body()
+                        userResponse?.let { handleSignInSuccess(it) }
+                    } else {
+                        // Failed to fetch user data
+                    }
+                }
+
+                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                    // Error handling
+                }
+            })
+        }
+    }
+
+
     private fun handleSignInSuccess(userResponse: UserResponse) {
         val user = userResponse.user
         user?.let {
             val userType = it.userType
             val userId = it.userId
-            saveLoginSession(userType,userId)
+            saveLoginSession(userType, userId)
 
-            if (userType == 0) {
-                Navigation.findNavController(view).navigate(R.id.home)
-            // user homepage
-            }else if(userType == 1){
-                Navigation.findNavController(view).navigate(R.id.userHome)
-            // driver homepage
-            }else if(userType == 2){
-                var isAuthorized: Boolean = false
-                retrofitService.isAuthorized(userId).enqueue(object : Callback<Boolean> {
-                    override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
-                        if (response.isSuccessful && response.body() != null) {
-                            isAuthorized = response.body()!!
-                            if (isAuthorized) {
-                                Navigation.findNavController(view).navigate(R.id.toDriverHome)
+            when (userType) {
+                0 -> Navigation.findNavController(requireView()).navigate(R.id.home)
+                1 -> Navigation.findNavController(requireView()).navigate(R.id.userHome)
+                2 -> {
+                    var isAuthorized = false
+                    retrofitService.isAuthorized(userId).enqueue(object : Callback<Boolean> {
+                        override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                            if (response.isSuccessful && response.body() != null) {
+                                isAuthorized = response.body()!!
+                                if (isAuthorized) {
+                                    Navigation.findNavController(requireView()).navigate(R.id.toDriverHome)
+                                } else {
+                                    Navigation.findNavController(requireView()).navigate(R.id.unauthorized)
+                                }
                             } else {
-                                Navigation.findNavController(view).navigate(R.id.unauthorized)
+                                // Handle error case
                             }
-                        } else {
-                            // Handle error case
-                            // For example, if there's a network issue or server error
                         }
-                    }
 
-                    override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                        // Handle failure case
-                        // For example, if the request failed due to a network issue
-                    }
-                })
-
+                        override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                            // Handle failure case
+                        }
+                    })
+                }
             }
-
         } ?: showToast("Failed to retrieve user details")
     }
-    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
-        try {
-            val account = completedTask.getResult(ApiException::class.java)
-            val idToken = account?.idToken
 
-            if (idToken != null) {
-                // Now, you have the Google ID token; proceed to send it to the backend
-                sendIdTokenToBackend(idToken)
-            } else {
-                Log.e("MainActivity", "Google ID token is null")
-            }
-
-        } catch (e: ApiException) {
-            // Handle sign-in failure
-            Log.e("MainActivity", "signInResult:failed code=${e.statusCode}")
-        }
-    }
-
-    private fun sendIdTokenToBackend(idToken: String) {
-        // Use Retrofit to send the Google ID token to your backend
-        GlobalScope.launch(Dispatchers.Main) {
-            try {
-                val response = retrofitService.signInWithGoogle(GoogleSignInRequest(idToken)).await()
-
-                // Handle the response from the Flask backend, e.g., update UI
-                Log.d("MainActivity", "Response from server: $response")
-
-            } catch (e: Exception) {
-                // Handle network issues or other failures
-                Log.e("MainActivity", "Error during Google Sign-In: $e")
-            }
-        }
-    }
     public fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }

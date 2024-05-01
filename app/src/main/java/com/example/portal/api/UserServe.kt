@@ -22,7 +22,10 @@ import retrofit2.http.Path
 
 interface UserServe {
     @POST("/google-sign-in-endpoint")
-    fun signInWithGoogle(@Body request: GoogleSignInRequest): Call<String>
+    fun signInWithGoogle(@Body request: LoginResponse): Call<String>
+
+    @POST("/google-sign-up-endpoint")
+    fun signUpWithGoogle(@Body request: LoginResponse): Call<String>
 
     @POST("/signin")
     fun signIn(@Body newUser: UserModel): Call<UserResponse>

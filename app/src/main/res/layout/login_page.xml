@@ -5,40 +5,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp"
     tools:context=".LogInPage">
 
     <!-- Title Section -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/topHalfLayout"
+    <ImageView
+        android:id="@+id/imageViewLogo"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@id/relativeLayout"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Travel Better"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/logo_description"/>
 
     <!-- Login Section -->
     <RelativeLayout
         android:id="@+id/relativeLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topHalfLayout"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintTop_toBottomOf="@id/imageViewLogo"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <EditText
             android:id="@+id/editTextEmail"
@@ -46,7 +36,9 @@
             android:layout_height="wrap_content"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
-            android:autofillHints="email" />
+            android:autofillHints="email"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <EditText
             android:id="@+id/editTextPassword"
@@ -64,24 +56,57 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/editTextPassword"
             android:layout_marginTop="16dp"
-            android:text="@string/sign_in" />
+            android:text="@string/sign_in"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
+            android:padding="12dp" />
 
         <Button
             android:id="@+id/buttonSignUp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/buttonSignIn"
-            android:layout_marginTop="16dp"
-            android:text="@string/sign_up" />
+            android:layout_marginTop="8dp"
+            android:text="@string/sign_up"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@color/colorPrimary"
+            android:textAllCaps="false"
+            android:padding="12dp" />
 
-        <Button
-            android:id="@+id/signInButton"
-            android:layout_width="wrap_content"
+        <!-- Sign Up with Google Button -->
+        <LinearLayout
+            android:id="@+id/googleButtonsContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_below="@id/buttonSignUp"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
-            android:text="@string/sign_in_with_google" />
+            android:layout_marginBottom="32dp"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/signUpButtonGoogle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign up with Google"
+                android:backgroundTint="@android:color/darker_gray"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:padding="12dp"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/signInButtonGoogle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign in with Google"
+                android:backgroundTint="@android:color/darker_gray"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:padding="12dp" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
