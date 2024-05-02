@@ -66,6 +66,7 @@
 
 <!-- PENDING LISTS -->
     <string name="pending_applications">Pending Applications</string>
+    <string name="dashboard">Dashboard\n</string>
 
 
 </resources>
