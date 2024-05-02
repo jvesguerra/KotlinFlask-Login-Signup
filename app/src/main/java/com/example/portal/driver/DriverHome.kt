@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -35,7 +36,10 @@ class DriverHome : Fragment() {
 
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("userId", 0)
+        val firstName = sharedPreferences.getString("firstName", "")
 
+        val homeString: TextView = view.findViewById(R.id.driverHomeText)
+        homeString.text = "Hello $firstName,"
 
         val readyButton: Button = view.findViewById(R.id.readyButton)
         readyButton.setOnClickListener {

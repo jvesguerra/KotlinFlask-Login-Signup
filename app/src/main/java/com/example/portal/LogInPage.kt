@@ -172,11 +172,12 @@ class LogInPage : Fragment() {
         }
     }
 
-    private fun saveLoginSession(userType: Int,userId: Int) {
+    private fun saveLoginSession(userType: Int,userId: Int, firstName: String) {
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)
-        editor.putInt("userType", userType) // Save user type in SharedPreferences
-        editor.putInt("userId", userId) // Save user type in SharedPreferences
+        editor.putInt("userType", userType)
+        editor.putInt("userId", userId)
+        editor.putString("firstName", firstName)
         editor.apply()
     }
 
@@ -229,7 +230,8 @@ class LogInPage : Fragment() {
         user?.let {
             val userType = it.userType
             val userId = it.userId
-            saveLoginSession(userType, userId)
+            val firstName = it.firstName
+            saveLoginSession(userType, userId, firstName)
 
             when (userType) {
                 0 -> Navigation.findNavController(requireView()).navigate(R.id.home)
