@@ -10,18 +10,21 @@
     tools:context=".LogInPage">
 
     <!-- Title Section -->
-    <ImageView
-        android:id="@+id/imageViewLogo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/logo_description"/>
 
     <!-- Login Section -->
+
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="282dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="104dp"
+        android:contentDescription="@string/logo_description"
+        android:src="@drawable/logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"

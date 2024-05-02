@@ -10,9 +10,6 @@
     <string name="google_map_api_key">AIzaSyD9BAhnNb62l_L_Htwtf3uJ1Q-saSoFFtw</string>
     <string name="default_web_client_id">562377295927-26r2kaucq403vbpo01pd5bjq9volo46n.apps.googleusercontent.com</string>
 
-<!-- ADMIN HOME -->
-    <string name="admin_home">Admin Home Page</string>
-
 <!-- FORMS -->
     <string name="sign_up_page">Sign Up Page</string>
     <string name="sign_up_page_title">Welcome to TravelBetter</string>
@@ -54,11 +51,21 @@
     <string name="press_ready_to_start_accepting_passengers">Press \'READY\' to start \n accepting passengers</string>
     <string name="driver_home">HOME</string>
     <string name="ready">READY</string>
+
 <!-- DRIVER HOME 2 -->
     <string name="_0">0</string>
     <string name="incoming_passengers">Incoming Passengers</string>
     <string name="take_passengers">Take Passengers</string>
-    <string name="passengeres_queued_online_n_to_your_vehicle">Passengeres queued online \n to your vehicle:</string>
+    <string name="passengeres_queued_online_n_to_your_vehicle">Passengers queued online \n to your vehicle:</string>
+    <string name="passengers_in_petition_0">Passengers in petition: 0</string>
+
+<!-- ADMIN HOME -->
+    <string name="admin_home">HOME</string>
+    <string name="map">Map</string>
+    <string name="pending">Pending</string>
+
+<!-- PENDING LISTS -->
+    <string name="pending_applications">Pending Applications</string>
 
 
 </resources>
