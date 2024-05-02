@@ -54,6 +54,11 @@
     <string name="press_ready_to_start_accepting_passengers">Press \'READY\' to start \n accepting passengers</string>
     <string name="driver_home">HOME</string>
     <string name="ready">READY</string>
+<!-- DRIVER HOME 2 -->
+    <string name="_0">0</string>
+    <string name="incoming_passengers">Incoming Passengers</string>
+    <string name="take_passengers">Take Passengers</string>
+    <string name="passengeres_queued_online_n_to_your_vehicle">Passengeres queued online \n to your vehicle:</string>
 
 
 </resources>

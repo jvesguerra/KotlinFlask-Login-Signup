@@ -47,31 +47,49 @@ import java.util.concurrent.TimeUnit
 
 //private const val TAG = "DRIVER HOME 2"
 //private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
+
+/*
+startLocationUpdates()
+- Schedules location updates and fetches passenger and petition counts.
+
+updateMapLocation()
+- Updates the map with the latest location and sends the location data to the server via Retrofit
+
+ForegroundOnlyBroadcastReceiver()
+- Checks if vehicle is within campus
+*/
+
 class DriverHome2 : Fragment(),
-    SharedPreferences.OnSharedPreferenceChangeListener{
-    private val TAG = "DRIVER HOME 2"
+    SharedPreferences.OnSharedPreferenceChangeListener {
+
+    // Constants
+    private val tag = "DRIVER HOME 2"
     private val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
+
+    // Retrofit Service
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
+
+    // SharedPreferences and other variables
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var scheduledExecutorService: ScheduledExecutorService
     private lateinit var handler: Handler
-    private var userId: Int = 0
-    private lateinit var incomingPassengersText: TextView
     private var accessToken: String? = null
-    // MAPS VARIABLES
-    private lateinit var googleMap: GoogleMap
-    private var lastKnownLocation: Location? = null
-    private val locationList: MutableList<LocationModel> = mutableListOf()
 
-    private var foregroundOnlyLocationServiceBound = false
-    private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
+    // UI Elements
     private lateinit var foregroundOnlyBroadcastReceiver: ForegroundOnlyBroadcastReceiver
     private lateinit var foregroundOnlyLocationButton: Button
     private lateinit var takePassengersButton: Button
     private lateinit var outputTextView: TextView
     private lateinit var petitionCountText: TextView
+    private lateinit var incomingPassengersText: TextView
 
+    // Location variables
+    private var lastKnownLocation: Location? = null
+
+    // Service connection
+    private var foregroundOnlyLocationServiceBound = false
+    private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
     private val foregroundOnlyServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             val binder = service as ForegroundOnlyLocationService.LocalBinder
@@ -85,17 +103,6 @@ class DriverHome2 : Fragment(),
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        // Updates button states if new while in use location is added to SharedPreferences.
-        if (key == SharedPreferenceUtil.KEY_FOREGROUND_ENABLED) {
-            if (sharedPreferences != null) {
-                updateButtonState(sharedPreferences.getBoolean(
-                    SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
-                )
-            }
-        }
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,34 +112,46 @@ class DriverHome2 : Fragment(),
 
         // MAPS
         foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
-        sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        sharedPreferences = requireActivity().getSharedPreferences(
+            getString(R.string.preference_file_key),
+            Context.MODE_PRIVATE
+        )
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view =  inflater.inflate(R.layout.driver_home2, container, false)
-        sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
-        userId = sharedPreferences.getInt("userId", 0)
-        incomingPassengersText = view.findViewById(R.id.incomingPassengersText)
+        // Initialize variables
+        val view = inflater.inflate(R.layout.driver_home2, container, false)
+        sharedPreferences =
+            requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         accessToken = sharedPreferences.getString("accessToken", null)
-        // MAPS
+
+        // Initialize UI Elements
         foregroundOnlyLocationButton = view.findViewById(R.id.foreground_only_location_button)
         takePassengersButton = view.findViewById(R.id.takePassengers)
-        outputTextView = view.findViewById(R.id.output_text_view)
+        //outputTextView = view.findViewById(R.id.output_text_view)
         petitionCountText = view.findViewById(R.id.petitionCount)
+        incomingPassengersText = view.findViewById(R.id.incomingPassengersText)
 
-
+        // Button Listeners
         foregroundOnlyLocationButton.setOnClickListener {
-            val enabled = sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
+            val enabled =
+                sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
             if (enabled) {
                 foregroundOnlyLocationService?.unsubscribeToLocationUpdates()
             } else {
                 if (PermissionHelper.foregroundPermissionApproved(requireContext())) {
-                    foregroundOnlyLocationService?.subscribeToLocationUpdates() ?: Log.d(TAG, "Service Not Bound")
+                    foregroundOnlyLocationService?.subscribeToLocationUpdates() ?: Log.d(
+                        tag,
+                        "Service Not Bound"
+                    )
                 } else {
-                    PermissionHelper.requestForegroundPermissions(requireActivity(), REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE)
+                    PermissionHelper.requestForegroundPermissions(
+                        requireActivity(),
+                        REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
+                    )
                 }
             }
         }
@@ -141,6 +160,7 @@ class DriverHome2 : Fragment(),
             takePassengers()
         }
 
+        // Hide button
         foregroundOnlyLocationButton.visibility = View.INVISIBLE
 
         return view
@@ -151,19 +171,18 @@ class DriverHome2 : Fragment(),
         call3.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-
+                    Log.d("Success", response.code().toString())
                 } else {
-                    // Handle error, could use response.code() to tailor the message
-                    Log.d("Error", "DriverHome2 - takePassengers")
+                    Log.d("Error", response.code().toString())
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                // Handle failure
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
+
     private fun fetchPetitionCount(textView: TextView) {
         val call2 = retrofitService.getPetition("Bearer $accessToken")
         call2.enqueue(object : Callback<Int> {
@@ -174,24 +193,22 @@ class DriverHome2 : Fragment(),
                         handler.post {
                             val text = "Passengers in Petition: $it"
                             textView.text = text
-                            Log.d("Petition Count", "Passengers in Petition: $it")
+                            Log.d("Success", response.code().toString())
                         }
                     }
                 } else {
-                    // Handle error, could use response.code() to tailor the message
-                    Log.d("Error", "DriverHome2 - fetchPetitionCount")
+                    Log.d("Error", response.code().toString())
                 }
             }
 
             override fun onFailure(call: Call<Int>, t: Throwable) {
-                // Handle failure
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun fetchPassengerCount(userId: Int, textView: TextView) {
-        val call = retrofitService.getIncomingPassengers(userId)
+    private fun fetchPassengerCount(textView: TextView) {
+        val call = retrofitService.getIncomingPassengers("Bearer $accessToken")
         call.enqueue(object : Callback<Int> {
             override fun onResponse(call: Call<Int>, response: Response<Int>) {
                 if (response.isSuccessful) {
@@ -199,35 +216,20 @@ class DriverHome2 : Fragment(),
                     incomingPassengersCount?.let {
                         // Update UI on the main thread
                         handler.post {
-                            val text = "Incoming Passengers: $it"
+                            val text = "$it"
                             textView.text = text
-                            Log.d("PassengerCount", "Passenger count: $it")
                         }
                     }
                 } else {
-                    // Handle error, could use response.code() to tailor the message
-                    Log.d("DriverHome2 Error", "Pain")
+                    Log.d("Error", response.code().toString())
                 }
             }
 
             override fun onFailure(call: Call<Int>, t: Throwable) {
-                // Handle failure
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
-
-    // MAPS
-//    override fun onMapReady(gMap: GoogleMap) {
-//        googleMap = gMap
-//        val lagunaCoordinates = LatLng(14.165104501414891, 121.24175774591879) // Coordinates for Laguna, Philippines
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lagunaCoordinates, 12.0f))
-//
-//        // Fetch initial location data and add markers
-//        LocationHelper.fetchLocations(retrofitService) { fetchedLocations ->
-//            LocationHelper.handleFetchedLocations(googleMap, fetchedLocations)
-//        }
-//    }
 
     override fun onStart() {
         super.onStart()
@@ -236,9 +238,11 @@ class DriverHome2 : Fragment(),
         )
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         val serviceIntent = Intent(requireContext(), ForegroundOnlyLocationService::class.java)
-        requireActivity().bindService(serviceIntent, foregroundOnlyServiceConnection, Context.BIND_AUTO_CREATE)
-//        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
-//        mapFragment.getMapAsync(this)
+        requireActivity().bindService(
+            serviceIntent,
+            foregroundOnlyServiceConnection,
+            Context.BIND_AUTO_CREATE
+        )
 
         Handler(Looper.getMainLooper()).postDelayed({
             foregroundOnlyLocationButton.performClick()
@@ -251,7 +255,7 @@ class DriverHome2 : Fragment(),
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
         scheduledExecutorService.scheduleAtFixedRate({
             foregroundOnlyLocationService?.requestLocationUpdates()
-            fetchPassengerCount(userId, incomingPassengersText)
+            fetchPassengerCount(incomingPassengersText)
             fetchPetitionCount(petitionCountText)
         }, 0, 10, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
     }
@@ -288,9 +292,11 @@ class DriverHome2 : Fragment(),
 
     private fun updateButtonState(trackingLocation: Boolean) {
         if (trackingLocation) {
-            foregroundOnlyLocationButton.text = getString(R.string.stop_location_updates_button_text)
+            foregroundOnlyLocationButton.text =
+                getString(R.string.stop_location_updates_button_text)
         } else {
-            foregroundOnlyLocationButton.text = getString(R.string.start_location_updates_button_text)
+            foregroundOnlyLocationButton.text =
+                getString(R.string.start_location_updates_button_text)
         }
     }
 
@@ -300,14 +306,14 @@ class DriverHome2 : Fragment(),
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.d(TAG, "onRequestPermissionResult")
+        Log.d(tag, "onRequestPermissionResult")
 
         when (requestCode) {
             REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE -> when {
                 grantResults.isEmpty() ->
                     // If user interaction was interrupted, the permission request
                     // is cancelled and you receive empty arrays.
-                    Log.d(TAG, "User interaction was cancelled.")
+                    Log.d(tag, "User interaction was cancelled.")
 
                 grantResults[0] == PackageManager.PERMISSION_GRANTED ->
                     // Permission was granted.
@@ -341,9 +347,18 @@ class DriverHome2 : Fragment(),
         }
     }
 
-
-
-
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        // Updates button states if new while in use location is added to SharedPreferences.
+        if (key == SharedPreferenceUtil.KEY_FOREGROUND_ENABLED) {
+            if (sharedPreferences != null) {
+                updateButtonState(
+                    sharedPreferences.getBoolean(
+                        SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false
+                    )
+                )
+            }
+        }
+    }
 
     private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -364,20 +379,22 @@ class DriverHome2 : Fragment(),
                 // put range
                 val givenLatitude = 14.1676560638653
                 val givenLongitude = 121.243494368555
-                val rangeLatitude = 14.1676560638653..14.171871318554894  // Replace with your given latitude
-                val rangeLongitude = 121.243494368555..121.26577861463531  // Replace with your given longitude
+                val rangeLatitude =
+                    14.1676560638653..14.171871318554894  // Replace with your given latitude
+                val rangeLongitude =
+                    121.243494368555..121.26577861463531  // Replace with your given longitude
 
-                if (latitude < givenLatitude || longitude < givenLongitude || latitude in rangeLatitude || longitude in rangeLongitude ) {
+                if (latitude < givenLatitude || longitude < givenLongitude || latitude in rangeLatitude || longitude in rangeLongitude) {
                     //showToast("INSIDE CAMPUS")
-                }else {
+                } else {
                     //showToast("OUTSIDE CAMPUS")
                 }
 
                 // Now you can use latitude and longitude as needed
-                logResultsToScreen("Latitude: $latitude, Longitude: $longitude", outputTextView)
+                //logResultsToScreen("Latitude: $latitude, Longitude: $longitude", outputTextView)
             } else {
                 // Handle case where location is unknown
-                logResultsToScreen("Unknown location", outputTextView)
+                //logResultsToScreen("Unknown location", outputTextView)
             }
 
         }
@@ -388,26 +405,18 @@ class DriverHome2 : Fragment(),
         val latLng = lastKnownLocation!!.toLatLng()
         val lat = latLng.first
         val long = latLng.second
-        // Update map with the latest location
-        val location = LatLng(lat, long)
-//        googleMap.addMarker(MarkerOptions().position(location).title("Me"))
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f))
         val userId = sharedPreferences.getInt("userId", 0)
         val timestamp = System.currentTimeMillis()
         val newLocation = LocationModel(
             locationId = 0,
             userId = userId,
-            latitude=lat,
+            latitude = lat,
             longitude = long,
             timestamp = timestamp
         )
 
-        retrofitService.addLocation(newLocation).enqueueVoid {
+        retrofitService.addLocation("Bearer $accessToken", newLocation).enqueueVoid {
             println("New Location added successfully")
         }
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
