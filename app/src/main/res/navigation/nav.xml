@@ -45,7 +45,7 @@
     </fragment>
     <fragment
         android:id="@+id/pendingLists"
-        android:name="com.example.portal.PendingLists"
+        android:name="com.example.portal.admin.PendingLists"
         android:label="pending_lists"
         tools:layout="@layout/pending_lists" />
     <fragment
@@ -80,7 +80,7 @@
 
     <fragment
         android:id="@+id/unauthorized"
-        android:name="com.example.portal.Unauthorized"
+        android:name="com.example.portal.driver.Unauthorized"
         android:label="unauthorized"
         tools:layout="@layout/unauthorized" />
 
@@ -127,7 +127,7 @@
             app:destination="@id/petition" />
     <fragment
         android:id="@+id/petition"
-        android:name="com.example.portal.Petition"
+        android:name="com.example.portal.user.Petition"
         android:label="petition"
         tools:layout="@layout/petition" />
         <action

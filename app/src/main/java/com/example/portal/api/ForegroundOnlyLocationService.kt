@@ -1,4 +1,4 @@
-package com.example.portal
+package com.example.portal.api
 
 import android.Manifest
 import android.app.Notification
@@ -19,6 +19,9 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.portal.Maps
+import com.example.portal.R
+import com.example.portal.SharedPreferenceUtil
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest

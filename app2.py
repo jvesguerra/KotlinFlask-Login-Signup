@@ -382,6 +382,7 @@ def login():
     else:
         return jsonify({'error': 'User not found'}), 404
 
+
 # @app.route('/google-sign-in-endpoint', methods=['POST'])
 # def google_sign_in():
 #     YOUR_WEB_CLIENT_ID = "AIzaSyD9BAhnNb62l_L_Htwtf3uJ1Q-saSoFFtw"
@@ -775,6 +776,7 @@ def get_available_rural_drivers():
 
 
 @app.route('/get_auth_drivers', methods=['GET'])
+@jwt_required()
 def get_auth_drivers():
     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
         User.userType == 2,
@@ -800,9 +802,8 @@ def get_auth_drivers():
     return jsonify(drivers_dict)
 
 
-#
-#
 @app.route('/get_pending_drivers', methods=['GET'])
+@jwt_required()
 def get_pending_drivers():
     drivers = db.session.query(User, Vehicle).join(Vehicle, User.userId == Vehicle.userId).filter(
         User.userType == 2,
@@ -829,9 +830,10 @@ def get_pending_drivers():
     return jsonify(drivers_dict)
 
 
-@app.route('/admin_delete_user/<int:userId>', methods=['DELETE'])
-def admin_delete_user(userId):
+@app.route('/admin_delete_user', methods=['DELETE'])
+def admin_delete_user():
     try:
+        userId = get_jwt_identity()
         # Step 1: Delete associated vehicle records
         Vehicle.query.filter_by(userId=userId).delete()
         Location.query.filter_by(userId=userId).delete()
@@ -847,8 +849,6 @@ def admin_delete_user(userId):
         db.session.rollback()
         return f"An error occurred: {str(e)}"
 
-
-# PETITION
 @app.route('/take_passengers', methods=['PUT'])
 @jwt_required()
 def take_passengers():

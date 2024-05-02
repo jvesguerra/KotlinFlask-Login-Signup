@@ -1,4 +1,4 @@
-package com.example.portal
+package com.example.portal.api
 
 import com.google.gson.annotations.SerializedName
 
