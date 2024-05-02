@@ -45,9 +45,7 @@ class Adapter(
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
-    val userId = sharedPreferences.getInt("userId", 0)
-    private val viewModelScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
+    val userId = 0 // Change of implementation
 
     enum class ContextType {
         ADMIN_HOME, PENDING_LISTS, USER_HOME2

@@ -1,4 +1,4 @@
-package com.example.portal
+package com.example.portal.admin
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -13,56 +13,38 @@ import android.widget.Toast
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.portal.Adapter
+import com.example.portal.R
 import com.example.portal.api.OnDeleteUserListener
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.models.DriverVecLocModel
-import com.example.portal.models.DriverVehicleModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 class PendingLists : Fragment(), OnDeleteUserListener {
-    private var param1: String? = null
-    private var param2: String? = null
-
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: Adapter
-
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var accessToken: String? = null
+    private lateinit var scheduledExecutorService: ScheduledExecutorService
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.pending_lists, container, false)
-
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+        accessToken = sharedPreferences.getString("accessToken", null)
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
-
-        logoutButton.setOnClickListener {
-            signOut()
-
-            val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
-            Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
-            Navigation.findNavController(view).navigate(R.id.logout)
-        }
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = Adapter(
@@ -74,8 +56,39 @@ class PendingLists : Fragment(), OnDeleteUserListener {
         )
         recyclerView.adapter = adapter
 
-        val call = retrofitService.getPendingDrivers()
 
+
+
+
+        logoutButton.setOnClickListener {
+            signOut()
+            val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+            Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
+            Navigation.findNavController(view).navigate(R.id.logout)
+        }
+        return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        scheduledExecutorService.scheduleAtFixedRate({
+            fetchPendingDrivers()
+        }, 0, 3, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
+    }
+
+    override fun onPause() {
+        super.onPause()
+        scheduledExecutorService.shutdownNow() // Stop all currently executing tasks
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor() // Prepare for next onResume
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scheduledExecutorService.shutdown() // Ensure no memory leaks from the executor service
+    }
+
+    private fun fetchPendingDrivers() {
+        val call = retrofitService.getPendingDrivers("Bearer $accessToken")
         call.enqueue(object : Callback<List<DriverVecLocModel>> {
             override fun onResponse(call: Call<List<DriverVecLocModel>>, response: Response<List<DriverVecLocModel>>) {
                 if (response.isSuccessful) {
@@ -85,28 +98,20 @@ class PendingLists : Fragment(), OnDeleteUserListener {
                     Log.e("API_RESPONSE", "Unsuccessful response: ${response.code()}")
                 }
             }
-
             override fun onFailure(call: Call<List<DriverVecLocModel>>, t: Throwable) {
                 Log.e("API_ERROR", "Error fetching data", t)
             }
         })
-
-
-
-        return view
     }
     private fun signOut() {
         val editor = sharedPreferences.edit()
         editor.clear()
         editor.apply()
-
-        // Add any additional logic for sign-out, such as navigating to a login screen
-        // For simplicity, let's just print a log message
         println("User logged out")
     }
 
     override fun onDeleteUser(userId: Int, position: Int) {
-        val call = retrofitService.adminDeleteUser(userId) // Assuming retrofitService is your Retrofit instance's service
+        val call = retrofitService.adminDeleteUser("Bearer $accessToken") // Assuming retrofitService is your Retrofit instance's service
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
@@ -123,14 +128,5 @@ class PendingLists : Fragment(), OnDeleteUserListener {
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-    companion object {
-        fun newInstance(param1: String, param2: String) =
-            PendingLists().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

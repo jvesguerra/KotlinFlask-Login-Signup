@@ -1,4 +1,4 @@
-package com.example.portal
+package com.example.portal.user
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.navigation.Navigation
+import com.example.portal.R
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.models.UserResponse

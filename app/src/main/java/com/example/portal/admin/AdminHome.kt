@@ -3,12 +3,15 @@ package com.example.portal.admin
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.Navigation
 import com.example.portal.R
@@ -28,28 +31,19 @@ import com.example.portal.utils.UserRemoveQueue
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
-    private var param1: String? = null
-    private var param2: String? = null
-
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: Adapter
-
+    private var accessToken: String? = null
+    private lateinit var scheduledExecutorService: ScheduledExecutorService
+    private lateinit var handler: Handler
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,11 +51,27 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     ): View? {
         val view = inflater.inflate(R.layout.admin_home, container, false)
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+        accessToken = sharedPreferences.getString("accessToken", null)
+        handler = Handler(Looper.getMainLooper())
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
         val mapsButton: Button = view.findViewById(R.id.btnMap)
         val pendingListsButton: Button = view.findViewById(R.id.btnPending)
+        recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        adapter = Adapter(
+            onDeleteUserListener = this@AdminHome,
+            onQueueUserListener = null,
+            context = requireContext(),
+            contextType = Adapter.ContextType.ADMIN_HOME,
+            items = mutableListOf()
+        )
+        recyclerView.adapter = adapter
+
+
+        // Button Listeners
         pendingListsButton.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.toPendingLists)
         }
@@ -75,19 +85,29 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
             Navigation.findNavController(view).navigate(R.id.logout)
         }
 
-        recyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = Adapter(
-            onDeleteUserListener = this@AdminHome,
-            onQueueUserListener = null,
-            context = requireContext(),
-            contextType = Adapter.ContextType.ADMIN_HOME,
-            items = mutableListOf()
-        )
-        recyclerView.adapter = adapter
+        return view
+    }
 
-        val call2 = retrofitService.getAuthDrivers()
+    override fun onResume() {
+        super.onResume()
+        scheduledExecutorService.scheduleAtFixedRate({
+            fetchAuthenticatedDrivers()
+        }, 0, 3, TimeUnit.SECONDS) // Adjust timing as needed
+    }
 
+    override fun onPause() {
+        super.onPause()
+        scheduledExecutorService.shutdownNow() // Stop all currently executing tasks
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor() // Prepare for next onResume
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scheduledExecutorService.shutdown() // Ensure no memory leaks from the executor service
+    }
+
+    private fun fetchAuthenticatedDrivers() {
+        val call2 = retrofitService.getAuthDrivers("Bearer $accessToken")
         call2.enqueue(object : Callback<List<DriverVecLocModel>> {
             override fun onResponse(call: Call<List<DriverVecLocModel>>, response: Response<List<DriverVecLocModel>>) {
                 if (response.isSuccessful) {
@@ -100,12 +120,10 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
                 Log.e("AdminHome", "Error fetching data", t)
             }
         })
-
-        return view
     }
 
     override fun onDeleteUser(userId: Int, position: Int) {
-        val call = retrofitService.adminDeleteUser(userId) // Assuming retrofitService is your Retrofit instance's service
+        val call = retrofitService.adminDeleteUser("Bearer $accessToken") // Assuming retrofitService is your Retrofit instance's service
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
@@ -123,40 +141,6 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
             }
         })
     }
-//    fun deleteItem(userId: Int, position: Int) {
-//        val call = retrofitService.adminDeleteUser(userId) // Assuming retrofitService is your Retrofit instance's service
-//        call.enqueue(object : Callback<Void> {
-//            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-//                if (response.isSuccessful) {
-//                    adapter.removeItemAt(position)
-//                    Toast.makeText(requireContext(), "Item deleted successfully", Toast.LENGTH_SHORT).show()
-//                } else {
-//                    // Handle error, could use response.code() to tailor the message
-//                    Toast.makeText(requireContext(), "Failed to delete item", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<Void>, t: Throwable) {
-//                // Handle failure
-//                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-//    }
-
-    private fun signOut() {
-        SessionManager.signOut(requireContext())
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AdminHome().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 
     override fun onQueueUser(userId: Int, position: Int, vehicleId: Int) {
         val userQueue = UserQueue(requireContext(), adapter)
@@ -171,6 +155,10 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     override fun editUser(userId: Int, position: Int, userModel: EditUserModel) {
         val editUser = UserEdit(requireContext(), adapter)
         editUser.editUser(retrofitService, userId, position, userModel)
+    }
+
+    private fun signOut() {
+        SessionManager.signOut(requireContext())
     }
 }
 

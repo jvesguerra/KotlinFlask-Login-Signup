@@ -1,6 +1,5 @@
 package com.example.portal.api
 
-import com.example.portal.GoogleSignInRequest
 import com.example.portal.models.Credentials
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.DriverVecLocModel
@@ -8,7 +7,6 @@ import com.example.portal.models.EditUserModel
 import com.example.portal.models.EditUserResponse
 import com.example.portal.models.LocationModel
 import com.example.portal.models.LoginResponse
-import com.example.portal.models.MessageResponse
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
 import retrofit2.Call
@@ -22,8 +20,8 @@ import retrofit2.http.Path
 
 interface UserServe {
     // DELETE
-    @DELETE("admin_delete_user/{userId}")
-    fun adminDeleteUser(@Path("userId") userId: Int): Call<Void>
+    @DELETE("/admin_delete_user")
+    fun adminDeleteUser(@Header("Authorization") token: String): Call<Void>
 
     @DELETE("/delete_petition")
     fun deletePetition(@Header("Authorization") token: String): Call<Void>
@@ -33,7 +31,7 @@ interface UserServe {
     fun fetchData(@Header("Authorization") token: String): Call<UserResponse>
 
     @GET("/get_auth_drivers")
-    fun getAuthDrivers(): Call<List<DriverVecLocModel>>
+    fun getAuthDrivers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
 
     @GET("/get_available_forestry_drivers")
     fun getAvailableForestryDrivers(): Call<List<DriverVecLocModel>>
@@ -54,7 +52,7 @@ interface UserServe {
     fun getLocations(): Call<List<LocationModel>>
 
     @GET("/get_pending_drivers")
-    fun getPendingDrivers(): Call<List<DriverVecLocModel>>
+    fun getPendingDrivers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
 
     @GET("/get_petition")
     fun getPetition(@Header("Authorization") token: String): Call<Int>
