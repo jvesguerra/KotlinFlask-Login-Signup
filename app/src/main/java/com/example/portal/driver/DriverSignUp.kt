@@ -92,7 +92,12 @@ class DriverSignUp : Fragment() {
         routeEditText.adapter = routeAdapter
 
         routeEditText.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 selectedItem = parent.getItemAtPosition(position).toString()
                 // Use selectedItem as needed
             }
@@ -137,25 +142,36 @@ class DriverSignUp : Fragment() {
             }
 
             if (missingFields.isNotEmpty()) {
-                val errorMessage = "Please fill in the following fields: ${missingFields.joinToString(", ")}"
+                val errorMessage =
+                    "Please fill in the following fields: ${missingFields.joinToString(", ")}"
                 showToast(errorMessage)
-            }else{
-                if(containsDigits(firstName)){
+            } else {
+                if (containsDigits(firstName)) {
                     showToast("Invalid First Name format")
                     firstNameErrorText.text = "Invalid First name format"
-                }else{
-                    if(containsDigits(lastName)) {
+                } else {
+                    if (containsDigits(lastName)) {
                         showToast("Invalid Last Name format")
                         lastNameErrorText.text = "Invalid Last name format"
-                    }else{
+                    } else {
                         if (isValidContactNumber(contactNumber)) {
                             if (isValidPassword(password)) {
                                 if (isValidPlateNumber(plateNumber)) {
-                                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email)
+                                            .matches()
+                                    ) {
                                         showToast("Invalid email format")
                                         emailErrorText.text = "Invalid email format"
-                                    }else{
-                                        signUp(email, firstName, lastName, contactNumber, password, route, plateNumber)
+                                    } else {
+                                        signUp(
+                                            email,
+                                            firstName,
+                                            lastName,
+                                            contactNumber,
+                                            password,
+                                            route,
+                                            plateNumber
+                                        )
                                     }
                                 } else {
                                     showToast("Invalid plate number format")
@@ -196,7 +212,8 @@ class DriverSignUp : Fragment() {
     }
 
     private fun isValidPassword(password: String): Boolean {
-        val pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*-])[A-Za-z\\d!@#$%^&*-]+$")
+        val pattern =
+            Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*-])[A-Za-z\\d!@#$%^&*-]+$")
         val matcher = pattern.matcher(password)
         return matcher.matches()
     }
@@ -205,64 +222,76 @@ class DriverSignUp : Fragment() {
         val regex = Regex("\\d")  // Raw string for digit pattern
         return regex.containsMatchIn(name)
     }
-    private fun signUp(email: String, firstName: String, lastName: String, contactNumber: String, password: String, route: String, plateNumber: String) {
-            val newUser = UserModel(
-                userId = 0,
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                contactNumber = contactNumber,
-                password = password,
-                userType = 2,
-                rating = 0,
-                isActive = true,
-                authorized = false,
-                isQueued = false,
-                isPetitioned = 0
-            )
 
-            val newVehicle = VehicleModel(
-                vehicleId = 0,
-                userId = 0,
-                plateNumber = plateNumber,
-                route = route,
-                isAvailable = false,
-                hasDeparted = false,
-                isFull = false,
-                queuedUsers = mutableListOf()
-            )
+    private fun signUp(
+        email: String,
+        firstName: String,
+        lastName: String,
+        contactNumber: String,
+        password: String,
+        route: String,
+        plateNumber: String
+    ) {
+        val newUser = UserModel(
+            userId = 0,
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            contactNumber = contactNumber,
+            password = password,
+            userType = 2,
+            rating = 0,
+            isActive = true,
+            authorized = false,
+            isQueued = false,
+            isPetitioned = 0
+        )
 
-            val request = DriverSignUpRequest(newUser, newVehicle)
+        val newVehicle = VehicleModel(
+            vehicleId = 0,
+            userId = 0,
+            plateNumber = plateNumber,
+            route = route,
+            isAvailable = false,
+            hasDeparted = false,
+            isFull = false,
+            queuedUsers = mutableListOf()
+        )
 
-            val call = retrofitService.registerDriver(request)
-            call.enqueue(object : Callback<EditUserResponse> {
-                override fun onResponse(call: Call<EditUserResponse>, response: Response<EditUserResponse>) {
-                    if (response.isSuccessful) {
-                        Log.e("Success", "Driver successfully registered")
-                        val message = "Driver successfully registered"
-                        showToast(message)
-                        Navigation.findNavController(view).navigate(R.id.toUnauthorized)
-                    } else {
-                        val errorJson = response.errorBody()?.string()
-                            ?.let { JSONObject(it) }
-                        val errorMessage = errorJson?.getString("message")
-                        // Display error message
-                        Log.e("Error", "Response error: $errorMessage")
-                        if (errorMessage != null) {
-                            showToast(errorMessage)
-                        }
+        val request = DriverSignUpRequest(newUser, newVehicle)
+
+        val call = retrofitService.registerDriver(request)
+        call.enqueue(object : Callback<EditUserResponse> {
+            override fun onResponse(
+                call: Call<EditUserResponse>,
+                response: Response<EditUserResponse>
+            ) {
+                if (response.isSuccessful) {
+                    Log.e("Success", "Driver successfully registered")
+                    val message = "Driver successfully registered"
+                    showToast(message)
+                    Navigation.findNavController(view).navigate(R.id.toUnauthorized)
+                } else {
+                    val errorJson = response.errorBody()?.string()
+                        ?.let { JSONObject(it) }
+                    val errorMessage = errorJson?.getString("message")
+                    // Display error message
+                    Log.e("Error", "Response error: $errorMessage")
+                    if (errorMessage != null) {
+                        showToast(errorMessage)
                     }
                 }
+            }
 
-                override fun onFailure(call: Call<EditUserResponse>, t: Throwable) {
-                    try {
-                        // Handle network error
-                        Log.e("Network Error", "Error: ${t.message}", t)
-                    } catch (e: Exception) {
-                        // Handle any other unexpected exceptions
-                        Log.e("Error", "Unexpected error: ${e.message}", e)
-                    }
+            override fun onFailure(call: Call<EditUserResponse>, t: Throwable) {
+                try {
+                    // Handle network error
+                    Log.e("Network Error", "Error: ${t.message}", t)
+                } catch (e: Exception) {
+                    // Handle any other unexpected exceptions
+                    Log.e("Error", "Unexpected error: ${e.message}", e)
                 }
-            })
+            }
+        })
     }
 }

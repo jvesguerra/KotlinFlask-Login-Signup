@@ -22,16 +22,14 @@ class DriverHome : Fragment() {
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
     private lateinit var sharedPreferences: SharedPreferences
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.driver_home, container, false)
-        sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         val accessToken = sharedPreferences.getString("accessToken", "")
         val firstName = sharedPreferences.getString("firstName", "")
         val homeString: TextView = view.findViewById(R.id.driverHomeText)
@@ -45,14 +43,23 @@ class DriverHome : Fragment() {
     }
 
     private fun readyDriver(accessToken: String?) {
-        val call = retrofitService.readyDriver("Bearer $accessToken") // Assuming retrofitService is your Retrofit instance's service
+        val call =
+            retrofitService.readyDriver("Bearer $accessToken")
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Driver set to ready successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Driver set to ready successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     view?.let { Navigation.findNavController(it).navigate(R.id.toDriverHome2) }
                 } else {
-                    Toast.makeText(requireContext(), "Failed to set driver ready", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to set driver ready",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 

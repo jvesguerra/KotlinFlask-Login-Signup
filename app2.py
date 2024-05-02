@@ -522,8 +522,6 @@ def add_queued_user(vehicleId, userId):
 @app.route('/remove_queued_user/<int:vehicleId>/<int:userId>', methods=['PUT', 'DELETE'])
 def remove_queued_user(vehicleId, userId):
     try:
-        print("Vehicle ID: ", vehicleId)
-        print("User ID: ", userId)
         vehicle = Vehicle.query.get(vehicleId)
         user = User.query.get(userId)
 
@@ -619,10 +617,11 @@ def add_user():
 
 
 @app.route('/add_location', methods=['POST'])
+@jwt_required()
 def add_location():
+    userId = get_jwt_identity()
     data = request.get_json()
     locationId = generate_location_id()
-    userId = data.get('userId')
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     timestamp = datetime.now()
@@ -641,7 +640,7 @@ def add_location():
 
     db.session.add(new_location)
     db.session.commit()
-    return jsonify({'message': 'User added successfully'})
+    return jsonify({'message': 'Location added successfully'})
 
 
 @app.route('/update_authorized/<int:userId>', methods=['PUT'])
@@ -668,14 +667,14 @@ def ready_driver():
     return jsonify({'message': 'Driver set to ready successfully'})
 
 
-@app.route('/get_incoming_passengers/<int:userId>', methods=['GET'])
-def get_incoming_passengers(userId):
+@app.route('/get_incoming_passengers', methods=['GET'])
+@jwt_required()
+def get_incoming_passengers():
+    userId = get_jwt_identity()
     user = User.query.get(userId)
     vehicle = Vehicle.query.filter_by(userId=user.userId).first()
     if vehicle:
         queued_users_count = len(json.loads(vehicle.queuedUsers))
-        # print("Queued Users Count: ", queued_users_count)
-        # return jsonify({'queuedUsersCount': queued_users_count})
         return str(queued_users_count)
     else:
         return jsonify({'error': 'Vehicle not found'})
