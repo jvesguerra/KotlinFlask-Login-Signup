@@ -1,4 +1,4 @@
-package com.example.portal
+package com.example.portal.driver
 
 import android.content.BroadcastReceiver
 import android.content.ComponentName
@@ -24,9 +24,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.portal.ForegroundOnlyLocationService
+import com.example.portal.R
+import com.example.portal.SharedPreferenceUtil
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
+import com.example.portal.enqueueVoid
+import com.example.portal.logResultsToScreen
 import com.example.portal.models.LocationModel
+import com.example.portal.toLatLng
 import com.example.portal.utils.PermissionHelper
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
@@ -39,10 +45,12 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-private const val TAG = "DRIVER HOME 2"
-private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
+//private const val TAG = "DRIVER HOME 2"
+//private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
 class DriverHome2 : Fragment(),
     SharedPreferences.OnSharedPreferenceChangeListener{
+    private val TAG = "DRIVER HOME 2"
+    private val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
     private lateinit var sharedPreferences: SharedPreferences
@@ -254,7 +262,8 @@ class DriverHome2 : Fragment(),
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
             foregroundOnlyBroadcastReceiver,
             IntentFilter(
-                ForegroundOnlyLocationService.ACTION_FOREGROUND_ONLY_LOCATION_BROADCAST)
+                ForegroundOnlyLocationService.ACTION_FOREGROUND_ONLY_LOCATION_BROADCAST
+            )
         )
     }
 
@@ -400,13 +409,5 @@ class DriverHome2 : Fragment(),
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DriverHome2().apply {
-                arguments = Bundle().apply {
-                }
-            }
     }
 }

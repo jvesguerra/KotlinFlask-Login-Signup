@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DriverHome2">
+    tools:context=".driver.DriverHome2">
 
     <!-- TextView for "DRIVER HOME 2" header -->
     <TextView

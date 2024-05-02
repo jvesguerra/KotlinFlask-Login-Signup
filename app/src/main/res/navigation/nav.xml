@@ -95,7 +95,7 @@
 
     <fragment
         android:id="@+id/driverHome2"
-        android:name="com.example.portal.DriverHome2"
+        android:name="com.example.portal.driver.DriverHome2"
         android:label="driver_home2"
         tools:layout="@layout/driver_home2" />
 

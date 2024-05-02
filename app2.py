@@ -652,8 +652,10 @@ def update_authorized(userId):
     return jsonify({'message': 'User authorized successfully'})
 
 
-@app.route('/ready_driver/<int:userId>', methods=['PUT'])
-def ready_driver(userId):
+@app.route('/ready_driver', methods=['PUT'])
+@jwt_required()
+def ready_driver():
+    userId = get_jwt_identity()
     user = User.query.get(userId)
     if user:
         vehicle = Vehicle.query.filter_by(userId=user.userId).first()

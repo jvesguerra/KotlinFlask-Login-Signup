@@ -45,8 +45,10 @@ interface UserServe {
     @POST("/register_driver")
     fun registerDriver(@Body request: DriverSignUpRequest): Call<EditUserResponse>
 
-    @PUT("ready_driver/{userId}")
-    fun readyDriver(@Path("userId") userId: Int): Call<Void>
+    @PUT("/ready_driver")
+    fun readyDriver(
+        @Header("Authorization") token: String,
+    ): Call<Void>
 
     @GET("/get_available_forestry_drivers")
     fun getAvailableForestryDrivers(): Call<List<DriverVecLocModel>>
