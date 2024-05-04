@@ -1,38 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFF7F7"
     tools:context=".user.UserHome1">
 
-    <!-- TextView for displaying "ROUTES" -->
+
+    <ImageView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="106dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="-5dp"
+        android:src="@drawable/rectangle_red" />
+
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="216dp"
+        android:layout_height="79dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="-15dp"
+        android:contentDescription="@string/logo_description"
+        android:src="@drawable/logo_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textViewRoutes"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ROUTES"
-        android:gravity="center"
+        android:layout_below="@+id/imageViewLogo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="99dp"
+        android:text="@string/routes"
+        android:textSize="36sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/instructionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_which_route_you_need"
         android:textSize="24sp"
-        android:layout_centerHorizontal="true" />
+        android:textColor="@android:color/darker_gray"
+        android:layout_below="@id/textViewRoutes"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_marginTop="0dp"/>
 
     <!-- Button for forestry -->
     <Button
         android:id="@+id/btnForestry"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Forestry"
-        android:layout_below="@id/textViewRoutes"
+        android:layout_height="72dp"
+        android:textSize="24sp"
+        android:text="@string/forestry"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/instructionText"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginTop="16dp" />
 
     <!-- Button for rural -->
     <Button
         android:id="@+id/btnRural"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Rural"
+        android:layout_height="72dp"
+        android:textSize="24sp"
+        android:text="@string/rural"
+        android:layout_centerHorizontal="true"
         android:layout_below="@id/btnForestry"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginTop="16dp" />
 
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="9dp"
+        android:text="@string/sign_out"
+        android:textColor="#FFFFFF" />
 
 
 </RelativeLayout>

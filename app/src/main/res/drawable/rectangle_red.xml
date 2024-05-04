@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Transparent rectangle for shadow -->
+    <item android:top="4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- Rectangle with shadow at the bottom -->
+    <item android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#7b1113" /> <!-- Rectangle color -->
+            <corners android:radius="4dp" /> <!-- Adjust the corner radius as needed -->
+        </shape>
+    </item>
+
+</layer-list>
