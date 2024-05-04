@@ -68,5 +68,12 @@
     <string name="pending_applications">Pending Applications</string>
     <string name="dashboard">Dashboard\n</string>
 
+<!-- USER HOME -->
+    <string name="routes">ROUTES</string>
+    <string name="choose_which_route_you_need">Choose which route you need</string>
+    <string name="forestry">Forestry</string>
+    <string name="rural">Rural</string>
+    <string name="design">design</string>
+
 
 </resources>
