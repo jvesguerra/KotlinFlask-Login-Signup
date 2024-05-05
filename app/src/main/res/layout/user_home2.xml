@@ -59,7 +59,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="584dp"
         android:layout_marginEnd="24dp"
         android:text="@string/get_a_ride_sign_a_petition"
         android:textSize="14sp"
@@ -67,7 +66,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.769" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/btnPetition"

@@ -709,6 +709,7 @@ def get_locations():
 
 
 @app.route('/get_available_forestry_drivers', methods=['GET'])
+@jwt_required()
 def get_available_forestry_drivers():
     subquery = db.session.query(Location.userId, func.max(Location.timestamp).label('latest_timestamp')).group_by(
         Location.userId).subquery()
@@ -744,6 +745,7 @@ def get_available_forestry_drivers():
 
 
 @app.route('/get_available_rural_drivers', methods=['GET'])
+@jwt_required()
 def get_available_rural_drivers():
     drivers = db.session.query(User, Vehicle, Location).join(Vehicle, User.userId == Vehicle.userId).join(Location,
                                                                                                           User.userId == Location.userId).filter(
@@ -848,6 +850,7 @@ def admin_delete_user():
     except Exception as e:
         db.session.rollback()
         return f"An error occurred: {str(e)}"
+
 
 @app.route('/take_passengers', methods=['PUT'])
 @jwt_required()
