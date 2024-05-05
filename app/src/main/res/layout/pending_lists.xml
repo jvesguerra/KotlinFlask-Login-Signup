@@ -47,9 +47,10 @@
         android:id="@+id/btnMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Map"
+        android:text="@string/map"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnLogout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnLogout"
         android:layout_margin="16dp"/>
 
     <!-- Sign Out Button -->
@@ -57,8 +58,9 @@
         android:id="@+id/btnLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign Out"
+        android:text="@string/sign_out"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnMap"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"/>
 

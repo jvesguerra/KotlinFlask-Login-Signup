@@ -246,7 +246,7 @@ class Adapter(
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_driver_detail, null)
 
         dialogView.findViewById<TextView>(R.id.fullNameTextView).text = "${user.firstName} ${user.lastName}"
-        dialogView.findViewById<TextView>(R.id.userIdTextView).text = "Contact Number: ${user.vehicleId}"
+        dialogView.findViewById<TextView>(R.id.contactNumberTextView).text = "Contact Number: ${user.contactNumber}"
         dialogView.findViewById<TextView>(R.id.plateNumberTextView).text = "Plate Number: ${user.plateNumber}"
         dialogView.findViewById<TextView>(R.id.routeTextView).text = "Route: ${user.route}"
 
