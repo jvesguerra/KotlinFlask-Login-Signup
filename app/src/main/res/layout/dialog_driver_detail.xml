@@ -5,7 +5,8 @@
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
     android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+    android:paddingBottom="16dp"
+    android:background="@drawable/background_rounded_corners">
 
     <TextView
         android:id="@+id/fullNameTextView"
@@ -13,28 +14,40 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
         android:paddingBottom="8dp"
         android:text="Full Name"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black" />
+
     <TextView
-        android:id="@+id/userIdTextView"
+        android:id="@+id/contactNumberTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="User ID"
-        android:paddingBottom="4dp"/>
+        android:text="Contact Number"
+        android:textColor="@color/black"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"/>
 
     <TextView
         android:id="@+id/plateNumberTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Plate Number"
-        android:paddingBottom="4dp"/>
+        android:textColor="@color/black"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"/>
 
     <TextView
         android:id="@+id/routeTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Route"
-        android:paddingBottom="4dp"/>
+        android:textColor="@color/black"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"/>
 
 </LinearLayout>

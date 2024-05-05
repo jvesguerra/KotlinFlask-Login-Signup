@@ -51,6 +51,7 @@
         android:layout_height="wrap_content"
         android:text="@string/map"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnPending"
         android:layout_margin="16dp"/>
 
@@ -61,6 +62,7 @@
         android:layout_height="wrap_content"
         android:text="@string/pending"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnMap"
         app:layout_constraintEnd_toStartOf="@id/btnLogout"
         android:layout_margin="16dp"/>
 
@@ -71,6 +73,7 @@
         android:layout_height="wrap_content"
         android:text="@string/sign_out"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnPending"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"/>
 
