@@ -28,6 +28,9 @@ import com.example.portal.utils.UserRemoveQueue
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     private lateinit var sharedPreferences: SharedPreferences
@@ -36,15 +39,20 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
     private lateinit var btnPetition: Button
+    private var accessToken: String? = null
+    private lateinit var scheduledExecutorService: ScheduledExecutorService
+    private var route: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.user_home2, container, false)
-        val route = arguments?.getString("route")
+        route = arguments?.getString("route")
         val bundle = Bundle()
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+        accessToken = sharedPreferences.getString("accessToken", null)
 
         btnPetition = view.findViewById(R.id.btnPetition)
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
@@ -69,10 +77,34 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         )
         recyclerView.adapter = adapter
 
+
+
+        return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        scheduledExecutorService.scheduleAtFixedRate({
+            fetchdDrivers()
+        }, 0, 3, TimeUnit.SECONDS) // Adjust timing as needed
+    }
+
+    override fun onPause() {
+        super.onPause()
+        scheduledExecutorService.shutdownNow() // Stop all currently executing tasks
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor() // Prepare for next onResume
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scheduledExecutorService.shutdown() // Ensure no memory leaks from the executor service
+    }
+
+    private fun fetchdDrivers() {
         val call: Call<List<DriverVecLocModel>> = if (route == "Forestry"){
-            retrofitService.getAvailableForestryDrivers()
+            retrofitService.getAvailableForestryDrivers("Bearer $accessToken")
         }else{
-            retrofitService.getAvailableRuralDrivers()
+            retrofitService.getAvailableRuralDrivers("Bearer $accessToken")
         }
 
         call.enqueue(object : Callback<List<DriverVecLocModel>> {
@@ -90,8 +122,6 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
                 Log.e("UserHome2", "Error fetching data", t)
             }
         })
-
-        return view
     }
     private fun signOut() {
         SessionManager.signOut(requireContext())

@@ -34,10 +34,10 @@ interface UserServe {
     fun getAuthDrivers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
 
     @GET("/get_available_forestry_drivers")
-    fun getAvailableForestryDrivers(): Call<List<DriverVecLocModel>>
+    fun getAvailableForestryDrivers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
 
     @GET("/get_available_rural_drivers")
-    fun getAvailableRuralDrivers(): Call<List<DriverVecLocModel>>
+    fun getAvailableRuralDrivers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
 
     @GET("/get_forestry_petition")
     fun getForestryPetition(@Header("Authorization") token: String): Call<Int>
