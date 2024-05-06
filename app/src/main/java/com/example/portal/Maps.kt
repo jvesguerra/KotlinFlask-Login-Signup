@@ -144,7 +144,7 @@ class Maps : Fragment(),
     }
 
     private fun fetchLocations() {
-        LocationHelper.fetchLocations(retrofitService) { fetchedLocations ->
+        LocationHelper.fetchLocations(requireContext(),retrofitService) { fetchedLocations ->
             LocationHelper.handleFetchedLocations(googleMap, fetchedLocations)
         }
     }

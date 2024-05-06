@@ -681,32 +681,64 @@ def get_incoming_passengers():
         return jsonify({'error': 'Vehicle not found'})
 
 
+# @app.route('/get_locations', methods=['GET'])
+# def get_locations():
+#     # Subquery to get the latest timestamp for each user with user type 2
+#     latest_timestamps = db.session.query(Location.userId, func.max(Location.timestamp).label('max_timestamp')) \
+#         .join(User, Location.userId == User.userId) \
+#         .join(Vehicle, Vehicle.userId == User.userId) \
+#         .filter(User.userType == 2) \
+#         .filter(Vehicle.isAvailable == True) \
+#         .group_by(Location.userId) \
+#         .subquery()
+#
+#     # Query to get the latest location for each user with user type 2 and isAvailable vehicles
+#     latest_locations = db.session.query(Location) \
+#         .join(latest_timestamps,
+#               (Location.userId == latest_timestamps.c.userId) &
+#               (Location.timestamp == latest_timestamps.c.max_timestamp)) \
+#         .all()
+#
+#     # Construct JSON response
+#     response_data = [{'locationId': loc.locationId,
+#                       'userId': loc.userId,
+#                       'latitude': loc.latitude,
+#                       'longitude': loc.longitude} for loc in latest_locations]
+#
+#     print(response_data)
+#
+#     return jsonify(response_data)
+
 @app.route('/get_locations', methods=['GET'])
+@jwt_required()
 def get_locations():
     # Subquery to get the latest timestamp for each user with user type 2
-    latest_timestamps = db.session.query(Location.userId, func.max(Location.timestamp).label('max_timestamp')) \
-        .join(User, Location.userId == User.userId) \
-        .join(Vehicle, Vehicle.userId == User.userId) \
-        .filter(User.userType == 2) \
-        .filter(Vehicle.isAvailable == True) \
+    latest_timestamps_subquery = db.session.query(Location.userId, func.max(Location.timestamp).label('max_timestamp')) \
         .group_by(Location.userId) \
         .subquery()
 
     # Query to get the latest location for each user with user type 2 and isAvailable vehicles
-    latest_locations = db.session.query(Location) \
-        .join(latest_timestamps,
-              (Location.userId == latest_timestamps.c.userId) &
-              (Location.timestamp == latest_timestamps.c.max_timestamp)) \
+    locations = db.session.query(Location, Vehicle) \
+        .join(Vehicle, Vehicle.userId == Location.userId) \
+        .join(User, User.userId == Location.userId) \
+        .join(latest_timestamps_subquery,
+              and_(Location.userId == latest_timestamps_subquery.c.userId,
+                   Location.timestamp == latest_timestamps_subquery.c.max_timestamp)) \
+        .filter(Vehicle.isAvailable == True,
+                User.userType == 2) \
         .all()
 
     # Construct JSON response
-    response_data = [{'locationId': loc.locationId,
-                      'userId': loc.userId,
-                      'latitude': loc.latitude,
-                      'longitude': loc.longitude} for loc in latest_locations]
+    locations_dict = [{
+        'locationId': location.locationId,
+        'userId': location.userId,
+        'latitude': location.latitude,
+        'longitude': location.longitude,
+        'plateNumber': vehicle.plateNumber,
+    } for location, vehicle in locations]
 
-    return jsonify(response_data)
-
+    print(locations_dict)
+    return jsonify(locations_dict)
 
 @app.route('/get_available_forestry_drivers', methods=['GET'])
 @jwt_required()

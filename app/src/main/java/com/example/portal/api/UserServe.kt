@@ -6,6 +6,7 @@ import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.EditUserModel
 import com.example.portal.models.EditUserResponse
 import com.example.portal.models.LocationModel
+import com.example.portal.models.LocationUserModel
 import com.example.portal.models.LoginResponse
 import com.example.portal.models.UserModel
 import com.example.portal.models.UserResponse
@@ -52,7 +53,7 @@ interface UserServe {
     fun getisQueued(@Path("userId") userId: Int): Call<Boolean>
 
     @GET("/get_locations")
-    fun getLocations(): Call<List<LocationModel>>
+    fun getLocations(@Header("Authorization") token: String): Call<List<LocationUserModel>>
 
     @GET("/get_pending_drivers")
     fun getPendingDrivers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
