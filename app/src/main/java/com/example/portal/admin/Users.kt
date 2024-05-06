@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +26,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-class PendingLists : Fragment(), OnDeleteUserListener {
+class Users : Fragment(), OnDeleteUserListener {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: Adapter
@@ -34,12 +34,11 @@ class PendingLists : Fragment(), OnDeleteUserListener {
         .create(UserServe::class.java)
     private var accessToken: String? = null
     private lateinit var scheduledExecutorService: ScheduledExecutorService
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.pending_lists, container, false)
+        val view = inflater.inflate(R.layout.users, container, false)
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         accessToken = sharedPreferences.getString("accessToken", null)
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
@@ -48,10 +47,10 @@ class PendingLists : Fragment(), OnDeleteUserListener {
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = Adapter(
-            onDeleteUserListener = this@PendingLists,
+            onDeleteUserListener = this@Users,
             onQueueUserListener = null,
             context = requireContext(),
-            contextType = Adapter.ContextType.PENDING_LISTS,
+            contextType = Adapter.ContextType.USERS,
             items = mutableListOf()
         )
         recyclerView.adapter = adapter
@@ -68,7 +67,7 @@ class PendingLists : Fragment(), OnDeleteUserListener {
     override fun onResume() {
         super.onResume()
         scheduledExecutorService.scheduleAtFixedRate({
-            fetchPendingDrivers()
+            getUsers()
         }, 0, 3, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
     }
 
@@ -83,8 +82,8 @@ class PendingLists : Fragment(), OnDeleteUserListener {
         scheduledExecutorService.shutdown() // Ensure no memory leaks from the executor service
     }
 
-    private fun fetchPendingDrivers() {
-        val call = retrofitService.getPendingDrivers("Bearer $accessToken")
+    private fun getUsers() {
+        val call = retrofitService.getUsers("Bearer $accessToken")
         call.enqueue(object : Callback<List<DriverVecLocModel>> {
             override fun onResponse(call: Call<List<DriverVecLocModel>>, response: Response<List<DriverVecLocModel>>) {
                 if (response.isSuccessful) {
@@ -99,13 +98,13 @@ class PendingLists : Fragment(), OnDeleteUserListener {
             }
         })
     }
+
     private fun signOut() {
         val editor = sharedPreferences.edit()
         editor.clear()
         editor.apply()
         println("User logged out")
     }
-
     override fun onDeleteUser(userId: Int, position: Int) {
         val call = retrofitService.adminDeleteUser("Bearer $accessToken") // Assuming retrofitService is your Retrofit instance's service
         call.enqueue(object : Callback<Void> {

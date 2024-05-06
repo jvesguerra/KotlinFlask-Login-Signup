@@ -776,6 +776,23 @@ def get_available_rural_drivers():
 
     return jsonify(drivers_dict)
 
+@app.route('/get_users', methods=['GET'])
+@jwt_required()
+def get_users():
+    users = db.session.query(User).filter(User.userType == 1).all()
+
+    users_dict = [{
+        'userId': user.userId,
+        'firstName': user.firstName,
+        'lastName': user.lastName,
+        'contactNumber': user.contactNumber,
+        'email': user.email,
+
+    } for user in users]
+
+    print(users_dict)
+
+    return jsonify(users_dict)
 
 @app.route('/get_auth_drivers', methods=['GET'])
 @jwt_required()
@@ -789,6 +806,7 @@ def get_auth_drivers():
         'firstName': user.firstName,
         'lastName': user.lastName,
         'contactNumber': user.contactNumber,
+        'email': user.email,
         'rating': user.rating,
         'userType': user.userType,
         'isActive': user.isActive,
