@@ -58,6 +58,7 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
         val mapsButton: Button = view.findViewById(R.id.btnMap)
         val pendingListsButton: Button = view.findViewById(R.id.btnPending)
+        val usersButton: Button = view.findViewById(R.id.btnUsers)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -74,6 +75,10 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         // Button Listeners
         pendingListsButton.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.toPendingLists)
+        }
+
+        usersButton.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.toUsers)
         }
 
         mapsButton.setOnClickListener {

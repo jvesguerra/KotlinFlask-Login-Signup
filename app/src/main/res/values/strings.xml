@@ -1,16 +1,16 @@
 <resources>
-<!-- GENERAL-->
+    <!-- GENERAL-->
     <string name="logo_description">traveLBetter</string>
     <string name="sign_out">Sign out</string>
     <string name="settings">Settings</string>
     <string name="ok">OK</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="app_name">Portal</string>
-<!-- API-->
+    <!-- API-->
     <string name="google_map_api_key">AIzaSyD9BAhnNb62l_L_Htwtf3uJ1Q-saSoFFtw</string>
     <string name="default_web_client_id">562377295927-26r2kaucq403vbpo01pd5bjq9volo46n.apps.googleusercontent.com</string>
 
-<!-- FORMS -->
+    <!-- FORMS -->
     <string name="sign_up_page">Sign Up Page</string>
     <string name="sign_up_page_title">Welcome to TravelBetter</string>
     <string name="sign_up_page_subtitle">Choose an account type to proceed</string>
@@ -35,7 +35,7 @@
         <item>Rural</item>
     </string-array>
 
-<!-- MAPS -->
+    <!-- MAPS -->
     <string name="launch_activity">Launch activity</string>
     <string name="location_unknown">Location Unknown</string>
     <string name="location_updates_label">Location Updates</string>
@@ -47,40 +47,38 @@
     <string name="preference_file_key">com.example.portal.PREFERENCE_FILE_KEY</string>
     <string name="no_location_text">No current location</string>
 
-<!-- DRIVER HOME 1-->
+    <!-- DRIVER HOME 1-->
     <string name="press_ready_to_start_accepting_passengers">Press \'READY\' to start \n accepting passengers</string>
     <string name="driver_home">HOME</string>
     <string name="ready">READY</string>
 
-<!-- DRIVER HOME 2 -->
+    <!-- DRIVER HOME 2 -->
     <string name="_0">0</string>
     <string name="incoming_passengers">Incoming Passengers</string>
     <string name="take_passengers">Take Passengers</string>
     <string name="passengeres_queued_online_n_to_your_vehicle">Passengers queued online \n to your vehicle:</string>
     <string name="passengers_in_petition_0">Passengers in petition: 0</string>
 
-<!-- ADMIN HOME -->
+    <!-- ADMIN HOME -->
     <string name="admin_home">HOME</string>
     <string name="map">Map</string>
     <string name="pending">Pending</string>
 
-<!-- PENDING LISTS -->
+    <!-- PENDING LISTS -->
     <string name="pending_applications">Pending Applications</string>
     <string name="dashboard">Dashboard\n</string>
 
-<!-- USER HOME -->
+    <!-- USER HOME -->
     <string name="routes">ROUTES</string>
     <string name="choose_which_route_you_need">Choose which route you need</string>
     <string name="forestry">Forestry</string>
     <string name="rural">Rural</string>
     <string name="design">design</string>
 
-<!-- USER HOME 2 -->
+    <!-- USER HOME 2 -->
     <string name="available_vehicles">Available Vehicles</string>
     <string name="get_a_ride_sign_a_petition">Get a ride, sign a petition</string>
     <string name="petition">Petition</string>
-
-
 
 
 </resources>

@@ -42,12 +42,21 @@
         <action
             android:id="@+id/toMaps"
             app:destination="@id/maps" />
+        <action
+            android:id="@+id/toUsers"
+            app:destination="@id/users" />
     </fragment>
     <fragment
         android:id="@+id/pendingLists"
         android:name="com.example.portal.admin.PendingLists"
         android:label="pending_lists"
         tools:layout="@layout/pending_lists" />
+
+    <fragment
+        android:id="@+id/users"
+        android:name="com.example.portal.Users"
+        android:label="users"
+        tools:layout="@layout/users" />
     <fragment
         android:id="@+id/signUpPage"
         android:name="com.example.portal.SignUpPage"
@@ -133,6 +142,7 @@
         <action
             android:id="@+id/petitionReload"
             app:destination="@id/petition" />
+
 
 
 </navigation>
