@@ -48,7 +48,7 @@ class Adapter(
     val userId = 0 // Change of implementation
 
     enum class ContextType {
-        ADMIN_HOME, PENDING_LISTS, USER_HOME2
+        ADMIN_HOME, PENDING_LISTS, USER_HOME2, USERS
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
@@ -320,13 +320,22 @@ class Adapter(
         fun bind(user: DriverVecLocModel) {
             val fullname = "${user.firstName} ${user.lastName}"
             itemView.findViewById<TextView>(R.id.itemNameTextView).text = fullname
-            itemView.findViewById<TextView>(R.id.RouteTextView).text = user.plateNumber
-            itemView.findViewById<TextView>(R.id.PlateNumberTextView).text = user.route
+            val routeTextView = itemView.findViewById<TextView>(R.id.RouteTextView)
+            val plateNumberTextView = itemView.findViewById<TextView>(R.id.PlateNumberTextView)
+            val emailTextView = itemView.findViewById<TextView>(R.id.EmailTextView)
 
+            routeTextView.text = user.route
+            plateNumberTextView.text = user.plateNumber
+            emailTextView.text = user.email
 
             // Chooses which buttons to Show
             when (contextType) {
                 ContextType.ADMIN_HOME -> {
+                    routeTextView.visibility = View.VISIBLE
+                    plateNumberTextView.visibility = View.VISIBLE
+                    emailTextView.visibility = View.VISIBLE
+
+
                     deleteButton.visibility = View.VISIBLE
                     showDriverDetails.visibility = View.VISIBLE
                     editButton.visibility = View.VISIBLE
@@ -339,6 +348,10 @@ class Adapter(
                     hasDepartedTextView.visibility = View.GONE
                 }
                 ContextType.USER_HOME2 -> {
+                    routeTextView.visibility = View.VISIBLE
+                    plateNumberTextView.visibility = View.VISIBLE
+                    emailTextView.visibility = View.VISIBLE
+
                     val isFull = if(user.isFull) "Full" else "Not Full"
 
                     var vertices = listOf<Pair<Double, Double>,>()
@@ -411,6 +424,10 @@ class Adapter(
                     }
                 }
                 ContextType.PENDING_LISTS -> {
+                    routeTextView.visibility = View.VISIBLE
+                    plateNumberTextView.visibility = View.VISIBLE
+                    emailTextView.visibility = View.VISIBLE
+
                     authorizeButton.visibility = View.VISIBLE
                     deleteButton.visibility = View.VISIBLE
                     showDriverDetails.visibility = View.VISIBLE
@@ -419,6 +436,21 @@ class Adapter(
                     editButton.visibility = View.GONE
                     isFullTextView.visibility = View.GONE
                     hasDepartedTextView.visibility = View.GONE
+                }
+                ContextType.USERS -> {
+                    routeTextView.visibility = View.GONE
+                    plateNumberTextView.visibility = View.GONE
+                    emailTextView.visibility = View.VISIBLE
+
+                    editButton.visibility = View.VISIBLE
+
+                    deleteButton.visibility = View.GONE
+                    authorizeButton.visibility = View.GONE
+                    showDriverDetails.visibility = View.GONE
+                    queueButton.visibility = View.GONE
+                    isFullTextView.visibility = View.GONE
+                    hasDepartedTextView.visibility = View.GONE
+
                 }
             }
         }

@@ -54,7 +54,7 @@
 
     <fragment
         android:id="@+id/users"
-        android:name="com.example.portal.Users"
+        android:name="com.example.portal.admin.Users"
         android:label="users"
         tools:layout="@layout/users" />
     <fragment

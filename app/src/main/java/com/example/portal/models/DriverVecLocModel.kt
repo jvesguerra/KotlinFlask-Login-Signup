@@ -9,6 +9,9 @@ class DriverVecLocModel (
         @SerializedName("vehicleId")
         val vehicleId: Int,
 
+        @SerializedName("email")
+        val email: String,
+
         @SerializedName("firstName")
         val firstName: String,
 

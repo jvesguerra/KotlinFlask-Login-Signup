@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Users">
+    tools:context=".admin.Users">
 
     <!-- Logo -->
     <ImageView
@@ -30,6 +30,7 @@
         app:layout_constraintTop_toBottomOf="@id/imageViewLogo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 
     <!-- RecyclerView for showing a list -->
     <androidx.recyclerview.widget.RecyclerView

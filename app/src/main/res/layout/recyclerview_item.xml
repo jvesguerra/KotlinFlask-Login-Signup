@@ -33,31 +33,51 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Route -->
             <TextView
-                android:id="@+id/RouteTextView"
+                android:id="@+id/EmailTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Route"
+                android:text="Email"
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/itemNameTextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Plate Number -->
-            <TextView
-                android:id="@+id/PlateNumberTextView"
+            <LinearLayout
+                android:id="@+id/routePlateNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:text="Plate Number"
-                android:textSize="16sp"
-                android:textColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/RouteTextView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/EmailTextView"
+                app:layout_constraintBottom_toTopOf="@id/isFullHasDepartedLayout">
+
+                <!-- Route -->
+                <TextView
+                    android:id="@+id/RouteTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Route"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/black" />
+
+                <!-- Separator -->
+                <View
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent" />
+
+                <!-- Plate Number -->
+                <TextView
+                    android:id="@+id/PlateNumberTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Plate Number"
+                    android:textSize="16sp"
+                    android:textColor="@color/black" />
+            </LinearLayout>
 
             <!-- isFull -->
             <LinearLayout
@@ -66,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/PlateNumberTextView"
+                app:layout_constraintTop_toBottomOf="@id/routePlateNumber"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <LinearLayout
