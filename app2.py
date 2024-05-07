@@ -735,6 +735,7 @@ def get_locations():
         'latitude': location.latitude,
         'longitude': location.longitude,
         'plateNumber': vehicle.plateNumber,
+        'route': vehicle.route,
     } for location, vehicle in locations]
 
     print(locations_dict)

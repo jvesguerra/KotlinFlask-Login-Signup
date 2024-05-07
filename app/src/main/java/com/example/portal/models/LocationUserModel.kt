@@ -12,6 +12,9 @@ class LocationUserModel (
     @SerializedName("plateNumber")
     val plateNumber: String,
 
+    @SerializedName("route")
+    val route: String,
+
     @SerializedName("latitude")
     val latitude: Double,
 

@@ -48,11 +48,7 @@ object LocationHelper {
         locations.forEach { location ->
             val latLng = LatLng(location.latitude, location.longitude)
             val markerOptions = MarkerOptions().position(latLng).title(location.plateNumber)
-            markerOptions.icon(
-                BitmapDescriptorFactory.defaultMarker(
-                    BitmapDescriptorFactory.HUE_BLUE
-                )
-            )
+
 
 
             // Define the boundaries of the campus area
@@ -66,6 +62,19 @@ object LocationHelper {
             //showToast(context, message)
             //logResultsToScreen(message,outputTextView)
             if (isInsideCampus){
+                if(location.route == "Forestry"){
+                    markerOptions.icon(
+                        BitmapDescriptorFactory.defaultMarker(
+                            BitmapDescriptorFactory.HUE_GREEN
+                        )
+                    )
+                }else{
+                    markerOptions.icon(
+                        BitmapDescriptorFactory.defaultMarker(
+                            BitmapDescriptorFactory.HUE_RED
+                        )
+                    )
+                }
                 googleMap.addMarker(markerOptions)
             }
         }

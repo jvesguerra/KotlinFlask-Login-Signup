@@ -275,43 +275,43 @@ class Maps : Fragment(),
                 ForegroundOnlyLocationService.EXTRA_LOCATION
             )
 
-            Log.e("MAPS", "ForegroundOnlyBroadcastReceiver")
-            lastKnownLocation = location
-
-            val latLng = location?.toLatLng()
-
-            if (latLng != null) {
-                val latitude = latLng.first
-                val longitude = latLng.second
-
-                // Define the boundaries of the campus area
-                val campusBounds = LatLngBounds(
-                    LatLng(14.1676560638653, 121.243494368555), // Southwest corner
-                    LatLng(14.171871318554894, 121.26577861463531) // Northeast corner
-                )
-
-                val currentLatLng = LatLng(latitude, longitude)
-
-                // Check if the current location is inside the campus bounds
-                val isInsideCampus = campusBounds.contains(currentLatLng)
-
-                val message = if (isInsideCampus) "INSIDE CAMPUS" else "OUTSIDE CAMPUS"
-
-                // Update text view only if it's initialized
-                outputTextView?.let {
-                    it.text = "Latitude: $latitude, Longitude: $longitude\n$message"
-                }
-
-                Log.e("MAPS", message)
-                // Log the location results to screen
-                logResultsToScreen(
-                    "Latitude: $latitude, Longitude: $longitude\n$message",
-                    outputTextView
-                )
-            } else {
-                // Handle case where location is unknown
-                logResultsToScreen("Unknown location", outputTextView)
-            }
+//            Log.e("MAPS", "ForegroundOnlyBroadcastReceiver")
+//            lastKnownLocation = location
+//
+//            val latLng = location?.toLatLng()
+//
+//            if (latLng != null) {
+//                val latitude = latLng.first
+//                val longitude = latLng.second
+//
+//                // Define the boundaries of the campus area
+//                val campusBounds = LatLngBounds(
+//                    LatLng(14.1676560638653, 121.243494368555), // Southwest corner
+//                    LatLng(14.171871318554894, 121.26577861463531) // Northeast corner
+//                )
+//
+//                val currentLatLng = LatLng(latitude, longitude)
+//
+//                // Check if the current location is inside the campus bounds
+//                val isInsideCampus = campusBounds.contains(currentLatLng)
+//
+//                val message = if (isInsideCampus) "INSIDE CAMPUS" else "OUTSIDE CAMPUS"
+//
+//                // Update text view only if it's initialized
+//                outputTextView?.let {
+//                    it.text = "Latitude: $latitude, Longitude: $longitude\n$message"
+//                }
+//
+//                Log.e("MAPS", message)
+//                // Log the location results to screen
+//                logResultsToScreen(
+//                    "Latitude: $latitude, Longitude: $longitude\n$message",
+//                    outputTextView
+//                )
+//            } else {
+//                // Handle case where location is unknown
+//                logResultsToScreen("Unknown location", outputTextView)
+//            }
 
             // Update map location if needed
             //updateMapLocation()outputTextView
