@@ -3,12 +3,16 @@ package com.example.portal.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.widget.TextView
+import android.widget.Toast
 import com.example.portal.models.LocationModel
 import com.example.portal.api.UserServe
+import com.example.portal.logResultsToScreen
 import com.example.portal.models.LocationUserModel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,10 +43,10 @@ object LocationHelper {
         })
     }
 
-    fun handleFetchedLocations(googleMap: GoogleMap, locations: List<LocationUserModel>) {
+    fun handleFetchedLocations(context: Context, googleMap: GoogleMap, locations: List<LocationUserModel>, outputTextView: TextView) {
         // Add markers based on fetched locations
         locations.forEach { location ->
-            val latLng = LatLng(location.latitude.toDouble(), location.longitude.toDouble())
+            val latLng = LatLng(location.latitude, location.longitude)
             val markerOptions = MarkerOptions().position(latLng).title(location.plateNumber)
             markerOptions.icon(
                 BitmapDescriptorFactory.defaultMarker(
@@ -50,6 +54,21 @@ object LocationHelper {
                 )
             )
             googleMap.addMarker(markerOptions)
+
+            // Define the boundaries of the campus area
+            val campusBounds = LatLngBounds(
+                LatLng(14.152992744657807, 121.22340588366656), // Southwest corner
+                LatLng(14.17011572642615, 121.25226645266653)  // Northeast corner
+            )
+
+            val isInsideCampus = campusBounds.contains(latLng)
+            val message = if (isInsideCampus) "INSIDE CAMPUS" else "OUTSIDE CAMPUS"
+            showToast(context, message)
+            logResultsToScreen(message,outputTextView)
         }
+    }
+
+    private fun showToast(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }
