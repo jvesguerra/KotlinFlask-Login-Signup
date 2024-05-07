@@ -367,7 +367,6 @@ def edit_user(userId):
 def login():
     email = request.json.get('email')
     password = request.json.get('password')
-    print("EMAIL: ", email)
     user = User.query.filter_by(email=email).first()
     if user:
         if bcrypt.check_password_hash(user.password, password):
@@ -381,32 +380,6 @@ def login():
             return jsonify({'error': 'Invalid password'}), 401
     else:
         return jsonify({'error': 'User not found'}), 404
-
-
-# @app.route('/google-sign-in-endpoint', methods=['POST'])
-# def google_sign_in():
-#     YOUR_WEB_CLIENT_ID = "AIzaSyD9BAhnNb62l_L_Htwtf3uJ1Q-saSoFFtw"
-#     token = request.json.get('idToken')
-#     try:
-#         # Validate the received ID token
-#         idinfo = id_token.verify_oauth2_token(token, requests.Request(), YOUR_WEB_CLIENT_ID)
-#
-#         # Extract user information
-#         user_id = idinfo['sub']
-#         user_email = idinfo['email']
-#         # You can extract more user information as needed
-#
-#         # Process the user data (e.g., create a session, store in database)
-#         # Example: session['user_id'] = user_id
-#         session['user_id'] = new_user.id
-#         access_token = create_access_token(identity=user.userId)
-#
-#         # Respond with a success message or user data
-#         return jsonify({'accessToken': access_token}), 200
-#
-#     except ValueError:
-#         # Invalid token
-#         return jsonify({'error': 'Invalid token'}), 401
 
 @app.route('/google-sign-up-endpoint', methods=['POST'])
 def google_sign_up():
@@ -495,9 +468,6 @@ def add_queued_user(vehicleId, userId):
     try:
         vehicle = Vehicle.query.get(vehicleId)
         user = User.query.get(userId)
-
-        print("Vehicle ID: ", vehicleId)
-        print("User ID: ", userId)
 
         if vehicle is None:
             return jsonify({'error': f'Vehicle with ID {vehicleId} not found'}), 404
@@ -679,35 +649,6 @@ def get_incoming_passengers():
         return str(queued_users_count)
     else:
         return jsonify({'error': 'Vehicle not found'})
-
-
-# @app.route('/get_locations', methods=['GET'])
-# def get_locations():
-#     # Subquery to get the latest timestamp for each user with user type 2
-#     latest_timestamps = db.session.query(Location.userId, func.max(Location.timestamp).label('max_timestamp')) \
-#         .join(User, Location.userId == User.userId) \
-#         .join(Vehicle, Vehicle.userId == User.userId) \
-#         .filter(User.userType == 2) \
-#         .filter(Vehicle.isAvailable == True) \
-#         .group_by(Location.userId) \
-#         .subquery()
-#
-#     # Query to get the latest location for each user with user type 2 and isAvailable vehicles
-#     latest_locations = db.session.query(Location) \
-#         .join(latest_timestamps,
-#               (Location.userId == latest_timestamps.c.userId) &
-#               (Location.timestamp == latest_timestamps.c.max_timestamp)) \
-#         .all()
-#
-#     # Construct JSON response
-#     response_data = [{'locationId': loc.locationId,
-#                       'userId': loc.userId,
-#                       'latitude': loc.latitude,
-#                       'longitude': loc.longitude} for loc in latest_locations]
-#
-#     print(response_data)
-#
-#     return jsonify(response_data)
 
 @app.route('/get_locations', methods=['GET'])
 @jwt_required()
@@ -1102,7 +1043,6 @@ def get_petition():
         if petition:
             forestry_petition_counts = json.loads(petition.forestryPetitionCount)
             count = len(forestry_petition_counts)  # Get count of items in the array
-            print("COUNT: ", count)
             return str(count), 200
         else:
             return jsonify({'error': 'Forestry petition not found'}), 404

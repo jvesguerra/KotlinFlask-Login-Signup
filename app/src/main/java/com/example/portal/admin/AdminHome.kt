@@ -97,7 +97,7 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         super.onResume()
         scheduledExecutorService.scheduleAtFixedRate({
             fetchAuthenticatedDrivers()
-        }, 0, 3, TimeUnit.SECONDS) // Adjust timing as needed
+        }, 0, 30, TimeUnit.SECONDS) // Adjust timing as needed
     }
 
     override fun onPause() {

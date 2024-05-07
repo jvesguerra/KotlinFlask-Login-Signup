@@ -69,7 +69,7 @@ class PendingLists : Fragment(), OnDeleteUserListener {
         super.onResume()
         scheduledExecutorService.scheduleAtFixedRate({
             fetchPendingDrivers()
-        }, 0, 3, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
+        }, 0, 30, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
     }
 
     override fun onPause() {
