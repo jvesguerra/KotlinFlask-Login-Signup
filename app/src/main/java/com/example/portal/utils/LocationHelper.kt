@@ -53,7 +53,7 @@ object LocationHelper {
                     BitmapDescriptorFactory.HUE_BLUE
                 )
             )
-            googleMap.addMarker(markerOptions)
+
 
             // Define the boundaries of the campus area
             val campusBounds = LatLngBounds(
@@ -63,8 +63,11 @@ object LocationHelper {
 
             val isInsideCampus = campusBounds.contains(latLng)
             val message = if (isInsideCampus) "INSIDE CAMPUS" else "OUTSIDE CAMPUS"
-            showToast(context, message)
-            logResultsToScreen(message,outputTextView)
+            //showToast(context, message)
+            //logResultsToScreen(message,outputTextView)
+            if (isInsideCampus){
+                googleMap.addMarker(markerOptions)
+            }
         }
     }
 
