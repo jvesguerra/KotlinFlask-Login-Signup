@@ -35,12 +35,16 @@ import com.example.portal.toLatLng
 import com.example.portal.utils.PermissionHelper
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.delay
 
 //private const val TAG = "DRIVER HOME 2"
 //private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
@@ -251,10 +255,20 @@ class DriverHome2 : Fragment(),
     private fun startLocationUpdates() {
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
         scheduledExecutorService.scheduleAtFixedRate({
-            foregroundOnlyLocationService?.requestLocationUpdates()
-            fetchPassengerCount(incomingPassengersText)
-            fetchPetitionCount(petitionCountText)
-        }, 0, 10, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
+            // Execute the location updates request asynchronously
+            GlobalScope.launch(Dispatchers.IO) {
+                foregroundOnlyLocationService?.requestLocationUpdates()
+
+                // Fetch passenger and petition counts asynchronously
+                fetchPassengerCount(incomingPassengersText)
+                fetchPetitionCount(petitionCountText)
+
+                // Introduce a delay before updating the map location
+                delay(5000) // Adjust the delay duration as needed
+                updateMapLocation()
+            }
+
+        }, 0, 30, TimeUnit.SECONDS)
     }
 
 
@@ -374,18 +388,18 @@ class DriverHome2 : Fragment(),
 
                 // Main gate entry point
                 // put range
-                val givenLatitude = 14.1676560638653
-                val givenLongitude = 121.243494368555
-                val rangeLatitude =
-                    14.1676560638653..14.171871318554894  // Replace with your given latitude
-                val rangeLongitude =
-                    121.243494368555..121.26577861463531  // Replace with your given longitude
-
-                if (latitude < givenLatitude || longitude < givenLongitude || latitude in rangeLatitude || longitude in rangeLongitude) {
-                    //showToast("INSIDE CAMPUS")
-                } else {
-                    //showToast("OUTSIDE CAMPUS")
-                }
+//                val givenLatitude = 14.1676560638653
+//                val givenLongitude = 121.243494368555
+//                val rangeLatitude =
+//                    14.1676560638653..14.171871318554894  // Replace with your given latitude
+//                val rangeLongitude =
+//                    121.243494368555..121.26577861463531  // Replace with your given longitude
+//
+//                if (latitude < givenLatitude || longitude < givenLongitude || latitude in rangeLatitude || longitude in rangeLongitude) {
+//                    //showToast("INSIDE CAMPUS")
+//                } else {
+//                    //showToast("OUTSIDE CAMPUS")
+//                }
 
                 // Now you can use latitude and longitude as needed
                 //logResultsToScreen("Latitude: $latitude, Longitude: $longitude", outputTextView)
@@ -397,16 +411,14 @@ class DriverHome2 : Fragment(),
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun updateMapLocation() {
         val latLng = lastKnownLocation!!.toLatLng()
         val lat = latLng.first
         val long = latLng.second
-        val userId = sharedPreferences.getInt("userId", 0)
         val timestamp = System.currentTimeMillis()
         val newLocation = LocationModel(
             locationId = 0,
-            userId = userId,
+            userId = 0,
             latitude = lat,
             longitude = long,
             timestamp = timestamp
