@@ -7,7 +7,18 @@
     android:orientation="vertical"
     android:layout_marginLeft="32dp"
     android:layout_marginRight="32dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".user.UserSignUp">
+
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="216dp"
+        android:layout_height="79dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="0dp"
+        android:contentDescription="@string/logo_description"
+        android:src="@drawable/logo" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
