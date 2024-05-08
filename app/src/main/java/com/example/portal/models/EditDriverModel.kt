@@ -2,7 +2,7 @@ package com.example.portal.models
 
 import com.google.gson.annotations.SerializedName
 
-class EditUserModel (
+class EditDriverModel (
     @SerializedName("firstName")
     val firstName: String? = null, // Nullable
 
@@ -17,4 +17,10 @@ class EditUserModel (
 
     @SerializedName("password")
     val password: String? = null, // Nullable
+
+    @SerializedName("plateNumber")
+    val plateNumber: String? = null, // Nullable
+
+    @SerializedName("route")
+    val route: String? = null, // Nullable
 )

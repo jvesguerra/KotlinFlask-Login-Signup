@@ -89,6 +89,12 @@ class Users : Fragment(), OnDeleteUserListener {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
                     adapter.updateData(items) // Update the adapter's data
+
+                    // Log the values of each item
+                    for (item in items) {
+                        Log.d("UserDetails", "USER TYPE: ${item.userType}")
+                        // Add more attributes as needed
+                    }
                 }else {
                     Log.e("API_RESPONSE", "Unsuccessful response: ${response.code()}")
                 }

@@ -1,21 +1,21 @@
 package com.example.portal.utils
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
-import android.widget.Toast
 import com.example.portal.Adapter
 import com.example.portal.api.UserServe
-import com.example.portal.models.DriverVecLocModel
-import com.example.portal.models.EditUserModel
+import com.example.portal.models.EditDriverModel
 import com.example.portal.models.EditUserResponse
-import com.example.portal.models.MessageResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class UserEdit(private val context: Context, private val adapter: Adapter) {
-    fun editUser(retrofitService: UserServe, userId: Int, position: Int, userModel: EditUserModel) {
-        val call = retrofitService.editUser(userId, userModel)
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+    private var accessToken: String? = sharedPreferences.getString("accessToken", null)
+    fun editUser(retrofitService: UserServe, userId: Int, position: Int, userModel: EditDriverModel) {
+        val call = retrofitService.editUser("Bearer $accessToken", userId, userModel)
         call.enqueue(object : Callback<EditUserResponse> {
             override fun onResponse(call: Call<EditUserResponse>, response: Response<EditUserResponse>) {
                 if (response.isSuccessful) {
