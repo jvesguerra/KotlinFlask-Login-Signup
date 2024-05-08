@@ -99,12 +99,12 @@ class Adapter(
         onDeleteUserListener?.onDeleteUser(userId, position)
     }
 
-    private fun queueUser(userId: Int, position: Int, vehicleId: Int) {
-        onQueueUserListener?.onQueueUser(userId, position, vehicleId)
+    private fun queueUser(position: Int, vehicleId: Int) {
+        onQueueUserListener?.onQueueUser(position, vehicleId)
     }
 
-    private fun removeUserQueue(userId: Int, position: Int, vehicleId: Int) {
-        onQueueUserListener?.onRemoveUserQueue(userId, position, vehicleId)
+    private fun removeUserQueue(position: Int, vehicleId: Int) {
+        onQueueUserListener?.onRemoveUserQueue(position, vehicleId)
     }
 
     private fun editUser(userId: Int, position: Int, userModel: EditDriverModel) {
@@ -252,12 +252,12 @@ class Adapter(
         builder.show()
     }
 
-    private fun showQueueConfirmationDialog(userId: Int, position: Int, vehicleId: Int) {
+    private fun showQueueConfirmationDialog(position: Int, vehicleId: Int) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Queue Driver")
         builder.setMessage("Are you sure you want to queue this driver?")
         builder.setPositiveButton("Yes") { dialogInterface: DialogInterface, i: Int ->
-            queueUser(userId, position, vehicleId)
+            queueUser(position, vehicleId)
             dialogInterface.dismiss()
         }
         builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
@@ -266,12 +266,12 @@ class Adapter(
         builder.show()
     }
 
-    private fun showCancelQueueConfirmationDialog(userId: Int, position: Int, vehicleId: Int) {
+    private fun showCancelQueueConfirmationDialog(position: Int, vehicleId: Int) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Cancel Queue")
         builder.setMessage("Are you sure you want to cancel your queue?")
         builder.setPositiveButton("Yes") { dialogInterface: DialogInterface, i: Int ->
-            removeUserQueue(userId, position, vehicleId)
+            removeUserQueue(position, vehicleId)
             dialogInterface.dismiss()
         }
         builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
@@ -336,7 +336,7 @@ class Adapter(
 
 
     private fun updateAuthorizedStatus(userId: Int) {
-        retrofitService.updateAuthorizedStatus(userId).enqueue(object : Callback<Void> {
+        retrofitService.updateAuthorizedStatus("Bearer $accessToken",userId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     // Update local data if needed
@@ -460,7 +460,7 @@ class Adapter(
                     editButton.visibility = View.GONE
 
 
-                    retrofitService.getisQueued(userId).enqueue(object : Callback<Boolean> {
+                    retrofitService.getisQueued("Bearer $accessToken").enqueue(object : Callback<Boolean> {
                         override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                             if (response.isSuccessful && response.body() != null) {
                                 isUserQueued = response.body()!!
@@ -484,10 +484,10 @@ class Adapter(
                     queueButton.setOnClickListener {
                         if (isUserQueued) {
                             // If the user is already queued, show confirmation dialog to cancel the queue
-                            showCancelQueueConfirmationDialog(userId, position, user.vehicleId)
+                            showCancelQueueConfirmationDialog(position, user.vehicleId)
                         } else {
                             // If the user is not queued, show confirmation dialog to queue the user
-                            showQueueConfirmationDialog(userId, position, user.vehicleId)
+                            showQueueConfirmationDialog(position, user.vehicleId)
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 package com.example.portal.utils
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
 import com.example.portal.Adapter
 import com.example.portal.api.UserServe
@@ -9,8 +10,10 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class UserQueue(private val context: Context, private val adapter: Adapter) {
-    fun addQueuedUser(retrofitService: UserServe, userId: Int, position: Int, vehicleId: Int) {
-        val call = retrofitService.addQueuedUser(vehicleId,userId)
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+    private var accessToken: String? = sharedPreferences.getString("accessToken", null)
+    fun addQueuedUser(retrofitService: UserServe, position: Int, vehicleId: Int) {
+        val call = retrofitService.addQueuedUser("Bearer $accessToken",vehicleId)
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
