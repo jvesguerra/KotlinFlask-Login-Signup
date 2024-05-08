@@ -304,8 +304,8 @@ def register_user():
 
 
 @app.route('/edit_user/<int:userId>', methods=['PUT'])
+@jwt_required()
 def edit_user(userId):
-    # Assuming you have some function to retrieve the user from the database
     user = User.query.get(userId)
     vehicle = Vehicle.query.filter_by(userId=userId).first()
 
@@ -347,16 +347,17 @@ def edit_user(userId):
         else:
             return jsonify({"message": "Invalid Password"}), 400
 
-    if request.json['plateNumber'] != '':
-        plate_number = request.json['plateNumber']
-        adjustedPlateNumber = plate_number.upper()
-        if re.match(r'^[A-Z0-9]{3}\s\d{3,4}$', adjustedPlateNumber):
-            vehicle.plateNumber = adjustedPlateNumber
-        else:
-            return jsonify({"message": "Invalid Plate Number"}), 400
+    if user.userType == 2:
+        if request.json['plateNumber'] != '':
+            plate_number = request.json['plateNumber']
+            adjustedPlateNumber = plate_number.upper()
+            if re.match(r'^[A-Z0-9]{3}\s\d{3,4}$', adjustedPlateNumber):
+                vehicle.plateNumber = adjustedPlateNumber
+            else:
+                return jsonify({"message": "Invalid Plate Number"}), 400
 
-    if request.json['route'] != '':
-        vehicle.route = request.json['route']
+        if request.json['route'] != '':
+            vehicle.route = request.json['route']
 
     db.session.commit()
 
@@ -761,11 +762,8 @@ def get_users():
         'lastName': user.lastName,
         'contactNumber': user.contactNumber,
         'email': user.email,
-
+        'userType': user.userType,
     } for user in users]
-
-    print(users_dict)
-
     return jsonify(users_dict)
 
 @app.route('/get_auth_drivers', methods=['GET'])

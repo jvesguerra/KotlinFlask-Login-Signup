@@ -22,7 +22,7 @@ import com.example.portal.api.OnQueueUserListener
 import com.example.portal.utils.UserDeletion
 import com.example.portal.utils.UserQueue
 import com.example.portal.models.DriverVecLocModel
-import com.example.portal.models.EditUserModel
+import com.example.portal.models.EditDriverModel
 import com.example.portal.utils.UserEdit
 import com.example.portal.utils.UserRemoveQueue
 import retrofit2.Call
@@ -142,7 +142,7 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         userRemoveQueue.removeQueuedUser(retrofitService, userId, position, vehicleId)
     }
 
-    override fun editUser(userId: Int, position: Int, userModel: EditUserModel) {
+    override fun editUser(userId: Int, position: Int, userModel: EditDriverModel) {
         val editUser = UserEdit(requireContext(), adapter)
         editUser.editUser(retrofitService, userId, position, userModel)
     }

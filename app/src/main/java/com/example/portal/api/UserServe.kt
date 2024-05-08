@@ -3,7 +3,7 @@ package com.example.portal.api
 import com.example.portal.models.Credentials
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.DriverVecLocModel
-import com.example.portal.models.EditUserModel
+import com.example.portal.models.EditDriverModel
 import com.example.portal.models.EditUserResponse
 import com.example.portal.models.LocationModel
 import com.example.portal.models.LocationUserModel
@@ -97,7 +97,7 @@ interface UserServe {
     fun changeisQueued(@Path("userId") userId: Int): Call<Void>
 
     @PUT("/edit_user/{userId}")
-    fun editUser(@Path("userId") userId: Int, @Body user: EditUserModel): Call<EditUserResponse>
+    fun editUser(@Header("Authorization") token: String, @Path("userId") userId: Int,@Body user: EditDriverModel): Call<EditUserResponse>
 
     @PUT("/ready_driver")
     fun readyDriver(@Header("Authorization") token: String): Call<Void>

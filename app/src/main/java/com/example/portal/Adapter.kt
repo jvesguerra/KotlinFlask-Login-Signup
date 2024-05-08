@@ -18,19 +18,12 @@ import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
 import com.example.portal.api.OnQueueUserListener
 import com.example.portal.models.DriverVecLocModel
+import com.example.portal.models.EditDriverModel
 import com.example.portal.models.EditUserModel
-import kotlinx.coroutines.DelicateCoroutinesApi
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
-import androidx.lifecycle.viewModelScope
 import com.example.portal.models.EditUserResponse
-import com.example.portal.models.MessageResponse
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 
@@ -44,8 +37,9 @@ class Adapter(
 
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
-    val sharedPreferences: SharedPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
     val userId = 0 // Change of implementation
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
+    private var accessToken: String? = sharedPreferences.getString("accessToken", null)
 
     enum class ContextType {
         ADMIN_HOME, PENDING_LISTS, USER_HOME2, USERS
@@ -73,7 +67,14 @@ class Adapter(
         }
 
         holder.editButton.setOnClickListener {
-            showEditDialog(item.userId, position, item.vehicleId)
+            showToast(item.userType.toString())
+            if(item.userType == 1){
+
+                showEditUserDialog(item.userId, position, item.vehicleId)
+            }else if (item.userType == 2){
+                showEditDialog(item.userId, position, item.vehicleId)
+            }
+
         }
 
 
@@ -106,7 +107,7 @@ class Adapter(
         onQueueUserListener?.onRemoveUserQueue(userId, position, vehicleId)
     }
 
-    private fun editUser(userId: Int, position: Int, userModel: EditUserModel) {
+    private fun editUser(userId: Int, position: Int, userModel: EditDriverModel) {
         onQueueUserListener?.editUser(userId, position, userModel)
     }
 
@@ -136,7 +137,7 @@ class Adapter(
                     val editedPlateNumber = plateNumberEditText.text.toString()
                     val editedRoute = routeEditText.text.toString()
 
-                    val editedUser = EditUserModel(
+                    val editedUser = EditDriverModel(
                         firstName = editedFirstName,
                         lastName = editedLastName,
                         email = editedEmail,
@@ -147,7 +148,7 @@ class Adapter(
                     )
 
                     //editUser(userId, position, editedUser)
-                    val call = retrofitService.editUser(userId, editedUser)
+                    val call = retrofitService.editUser("Bearer $accessToken", userId,editedUser)
                     call.enqueue(object : Callback<EditUserResponse> {
                         override fun onResponse(call: Call<EditUserResponse>, response: Response<EditUserResponse>) {
                             if (response.isSuccessful) {
@@ -155,14 +156,8 @@ class Adapter(
                                 val message = "User successfully edited"
                                 showToast(message)
                             } else {
-                                val errorJson = response.errorBody()?.string()
-                                    ?.let { JSONObject(it) }
-                                val errorMessage = errorJson?.getString("message")
-                                // Display error message
-                                Log.e("Error", "Response error: $errorMessage")
-                                if (errorMessage != null) {
-                                    showToast(errorMessage)
-                                }
+                                Log.e("API_RESPONSE_ERROR", "Response body: ${response.errorBody()?.string()}")
+                                response.errorBody()?.string()?.let { showToast(it) }
                             }
                         }
 
@@ -184,7 +179,78 @@ class Adapter(
                 }
 
                 builder.show()
+    }
+
+    private fun showEditUserDialog(userId: Int, position: Int, vehicleId: Int){
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Edit User Details")
+
+        val inflater = LayoutInflater.from(context)
+        val dialogLayout = inflater.inflate(R.layout.edit_user_dialog_layout, null)
+
+        val firstNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextFirstName)
+        val lastNameEditText = dialogLayout.findViewById<EditText>(R.id.editTextLastName)
+        val emailEditText = dialogLayout.findViewById<EditText>(R.id.editTextEmail)
+        val contactNumberEditText = dialogLayout.findViewById<EditText>(R.id.editTextContactNumber)
+        val passwordEditText = dialogLayout.findViewById<EditText>(R.id.editTextPassword)
+        val plateNumberEditText = dialogLayout.findViewById<EditText>(R.id.editTextPlateNumber)
+        val routeEditText = dialogLayout.findViewById<EditText>(R.id.editTextRoute)
+
+        // Hide plate number and route fields
+        plateNumberEditText.visibility = View.GONE
+        routeEditText.visibility = View.GONE
+
+        builder.setView(dialogLayout)
+
+        builder.setPositiveButton("Save") { dialogInterface: DialogInterface, i: Int ->
+            val editedFirstName = firstNameEditText.text.toString()
+            val editedLastName = lastNameEditText.text.toString()
+            val editedEmail = emailEditText.text.toString()
+            val editedContactNumber = contactNumberEditText.text.toString()
+            val editedPassword = passwordEditText.text.toString()
+
+            val editedUser = EditDriverModel(
+                firstName = editedFirstName,
+                lastName = editedLastName,
+                email = editedEmail,
+                contactNumber = editedContactNumber,
+                password = editedPassword,
+            )
+
+            //editUser(userId, position, editedUser)
+            val call = retrofitService.editUser("Bearer $accessToken", userId,editedUser)
+            call.enqueue(object : Callback<EditUserResponse> {
+                override fun onResponse(call: Call<EditUserResponse>, response: Response<EditUserResponse>) {
+                    if (response.isSuccessful) {
+                        Log.e("Success", "User successfully edited")
+                        val message = "User successfully edited"
+                        showToast(message)
+                    } else {
+                        Log.e("API_RESPONSE_ERROR", "Response body: ${response.errorBody()?.string()}")
+                        response.errorBody()?.string()?.let { showToast(it) }
+
+                    }
+                }
+
+                override fun onFailure(call: Call<EditUserResponse>, t: Throwable) {
+                    try {
+                        // Handle network error
+                        Log.e("Network Error", "Error: ${t.message}", t)
+                    } catch (e: Exception) {
+                        // Handle any other unexpected exceptions
+                        Log.e("Error", "Unexpected error: ${e.message}", e)
+                    }
+                }
+            })
+
+            dialogInterface.dismiss()
         }
+        builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
+            dialogInterface.dismiss()
+        }
+
+        builder.show()
+    }
 
     private fun showQueueConfirmationDialog(userId: Int, position: Int, vehicleId: Int) {
         val builder = AlertDialog.Builder(context)
@@ -266,6 +332,8 @@ class Adapter(
         }
         builder.show()
     }
+
+
 
     private fun updateAuthorizedStatus(userId: Int) {
         retrofitService.updateAuthorizedStatus(userId).enqueue(object : Callback<Void> {

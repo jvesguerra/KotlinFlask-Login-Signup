@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.Navigation
 import com.example.portal.R
@@ -24,7 +23,7 @@ import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.SessionManager
 import com.example.portal.api.UserServe
 import com.example.portal.models.DriverVecLocModel
-import com.example.portal.models.EditUserModel
+import com.example.portal.models.EditDriverModel
 import com.example.portal.utils.UserEdit
 import com.example.portal.utils.UserQueue
 import com.example.portal.utils.UserRemoveQueue
@@ -118,6 +117,11 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
                 if (response.isSuccessful) {
                     val items = response.body() ?: emptyList()
                     adapter.updateData(items) // Update the adapter's data
+
+                    for (item in items) {
+                        Log.d("UserDetails", "USER TYPE: ${item.userType}")
+                        // Add more attributes as needed
+                    }
                 }
             }
 
@@ -157,7 +161,7 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         userRemoveQueue.removeQueuedUser(retrofitService, userId, position, vehicleId)
     }
 
-    override fun editUser(userId: Int, position: Int, userModel: EditUserModel) {
+    override fun editUser(userId: Int, position: Int, userModel: EditDriverModel) {
         val editUser = UserEdit(requireContext(), adapter)
         editUser.editUser(retrofitService, userId, position, userModel)
     }
