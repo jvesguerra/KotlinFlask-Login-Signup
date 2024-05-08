@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RetrofitInstance {
     companion object{
-        private const val mainURL = "http://192.168.1.19:5000"
+        private const val mainURL = "https://d36f-49-147-94-8.ngrok-free.app"
         fun getRetrofitInstance(): Retrofit {
             return Retrofit.Builder()
                 .baseUrl(mainURL)
