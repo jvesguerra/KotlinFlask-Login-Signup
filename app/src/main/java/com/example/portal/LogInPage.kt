@@ -44,8 +44,8 @@ class LogInPage : Fragment() {
     private lateinit var signInButton: Button
     private lateinit var signUpButton: Button
 
-    private lateinit var signInButtonGoogle: Button
-    private lateinit var signUpButtonGoogle: Button
+//    private lateinit var signInButtonGoogle: Button
+//    private lateinit var signUpButtonGoogle: Button
 
 
     private lateinit var view: View
@@ -66,12 +66,12 @@ class LogInPage : Fragment() {
         passwordEditText = view.findViewById(R.id.editTextPassword)
         signInButton = view.findViewById(R.id.buttonSignIn)
         signUpButton = view.findViewById(R.id.buttonSignUp)
-        signInButtonGoogle = view.findViewById(R.id.signInButtonGoogle)
-        signUpButtonGoogle = view.findViewById(R.id.signUpButtonGoogle)
+        //signInButtonGoogle = view.findViewById(R.id.signInButtonGoogle)
+        //signUpButtonGoogle = view.findViewById(R.id.signUpButtonGoogle)
 
         // REMOVE
         val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
-        Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "IsLoggedIn: $isLoggedIn", Toast.LENGTH_SHORT).show()
 
         signInButton.setOnClickListener {
             val email = emailEditText.text.toString()
@@ -83,31 +83,31 @@ class LogInPage : Fragment() {
             Navigation.findNavController(view).navigate(R.id.signup)
         }
 
-        signInButtonGoogle.setOnClickListener {
-            // Start Google Sign-In process for sign-up
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)) // Replace with your web client ID
-                .requestEmail()
-                .build()
-
-            val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-            val signInIntent = googleSignInClient.signInIntent
-            startActivityForResult(signInIntent, RC_SIGN_IN)
-
-        }
-
-        signUpButtonGoogle.setOnClickListener {
-            // Start Google Sign-In process for sign-up
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)) // Replace with your web client ID
-                .requestEmail()
-                .build()
-
-            val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-            val signInIntent = googleSignInClient.signInIntent
-            startActivityForResult(signInIntent, RC_SIGN_IN)
-
-        }
+//        signInButtonGoogle.setOnClickListener {
+//            // Start Google Sign-In process for sign-up
+//            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestIdToken(getString(R.string.default_web_client_id)) // Replace with your web client ID
+//                .requestEmail()
+//                .build()
+//
+//            val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+//            val signInIntent = googleSignInClient.signInIntent
+//            startActivityForResult(signInIntent, RC_SIGN_IN)
+//
+//        }
+//
+//        signUpButtonGoogle.setOnClickListener {
+//            // Start Google Sign-In process for sign-up
+//            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestIdToken(getString(R.string.default_web_client_id)) // Replace with your web client ID
+//                .requestEmail()
+//                .build()
+//
+//            val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+//            val signInIntent = googleSignInClient.signInIntent
+//            startActivityForResult(signInIntent, RC_SIGN_IN)
+//
+//        }
 
         return view
     }
