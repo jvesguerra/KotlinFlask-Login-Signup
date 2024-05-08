@@ -85,7 +85,7 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     override fun onResume() {
         super.onResume()
         scheduledExecutorService.scheduleAtFixedRate({
-            fetchdDrivers()
+            fetchedDrivers()
         }, 0, 30, TimeUnit.SECONDS) // Adjust timing as needed
     }
 
@@ -100,7 +100,7 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         scheduledExecutorService.shutdown() // Ensure no memory leaks from the executor service
     }
 
-    private fun fetchdDrivers() {
+    private fun fetchedDrivers() {
         val call: Call<List<DriverVecLocModel>> = if (route == "Forestry"){
             retrofitService.getAvailableForestryDrivers("Bearer $accessToken")
         }else{
