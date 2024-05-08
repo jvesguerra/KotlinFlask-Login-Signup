@@ -464,8 +464,10 @@ def logout():
     return jsonify({'message': 'Logged out'})
 
 
-@app.route('/add_queued_user/<int:vehicleId>/<int:userId>', methods=['POST'])
-def add_queued_user(vehicleId, userId):
+@app.route('/add_queued_user/<int:vehicleId>', methods=['POST'])
+@jwt_required()
+def add_queued_user(vehicleId):
+    userId = get_jwt_identity()
     try:
         vehicle = Vehicle.query.get(vehicleId)
         user = User.query.get(userId)
@@ -491,8 +493,10 @@ def add_queued_user(vehicleId, userId):
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
 
-@app.route('/remove_queued_user/<int:vehicleId>/<int:userId>', methods=['PUT', 'DELETE'])
-def remove_queued_user(vehicleId, userId):
+@app.route('/remove_queued_user/<int:vehicleId>', methods=['PUT', 'DELETE'])
+@jwt_required()
+def remove_queued_user(vehicleId):
+    userId = get_jwt_identity()
     try:
         vehicle = Vehicle.query.get(vehicleId)
         user = User.query.get(userId)
@@ -556,8 +560,10 @@ def is_authorized(userId):
         return {'error': f'An error occurred: {str(e)}'}, 500
 
 
-@app.route('/get_is_queued/<int:userId>', methods=['GET'])
-def get_is_queued(userId):
+@app.route('/get_is_queued', methods=['GET'])
+@jwt_required()
+def get_is_queued():
+    userId = get_jwt_identity()
     try:
         user = User.query.get(userId)
 
@@ -616,6 +622,7 @@ def add_location():
 
 
 @app.route('/update_authorized/<int:userId>', methods=['PUT'])
+@jwt_required()
 def update_authorized(userId):
     user = User.query.get(userId)
     user.authorized = True
@@ -716,6 +723,7 @@ def get_available_forestry_drivers():
         'longitude': location.longitude
     } for user, vehicle, location in drivers]
 
+    print(drivers_dict)
     return jsonify(drivers_dict)
 
 

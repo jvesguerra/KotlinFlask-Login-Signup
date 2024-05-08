@@ -49,8 +49,8 @@ interface UserServe {
     @GET("/get_incoming_passengers")
     fun getIncomingPassengers(@Header("Authorization") token: String): Call<Int>
 
-    @GET("/get_is_queued/{userId}")
-    fun getisQueued(@Path("userId") userId: Int): Call<Boolean>
+    @GET("/get_is_queued")
+    fun getisQueued(@Header("Authorization") token: String): Call<Boolean>
 
     @GET("/get_locations")
     fun getLocations(@Header("Authorization") token: String): Call<List<LocationUserModel>>
@@ -71,8 +71,8 @@ interface UserServe {
     @POST("/add_location")
     fun addLocation(@Header("Authorization") token: String, @Body newLocation: LocationModel): Call<Void>
 
-    @POST("/add_queued_user/{vehicleId}/{userId}")
-    fun addQueuedUser(@Path("vehicleId") vehicleId: Int, @Path("userId") userId: Int): Call<Void>
+    @POST("/add_queued_user/{vehicleId}")
+    fun addQueuedUser(@Header("Authorization") token: String, @Path("vehicleId") vehicleId: Int): Call<Void>
 
     @POST("/google-sign-in-endpoint")
     fun signInWithGoogle(@Body request: LoginResponse): Call<String>
@@ -102,14 +102,14 @@ interface UserServe {
     @PUT("/ready_driver")
     fun readyDriver(@Header("Authorization") token: String): Call<Void>
 
-    @PUT("/remove_queued_user/{vehicleId}/{userId}")
-    fun removeQueuedUser(@Path("vehicleId") vehicleId: Int, @Path("userId") userId: Int): Call<Void>
+    @PUT("/remove_queued_user/{vehicleId}")
+    fun removeQueuedUser(@Header("Authorization") token: String, @Path("vehicleId") vehicleId: Int): Call<Void>
 
     @PUT("/take_passengers")
     fun takePassengers(@Header("Authorization") token: String): Call<Void>
 
     @PUT("/update_authorized/{userId}")
-    fun updateAuthorizedStatus(@Path("userId") userId: Int): Call<Void>
+    fun updateAuthorizedStatus(@Header("Authorization") token: String,@Path("userId") userId: Int): Call<Void>
 
     @PUT("/add_forestry_petition")
     fun addForestryPetition(@Header("Authorization") token: String): Call<Void>

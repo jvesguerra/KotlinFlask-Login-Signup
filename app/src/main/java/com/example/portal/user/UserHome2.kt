@@ -132,14 +132,14 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         userDeletion.deleteUser(retrofitService, userId, position)
     }
 
-    override fun onQueueUser(userId: Int, position: Int, vehicleId: Int) {
+    override fun onQueueUser(position: Int, vehicleId: Int) {
         val userQueue = UserQueue(requireContext(), adapter)
-        userQueue.addQueuedUser(retrofitService, userId, position, vehicleId)
+        userQueue.addQueuedUser(retrofitService, position, vehicleId)
     }
 
-    override fun onRemoveUserQueue(userId: Int, position: Int, vehicleId: Int) {
+    override fun onRemoveUserQueue(position: Int, vehicleId: Int) {
         val userRemoveQueue = UserRemoveQueue(requireContext(), adapter)
-        userRemoveQueue.removeQueuedUser(retrofitService, userId, position, vehicleId)
+        userRemoveQueue.removeQueuedUser(retrofitService, position, vehicleId)
     }
 
     override fun editUser(userId: Int, position: Int, userModel: EditDriverModel) {
