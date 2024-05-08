@@ -30,36 +30,51 @@ class Petition : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private var isPetitioned: Int? = null
     private var accessToken: String? = null
-    private lateinit var scheduledExecutor: ScheduledExecutorService
-    private val INITIAL_DELAY: Long = 0 // Delay before the first execution
-    private val INTERVAL: Long = 3 // Interval between executions
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private lateinit var scheduledExecutorService: ScheduledExecutorService
+    private var route: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.petition, container, false)
-        val route = arguments?.getString("route")
+        route = arguments?.getString("route")
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         petitionTitle = view.findViewById(R.id.petition)
         petitionCount = view.findViewById(R.id.petition_count)
         btnSignPetition = view.findViewById(R.id.signPetition)
         petitionTitle.text = route
         accessToken = sharedPreferences.getString("accessToken", null)
-        fetchUserDetails()
-        fetchPetitionCount(route)
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+
+        //route?.let { showToast(requireContext(), it) }
+
         setupButtonListener(route)
 
-        scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
-        scheduledExecutor.scheduleAtFixedRate({
+        return view
+    }
+
+    private fun showToast(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        scheduledExecutorService.scheduleAtFixedRate({
             fetchUserDetails()
             fetchPetitionCount(route)
-        }, INITIAL_DELAY, INTERVAL, TimeUnit.SECONDS)
+        }, 0, 30, TimeUnit.SECONDS) // Adjust timing as needed
+    }
 
-        return view
+    override fun onPause() {
+        super.onPause()
+        scheduledExecutorService.shutdownNow() // Stop all currently executing tasks
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor() // Prepare for next onResume
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scheduledExecutorService.shutdown() // Ensure no memory leaks from the executor service
     }
 
     private fun fetchUserDetails() {
@@ -91,10 +106,14 @@ class Petition : Fragment() {
     }
 
     private fun fetchPetitionCount(route: String?) {
+//        if (isPetitioned == null || accessToken == null || route == null) {
+//            Toast.makeText(context, "Missing data, cannot proceed.", Toast.LENGTH_SHORT).show()
+//            return
+//        }
+
         val call = when (route) {
             "Forestry" -> retrofitService.getForestryPetition("Bearer $accessToken")
-            "Rural" -> retrofitService.getRuralPetition("Bearer $accessToken")
-            else -> return
+            else -> {retrofitService.getRuralPetition("Bearer $accessToken")}
         }
         call.enqueue(object : Callback<Int> {
             override fun onResponse(call: Call<Int>, response: Response<Int>) {
