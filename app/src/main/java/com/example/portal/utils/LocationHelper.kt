@@ -45,6 +45,8 @@ object LocationHelper {
 
     fun handleFetchedLocations(context: Context, googleMap: GoogleMap, locations: List<LocationUserModel>, outputTextView: TextView) {
         // Add markers based on fetched locations
+        googleMap.clear()
+
         locations.forEach { location ->
             val latLng = LatLng(location.latitude, location.longitude)
             val markerOptions = MarkerOptions().position(latLng).title(location.plateNumber)
