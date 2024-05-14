@@ -161,7 +161,7 @@ class Maps : Fragment(),
         scheduledExecutorService.scheduleAtFixedRate({
             foregroundOnlyLocationService?.requestLocationUpdates()
             fetchLocations()
-        }, 0, 30, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
+        }, 0, 6, TimeUnit.SECONDS) // Fetch every 10 seconds, adjust as needed
     }
 
     private fun fetchLocations() {

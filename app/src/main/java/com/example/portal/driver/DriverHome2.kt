@@ -257,18 +257,27 @@ class DriverHome2 : Fragment(),
         scheduledExecutorService.scheduleAtFixedRate({
             // Execute the location updates request asynchronously
             GlobalScope.launch(Dispatchers.IO) {
-                foregroundOnlyLocationService?.requestLocationUpdates()
 
                 // Fetch passenger and petition counts asynchronously
                 fetchPassengerCount(incomingPassengersText)
                 fetchPetitionCount(petitionCountText)
 
-                // Introduce a delay before updating the map location
-                delay(5000) // Adjust the delay duration as needed
-                updateMapLocation()
+//                // Introduce a delay before updating the map location
+//                delay(5000) // Adjust the delay duration as needed
             }
 
         }, 0, 30, TimeUnit.SECONDS)
+
+        scheduledExecutorService.scheduleAtFixedRate({
+            // Execute the location updates request asynchronously
+            GlobalScope.launch(Dispatchers.IO) {
+                foregroundOnlyLocationService?.requestLocationUpdates()
+
+                delay(3000)
+                updateMapLocation()
+            }
+
+        }, 0, 5, TimeUnit.SECONDS)
     }
 
 
@@ -412,20 +421,24 @@ class DriverHome2 : Fragment(),
     }
 
     private fun updateMapLocation() {
-        val latLng = lastKnownLocation!!.toLatLng()
-        val lat = latLng.first
-        val long = latLng.second
-        val timestamp = System.currentTimeMillis()
-        val newLocation = LocationModel(
-            locationId = 0,
-            userId = 0,
-            latitude = lat,
-            longitude = long,
-            timestamp = timestamp
-        )
+        lastKnownLocation?.let { location ->
+            val latLng = location.toLatLng()
+            val lat = latLng.first
+            val long = latLng.second
+            val timestamp = System.currentTimeMillis()
+            val newLocation = LocationModel(
+                locationId = 0,
+                userId = 0,
+                latitude = lat,
+                longitude = long,
+                timestamp = timestamp
+            )
 
-        retrofitService.addLocation("Bearer $accessToken", newLocation).enqueueVoid {
-            println("New Location added successfully")
+            retrofitService.addLocation("Bearer $accessToken", newLocation).enqueueVoid {
+                println("New Location added successfully")
+            }
+        } ?: run {
+            Log.e(tag, "Last known location is null")
         }
     }
 }
