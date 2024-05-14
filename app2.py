@@ -26,11 +26,13 @@ from flask_login import UserMixin
 from datetime import timedelta
 from sqlalchemy import desc
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask_ngrok import run_with_ngrok
 
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
 jwt = JWTManager(app)
+# run_with_ngrok(app)
 
 # Configure your MySQL database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost/travelbetter-dev'
@@ -849,7 +851,6 @@ def admin_delete_user():
         db.session.rollback()
         return f"An error occurred: {str(e)}"
 
-
 @app.route('/take_passengers', methods=['PUT'])
 @jwt_required()
 def take_passengers():
@@ -865,11 +866,15 @@ def take_passengers():
         if petition:
             if vehicle.route == 'Forestry':
                 forestry_petition_count_array = json.loads(petition.forestryPetitionCount)
+                if len(forestry_petition_count_array) == 0:
+                    return jsonify({'error': 'Forestry petition count is already 0'}), 400
                 array_to_transfer = forestry_petition_count_array
                 petition.forestryPetitionCount = json.dumps([])  # Setting an empty array
                 User.query.filter_by(isPetitioned=1).update({'isPetitioned': 0}, synchronize_session=False)
             else:
                 rural_petition_count_array = json.loads(petition.ruralPetitionCount)
+                if len(rural_petition_count_array) == 0:
+                    return jsonify({'error': 'Rural petition count is already 0'}), 400
                 array_to_transfer = rural_petition_count_array
                 petition.ruralPetitionCount = json.dumps([])  # Setting an empty array
                 User.query.filter_by(isPetitioned=2).update({'isPetitioned': 0}, synchronize_session=False)
@@ -882,7 +887,7 @@ def take_passengers():
             db.session.commit()
             return jsonify({'message': f'User {userId} added to forestry petition'}), 200
         else:
-            return jsonify({'error': 'Forestry petition not found'}), 404
+            return jsonify({'error': 'Petition not found'}), 404
     except Exception as e:
         print(f"Error occurred while processing: {str(e)}")
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
