@@ -81,13 +81,13 @@
                 android:id="@+id/petitionCount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:gravity="center_horizontal"
                 android:text="@string/passengers_in_petition_0"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
