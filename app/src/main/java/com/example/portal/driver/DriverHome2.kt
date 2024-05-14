@@ -264,11 +264,27 @@ class DriverHome2 : Fragment(),
                 fetchPetitionCount(petitionCountText)
 
                 // Introduce a delay before updating the map location
-                delay(5000) // Adjust the delay duration as needed
-                updateMapLocation()
+//                delay(3000) // Adjust the delay duration as needed
+//                updateMapLocation()
             }
 
         }, 0, 30, TimeUnit.SECONDS)
+
+        scheduledExecutorService.scheduleAtFixedRate({
+            // Execute the location updates request asynchronously
+            GlobalScope.launch(Dispatchers.IO) {
+                foregroundOnlyLocationService?.requestLocationUpdates()
+
+//                // Fetch passenger and petition counts asynchronously
+//                fetchPassengerCount(incomingPassengersText)
+//                fetchPetitionCount(petitionCountText)
+
+                // Introduce a delay before updating the map location
+                //delay(3000) // Adjust the delay duration as needed
+                updateMapLocation()
+            }
+
+        }, 0, 2, TimeUnit.SECONDS)
     }
 
 
