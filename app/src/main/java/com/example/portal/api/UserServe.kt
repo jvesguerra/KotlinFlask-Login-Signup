@@ -1,6 +1,7 @@
 package com.example.portal.api
 
 import com.example.portal.models.Credentials
+import com.example.portal.models.DriverMod
 import com.example.portal.models.DriverSignUpRequest
 import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.EditDriverModel
@@ -28,6 +29,9 @@ interface UserServe {
     fun deletePetition(@Header("Authorization") token: String): Call<Void>
 
     // GET
+    @GET("/get_driver/{vehicleId}")
+    fun getDriver(@Header("Authorization") token: String,
+                  @Path("vehicleId") vehicleId: Int): Call<DriverMod>
     @GET("/data")
     fun fetchData(@Header("Authorization") token: String): Call<UserResponse>
 
