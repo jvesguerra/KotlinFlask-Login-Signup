@@ -134,6 +134,14 @@
         <action
             android:id="@+id/toPetition"
             app:destination="@id/petition" />
+        <action
+            android:id="@+id/toUserHome3"
+            app:destination="@id/userHome3" />
+    <fragment
+        android:id="@+id/userHome3"
+        android:name="com.example.portal.user.UserHome3"
+        android:label="user_home3"
+        tools:layout="@layout/user_home3" />
     <fragment
         android:id="@+id/petition"
         android:name="com.example.portal.user.Petition"

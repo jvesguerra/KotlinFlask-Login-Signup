@@ -101,7 +101,7 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     }
 
     private fun fetchedDrivers() {
-        val call: Call<List<DriverVecLocModel>> = if (route == "Forestry"){
+        val call: Call<List<DriverVecLocModel>> = if (route.equals("Forestry")){
             retrofitService.getAvailableForestryDrivers("Bearer $accessToken")
         }else{
             retrofitService.getAvailableRuralDrivers("Bearer $accessToken")
@@ -132,9 +132,9 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         userDeletion.deleteUser(retrofitService, userId, position)
     }
 
-    override fun onQueueUser(position: Int, vehicleId: Int) {
+    override fun onQueueUser(position: Int, vehicleId: Int, view: View) {
         val userQueue = UserQueue(requireContext(), adapter)
-        userQueue.addQueuedUser(retrofitService, position, vehicleId)
+        userQueue.addQueuedUser(retrofitService, position, vehicleId, view)
     }
 
     override fun onRemoveUserQueue(position: Int, vehicleId: Int) {
