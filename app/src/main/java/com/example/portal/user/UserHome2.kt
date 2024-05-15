@@ -77,8 +77,6 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         )
         recyclerView.adapter = adapter
 
-
-
         return view
     }
 

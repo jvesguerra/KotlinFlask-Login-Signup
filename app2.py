@@ -101,6 +101,7 @@ class User(db.Model):
     authorized = db.Column(db.Boolean, default=False)
     isQueued = db.Column(db.Boolean, default=False)
     isPetitioned = db.Column(db.Integer, default=0)
+    queuedDriver = db.Column(db.Integer, default=0)
 
     def is_active(self):
         return self.is_active
@@ -461,6 +462,7 @@ def get_data():
 @app.route('/get_driver/<int:vehicleId>', methods=['GET'])
 @jwt_required()
 def get_driver(vehicleId):
+    print("Vehicle ID",vehicleId)
     vehicle = Vehicle.query.filter_by(vehicleId=vehicleId).first()
     user = User.query.filter_by(userId=vehicle.userId).first()
 
@@ -480,6 +482,31 @@ def get_driver(vehicleId):
         return jsonify(user_data), 200
     else:
         return jsonify({'error': 'User not found'}), 404
+
+@app.route('/get_is_queued', methods=['GET'])
+@jwt_required()
+def get_is_queued():
+    userId = get_jwt_identity()
+    try:
+        user = User.query.get(userId)
+
+        if user is None:
+            return {'error': f'User with ID {userId} not found'}, 404
+
+        if user.isQueued:
+            isQueued = True
+        else:
+            isQueued = False
+
+        user_data = {
+            'queuedDriver': user.queuedDriver,
+            'isQueued': isQueued,
+        }
+
+        print(user_data)
+        return jsonify(user_data), 200
+    except Exception as e:
+        return jsonify({'error': 'Data not found'}), 404
 
 
 @app.route("/logout")
@@ -510,6 +537,7 @@ def add_queued_user(vehicleId):
             return jsonify({'error': f'User {userId} is already queued to another vehicle'}), 400
 
         user.isQueued = True
+        user.queuedDriver = vehicle.vehicleId
         vehicle.add_queued_user(userId)
         db.session.commit()
 
@@ -587,22 +615,7 @@ def is_authorized(userId):
         return {'error': f'An error occurred: {str(e)}'}, 500
 
 
-@app.route('/get_is_queued', methods=['GET'])
-@jwt_required()
-def get_is_queued():
-    userId = get_jwt_identity()
-    try:
-        user = User.query.get(userId)
 
-        if user is None:
-            return {'error': f'User with ID {userId} not found'}, 404
-
-        if user.isQueued:
-            return jsonify(True)
-        else:
-            return jsonify(False)
-    except Exception as e:
-        return {'error': f'An error occurred: {str(e)}'}, 500
 
 
 @app.route('/add_user', methods=['POST'])
