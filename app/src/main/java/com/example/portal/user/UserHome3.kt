@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.navigation.Navigation
 import com.example.portal.R
 import com.example.portal.api.RetrofitInstance
 import com.example.portal.api.UserServe
@@ -27,6 +28,7 @@ class UserHome3 : Fragment() {
         .create(UserServe::class.java)
     private var accessToken: String? = null
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var cancelButton: Button
 
     private lateinit var itemNameTextView: TextView
     private lateinit var routeTextView: TextView
@@ -55,8 +57,34 @@ class UserHome3 : Fragment() {
         accessToken = sharedPreferences.getString("accessToken", null)
         driverID = arguments?.getInt("driverID").toString()
 
+        Log.d("UserHome3", driverID!!)
         fetchedDriver(driverID!!.toInt())
+
+        cancelButton = view.findViewById(R.id.cancelButton)
+        cancelButton.setOnClickListener {
+            removeQueuedUser(driverID!!.toInt())
+            //Navigation.findNavController(view).navigate(R.id.toUserHome2)
+            Navigation.findNavController(view).popBackStack()
+        }
         return view
+    }
+
+    private fun removeQueuedUser(vehicleId: Int) {
+        val call = retrofitService.removeQueuedUser("Bearer $accessToken", vehicleId)
+        call.enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+
+                } else {
+
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                // Handle failure
+                Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun fetchedDriver(driverID: Int?) {

@@ -10,6 +10,7 @@ import com.example.portal.models.LocationModel
 import com.example.portal.models.LocationUserModel
 import com.example.portal.models.LoginResponse
 import com.example.portal.models.UserModel
+import com.example.portal.models.UserQueueModel
 import com.example.portal.models.UserResponse
 import retrofit2.Call
 import retrofit2.http.Body
@@ -54,7 +55,7 @@ interface UserServe {
     fun getIncomingPassengers(@Header("Authorization") token: String): Call<Int>
 
     @GET("/get_is_queued")
-    fun getisQueued(@Header("Authorization") token: String): Call<Boolean>
+    fun getIsQueued(@Header("Authorization") token: String): Call<UserQueueModel>
 
     @GET("/get_locations")
     fun getLocations(@Header("Authorization") token: String): Call<List<LocationUserModel>>

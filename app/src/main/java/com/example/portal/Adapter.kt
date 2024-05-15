@@ -23,6 +23,7 @@ import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
 import com.example.portal.models.EditUserResponse
+import com.example.portal.models.UserQueueModel
 
 
 class Adapter(
@@ -459,10 +460,11 @@ class Adapter(
                     editButton.visibility = View.GONE
 
 
-                    retrofitService.getisQueued("Bearer $accessToken").enqueue(object : Callback<Boolean> {
-                        override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                    retrofitService.getIsQueued("Bearer $accessToken").enqueue(object : Callback<UserQueueModel> {
+                        override fun onResponse(call: Call<UserQueueModel>, response: Response<UserQueueModel>) {
                             if (response.isSuccessful && response.body() != null) {
-                                isUserQueued = response.body()!!
+                                val userData = response.body()!!
+                                isUserQueued = userData.isQueued
                                 if (isUserQueued) {
                                     queueButton.text = "Cancel Queue"
                                 } else {
@@ -474,7 +476,7 @@ class Adapter(
                             }
                         }
 
-                        override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                        override fun onFailure(call: Call<UserQueueModel>, t: Throwable) {
                             // Handle failure case
                             // For example, if the request failed due to a network issue
                         }
