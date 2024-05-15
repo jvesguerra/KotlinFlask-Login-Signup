@@ -384,6 +384,7 @@ def login():
     else:
         return jsonify({'error': 'User not found'}), 404
 
+
 @app.route('/google-sign-up-endpoint', methods=['POST'])
 def google_sign_up():
     YOUR_WEB_CLIENT_ID = "562377295927-26r2kaucq403vbpo01pd5bjq9volo46n.apps.googleusercontent.com"
@@ -455,6 +456,30 @@ def get_data():
         })
     else:
         return jsonify({'error'}), 401
+
+
+@app.route('/get_driver/<int:vehicleId>', methods=['GET'])
+@jwt_required()
+def get_driver(vehicleId):
+    vehicle = Vehicle.query.filter_by(vehicleId=vehicleId).first()
+    user = User.query.filter_by(userId=vehicle.userId).first()
+
+    if user:
+        user_data = {
+            'userId': user.userId,
+            'firstName': user.firstName,
+            'lastName': user.lastName,
+            'email': user.email,
+            'contactNumber': user.contactNumber,
+            'route': vehicle.route,
+            'plateNumber': vehicle.plateNumber,
+        }
+
+        print(user_data)  # Printing user details
+
+        return jsonify(user_data), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404
 
 
 @app.route("/logout")
@@ -660,6 +685,7 @@ def get_incoming_passengers():
     else:
         return jsonify({'error': 'Vehicle not found'})
 
+
 @app.route('/get_locations', methods=['GET'])
 @jwt_required()
 def get_locations():
@@ -691,6 +717,7 @@ def get_locations():
 
     print(locations_dict)
     return jsonify(locations_dict)
+
 
 @app.route('/get_available_forestry_drivers', methods=['GET'])
 @jwt_required()
@@ -761,6 +788,7 @@ def get_available_rural_drivers():
 
     return jsonify(drivers_dict)
 
+
 @app.route('/get_users', methods=['GET'])
 @jwt_required()
 def get_users():
@@ -775,6 +803,7 @@ def get_users():
         'userType': user.userType,
     } for user in users]
     return jsonify(users_dict)
+
 
 @app.route('/get_auth_drivers', methods=['GET'])
 @jwt_required()
@@ -850,6 +879,7 @@ def admin_delete_user():
     except Exception as e:
         db.session.rollback()
         return f"An error occurred: {str(e)}"
+
 
 @app.route('/take_passengers', methods=['PUT'])
 @jwt_required()
