@@ -2,8 +2,11 @@ package com.example.portal.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.view.View
 import android.widget.Toast
+import androidx.navigation.Navigation
 import com.example.portal.Adapter
+import com.example.portal.R
 import com.example.portal.api.UserServe
 import retrofit2.Call
 import retrofit2.Callback
@@ -12,13 +15,14 @@ import retrofit2.Response
 class UserQueue(private val context: Context, private val adapter: Adapter) {
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
     private var accessToken: String? = sharedPreferences.getString("accessToken", null)
-    fun addQueuedUser(retrofitService: UserServe, position: Int, vehicleId: Int) {
+    fun addQueuedUser(retrofitService: UserServe, position: Int, vehicleId: Int, view: View) {
         val call = retrofitService.addQueuedUser("Bearer $accessToken",vehicleId)
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     //adapter.removeItemAt(position)
                     Toast.makeText(context, "Queued successfully", Toast.LENGTH_SHORT).show()
+                    Navigation.findNavController(view).navigate(R.id.toUserHome3)
                 } else {
                     // Handle error, could use response.code() to tailor the message
                     Toast.makeText(context, "Failed to queue", Toast.LENGTH_SHORT).show()

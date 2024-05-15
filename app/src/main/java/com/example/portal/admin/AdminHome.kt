@@ -151,9 +151,9 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         })
     }
 
-    override fun onQueueUser(position: Int, vehicleId: Int) {
+    override fun onQueueUser(position: Int, vehicleId: Int, view: View) {
         val userQueue = UserQueue(requireContext(), adapter)
-        userQueue.addQueuedUser(retrofitService, position, vehicleId)
+        userQueue.addQueuedUser(retrofitService, position, vehicleId, view)
     }
 
     override fun onRemoveUserQueue(position: Int, vehicleId: Int) {

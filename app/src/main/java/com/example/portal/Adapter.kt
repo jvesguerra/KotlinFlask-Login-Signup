@@ -19,12 +19,10 @@ import com.example.portal.api.UserServe
 import com.example.portal.api.OnQueueUserListener
 import com.example.portal.models.DriverVecLocModel
 import com.example.portal.models.EditDriverModel
-import com.example.portal.models.EditUserModel
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
 import com.example.portal.models.EditUserResponse
-import org.json.JSONObject
 
 
 class Adapter(
@@ -99,8 +97,9 @@ class Adapter(
         onDeleteUserListener?.onDeleteUser(userId, position)
     }
 
-    private fun queueUser(position: Int, vehicleId: Int) {
-        onQueueUserListener?.onQueueUser(position, vehicleId)
+    private fun queueUser(position: Int, vehicleId: Int, view: View) {
+        onQueueUserListener?.onQueueUser(position, vehicleId, view)
+
     }
 
     private fun removeUserQueue(position: Int, vehicleId: Int) {
@@ -252,12 +251,12 @@ class Adapter(
         builder.show()
     }
 
-    private fun showQueueConfirmationDialog(position: Int, vehicleId: Int) {
+    private fun showQueueConfirmationDialog(position: Int, vehicleId: Int, view: View) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Queue Driver")
         builder.setMessage("Are you sure you want to queue this driver?")
         builder.setPositiveButton("Yes") { dialogInterface: DialogInterface, i: Int ->
-            queueUser(position, vehicleId)
+            queueUser(position, vehicleId,view)
             dialogInterface.dismiss()
         }
         builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int ->
@@ -487,7 +486,7 @@ class Adapter(
                             showCancelQueueConfirmationDialog(position, user.vehicleId)
                         } else {
                             // If the user is not queued, show confirmation dialog to queue the user
-                            showQueueConfirmationDialog(position, user.vehicleId)
+                            showQueueConfirmationDialog(position, user.vehicleId,itemView)
                         }
                     }
                 }
