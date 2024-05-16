@@ -161,7 +161,7 @@ class DriverHome2 : Fragment(),
         }
 
         takePassengersButton.setOnClickListener {
-            takePassengers()
+            takePassengers(view)
         }
 
         viewQueuedList.setOnClickListener {
@@ -174,12 +174,13 @@ class DriverHome2 : Fragment(),
         return view
     }
 
-    private fun takePassengers() {
+    private fun takePassengers(view: View) {
         val call3 = retrofitService.takePassengers("Bearer $accessToken")
         call3.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Log.d("Success", response.code().toString())
+                    Navigation.findNavController(view).navigate(R.id.toQueuedList)
                 } else {
                     Log.d("Error", response.code().toString())
                 }
