@@ -107,7 +107,14 @@
         android:name="com.example.portal.driver.DriverHome2"
         android:label="driver_home2"
         tools:layout="@layout/driver_home2" />
-
+        <action
+            android:id="@+id/toQueuedList"
+            app:destination="@id/queuedList" />
+    <fragment
+        android:id="@+id/queuedList"
+        android:name="com.example.portal.driver.QueuedList"
+        android:label="queued_list"
+        tools:layout="@layout/queued_list" />
     <!-- User -->
     <fragment
         android:id="@+id/user_signup"

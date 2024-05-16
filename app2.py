@@ -801,6 +801,31 @@ def get_available_rural_drivers():
 
     return jsonify(drivers_dict)
 
+@app.route('/get_queued_users', methods=['GET'])
+@jwt_required()
+def get_queued_users():
+    userId = get_jwt_identity()
+    vehicle = db.session.query(Vehicle).filter_by(userId=userId).first()
+
+    if not vehicle:
+        return jsonify({"error": "Vehicle not found"}), 404
+
+    # Deserialize the queuedUsers JSON string
+    queued_user_ids = json.loads(vehicle.queuedUsers)
+
+    # Query the User table for each user ID in the list
+    users = db.session.query(User).filter(User.userId.in_(queued_user_ids)).all()
+
+    users_dict = [{
+        'userId': user.userId,
+        'firstName': user.firstName,
+        'lastName': user.lastName,
+        'contactNumber': user.contactNumber,
+        'email': user.email,
+        'userType': user.userType,
+    } for user in users]
+
+    return jsonify(users_dict)
 
 @app.route('/get_users', methods=['GET'])
 @jwt_required()

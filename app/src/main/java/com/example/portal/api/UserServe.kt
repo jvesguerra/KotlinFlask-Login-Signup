@@ -42,6 +42,9 @@ interface UserServe {
     @GET("/get_users")
     fun getUsers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
 
+    @GET("/get_queued_users")
+    fun getQueuedUsers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
+
     @GET("/get_available_forestry_drivers")
     fun getAvailableForestryDrivers(@Header("Authorization") token: String): Call<List<DriverVecLocModel>>
 

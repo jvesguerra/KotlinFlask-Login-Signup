@@ -24,6 +24,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.Navigation
 import com.example.portal.api.ForegroundOnlyLocationService
 import com.example.portal.R
 import com.example.portal.SharedPreferenceUtil
@@ -81,6 +82,7 @@ class DriverHome2 : Fragment(),
     private lateinit var foregroundOnlyBroadcastReceiver: ForegroundOnlyBroadcastReceiver
     private lateinit var foregroundOnlyLocationButton: Button
     private lateinit var takePassengersButton: Button
+    private lateinit var viewQueuedList: Button
     private lateinit var outputTextView: TextView
     private lateinit var petitionCountText: TextView
     private lateinit var incomingPassengersText: TextView
@@ -132,6 +134,7 @@ class DriverHome2 : Fragment(),
         // Initialize UI Elements
         foregroundOnlyLocationButton = view.findViewById(R.id.foreground_only_location_button)
         takePassengersButton = view.findViewById(R.id.takePassengers)
+        viewQueuedList = view.findViewById(R.id.queuedList)
         //outputTextView = view.findViewById(R.id.output_text_view)
         petitionCountText = view.findViewById(R.id.petitionCount)
         incomingPassengersText = view.findViewById(R.id.incomingPassengersText)
@@ -159,6 +162,10 @@ class DriverHome2 : Fragment(),
 
         takePassengersButton.setOnClickListener {
             takePassengers()
+        }
+
+        viewQueuedList.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.toQueuedList)
         }
 
         // Hide button
