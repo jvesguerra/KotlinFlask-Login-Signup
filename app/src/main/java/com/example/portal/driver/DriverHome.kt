@@ -10,9 +10,12 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.portal.R
 import com.example.portal.api.RetrofitInstance
+import com.example.portal.api.SessionManager
+import com.example.portal.api.SessionManager.signOut
 import com.example.portal.api.UserServe
 import retrofit2.Call
 import retrofit2.Callback
@@ -22,6 +25,8 @@ class DriverHome : Fragment() {
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var navController: NavController // Declare NavController
+    private var accessToken: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,16 +35,37 @@ class DriverHome : Fragment() {
         val view = inflater.inflate(R.layout.driver_home, container, false)
         sharedPreferences =
             requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
-        val accessToken = sharedPreferences.getString("accessToken", "")
+        accessToken = sharedPreferences.getString("accessToken", "")
+
         val firstName = sharedPreferences.getString("firstName", "")
         val homeString: TextView = view.findViewById(R.id.driverHomeText)
-        val readyButton: Button = view.findViewById(R.id.readyButton)
 
         homeString.text = "Hello $firstName,"
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize NavController in onViewCreated()
+        navController = Navigation.findNavController(view)
+
+        // Set click listeners
+        val logoutButton: Button = view.findViewById(R.id.btnLogout)
+        val readyButton: Button = view.findViewById(R.id.readyButton)
+
         readyButton.setOnClickListener {
             readyDriver(accessToken)
         }
-        return view
+
+        logoutButton.setOnClickListener {
+            signOut(navController)
+        }
+    }
+
+    private fun signOut(navController: NavController) {
+        signOut(requireContext(), navController)
     }
 
     private fun readyDriver(accessToken: String?) {

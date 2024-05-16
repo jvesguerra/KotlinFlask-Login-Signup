@@ -144,6 +144,9 @@
         <action
             android:id="@+id/toUserHome3"
             app:destination="@id/userHome3" />
+        <action
+            android:id="@+id/toLogin"
+            app:destination="@id/LogInPage" />
     <fragment
         android:id="@+id/userHome3"
         android:name="com.example.portal.user.UserHome3"

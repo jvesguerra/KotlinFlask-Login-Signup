@@ -385,6 +385,18 @@ def login():
     else:
         return jsonify({'error': 'User not found'}), 404
 
+@app.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if user:
+        logout_user()
+        session.clear()
+        return jsonify({"msg": "Logout successful"}), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
+
 
 @app.route('/google-sign-up-endpoint', methods=['POST'])
 def google_sign_up():
@@ -509,13 +521,13 @@ def get_is_queued():
         return jsonify({'error': 'Data not found'}), 404
 
 
-@app.route("/logout")
-@cross_origin(supports_credentials=True)
-@login_required
-def logout():
-    session.pop('user_id', None)
-    logout_user()
-    return jsonify({'message': 'Logged out'})
+# @app.route("/logout")
+# @cross_origin(supports_credentials=True)
+# @login_required
+# def logout():
+#     session.pop('user_id', None)
+#     logout_user()
+#     return jsonify({'message': 'Logged out'})
 
 
 @app.route('/add_queued_user/<int:vehicleId>', methods=['POST'])

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +43,8 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     private var accessToken: String? = null
     private lateinit var scheduledExecutorService: ScheduledExecutorService
     private var route: String? = null
+    private lateinit var navController: NavController // Initialize NavController here
+    private val bundle = Bundle()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,23 +52,13 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     ): View? {
         val view = inflater.inflate(R.layout.user_home2, container, false)
         route = arguments?.getString("route")
-        val bundle = Bundle()
+
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
         accessToken = sharedPreferences.getString("accessToken", null)
 
         btnPetition = view.findViewById(R.id.btnPetition)
         val logoutButton: Button = view.findViewById(R.id.btnLogout)
-        logoutButton.setOnClickListener {
-            signOut()
-            Navigation.findNavController(view).navigate(R.id.logout)
-        }
-
-        btnPetition.setOnClickListener {
-            bundle.putString("route", route)
-            Navigation.findNavController(view).navigate(R.id.toPetition, bundle)
-        }
-
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = Adapter(
@@ -78,6 +71,25 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         recyclerView.adapter = adapter
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize NavController
+        navController = Navigation.findNavController(view)
+
+        // Set click listener for logout button
+        val logoutButton: Button = view.findViewById(R.id.btnLogout)
+        logoutButton.setOnClickListener {
+            signOut(navController)
+        }
+
+        // Set click listener for petition button
+        btnPetition.setOnClickListener {
+            bundle.putString("route", route)
+            navController.navigate(R.id.toPetition, bundle)
+        }
     }
 
     override fun onResume() {
@@ -121,8 +133,9 @@ class UserHome2 : Fragment(), OnDeleteUserListener, OnQueueUserListener {
             }
         })
     }
-    private fun signOut() {
-        SessionManager.signOut(requireContext())
+    private fun signOut(navController: NavController) {
+        SessionManager.signOut(requireContext(), navController)
+        //Navigation.findNavController(view).navigate(R.id.toLogin)
     }
 
     override fun onDeleteUser(userId: Int, position: Int) {
