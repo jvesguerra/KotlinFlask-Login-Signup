@@ -30,6 +30,7 @@ class UserHome3 : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var cancelButton: Button
 
+    private lateinit var nameTextView: TextView
     private lateinit var itemNameTextView: TextView
     private lateinit var routeTextView: TextView
     private lateinit var plateNumberTextView: TextView
@@ -48,6 +49,7 @@ class UserHome3 : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.user_home3, container, false)
 
+        nameTextView = view.findViewById(R.id.NameTextView)
         itemNameTextView = view.findViewById(R.id.itemNameTextView)
         routeTextView = view.findViewById(R.id.RouteTextView)
         plateNumberTextView = view.findViewById(R.id.PlateNumberTextView)
@@ -56,6 +58,11 @@ class UserHome3 : Fragment() {
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         accessToken = sharedPreferences.getString("accessToken", null)
         driverID = arguments?.getInt("driverID").toString()
+
+        val firstName = sharedPreferences.getString("firstName", "")
+        val lastName = sharedPreferences.getString("lastName", "")
+
+        nameTextView.text = "Hi, $firstName $lastName"
 
         Log.d("UserHome3", driverID!!)
         fetchedDriver(driverID!!.toInt())
