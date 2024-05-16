@@ -41,7 +41,7 @@ class Adapter(
     private var accessToken: String? = sharedPreferences.getString("accessToken", null)
 
     enum class ContextType {
-        ADMIN_HOME, PENDING_LISTS, USER_HOME2, USERS
+        ADMIN_HOME, PENDING_LISTS, USER_HOME2, USERS, QUEUED_LIST
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
@@ -512,6 +512,21 @@ class Adapter(
                     emailTextView.visibility = View.VISIBLE
 
                     editButton.visibility = View.VISIBLE
+
+                    deleteButton.visibility = View.GONE
+                    authorizeButton.visibility = View.GONE
+                    showDriverDetails.visibility = View.GONE
+                    queueButton.visibility = View.GONE
+                    isFullTextView.visibility = View.GONE
+                    hasDepartedTextView.visibility = View.GONE
+
+                }
+                ContextType.QUEUED_LIST -> {
+                    routeTextView.visibility = View.GONE
+                    plateNumberTextView.visibility = View.GONE
+                    emailTextView.visibility = View.GONE
+
+                    editButton.visibility = View.GONE
 
                     deleteButton.visibility = View.GONE
                     authorizeButton.visibility = View.GONE
