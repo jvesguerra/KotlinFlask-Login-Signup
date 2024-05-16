@@ -97,6 +97,9 @@ interface UserServe {
     @POST("/login")
     fun login(@Body credentials: Credentials): Call<LoginResponse>
 
+    @POST("/logout")
+    fun logout(@Header("Authorization") token: String): Call<Void>
+
     @POST("/signin")
     fun signIn(@Body newUser: UserModel): Call<UserResponse>
 

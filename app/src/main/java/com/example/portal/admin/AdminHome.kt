@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.portal.R
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +44,9 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
     private lateinit var handler: Handler
     private val retrofitService: UserServe = RetrofitInstance.getRetrofitInstance()
         .create(UserServe::class.java)
+    private lateinit var navController: NavController // Initialize NavController here
+
+    private val bundle = Bundle() // Declare bundle here
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,13 +55,7 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         val view = inflater.inflate(R.layout.admin_home, container, false)
         sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
         accessToken = sharedPreferences.getString("accessToken", null)
-        handler = Handler(Looper.getMainLooper())
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-
-        val logoutButton: Button = view.findViewById(R.id.btnLogout)
-        val mapsButton: Button = view.findViewById(R.id.btnMap)
-        val pendingListsButton: Button = view.findViewById(R.id.btnPending)
-        val usersButton: Button = view.findViewById(R.id.btnUsers)
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -70,26 +68,37 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         )
         recyclerView.adapter = adapter
 
+        return view
+    }
 
-        // Button Listeners
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize NavController in onViewCreated()
+        navController = Navigation.findNavController(view)
+
+        // Set click listeners
+        val logoutButton: Button = view.findViewById(R.id.btnLogout)
+        val mapsButton: Button = view.findViewById(R.id.btnMap)
+        val pendingListsButton: Button = view.findViewById(R.id.btnPending)
+        val usersButton: Button = view.findViewById(R.id.btnUsers)
+
         pendingListsButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.toPendingLists)
+            navController.navigate(R.id.toPendingLists)
         }
 
         usersButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.toUsers)
+            navController.navigate(R.id.toUsers)
         }
 
         mapsButton.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.toMaps)
+            navController.navigate(R.id.toMaps)
         }
 
         logoutButton.setOnClickListener {
-            signOut()
-            Navigation.findNavController(view).navigate(R.id.logout)
+            signOut(navController)
+            navController.navigate(R.id.logout)
         }
-
-        return view
     }
 
     override fun onResume() {
@@ -166,8 +175,8 @@ class AdminHome : Fragment(), OnDeleteUserListener, OnQueueUserListener {
         editUser.editUser(retrofitService, userId, position, userModel)
     }
 
-    private fun signOut() {
-        SessionManager.signOut(requireContext())
+    private fun signOut(navController: NavController) {
+        SessionManager.signOut(requireContext(), navController)
     }
 }
 
