@@ -603,8 +603,10 @@ def change_is_queued(userId):
         return {'error': f'An error occurred: {str(e)}'}, 500
 
 
-@app.route('/is_authorized/<int:userId>', methods=['GET'])
-def is_authorized(userId):
+@app.route('/is_authorized', methods=['GET'])
+@jwt_required()
+def is_authorized():
+    userId = get_jwt_identity()
     try:
         user = User.query.get(userId)
         if user.authorized:
@@ -825,6 +827,8 @@ def get_queued_users():
         'userType': user.userType,
     } for user in users]
 
+    print(users_dict)
+
     return jsonify(users_dict)
 
 @app.route('/get_users', methods=['GET'])
@@ -938,6 +942,7 @@ def take_passengers():
                     return jsonify({'error': 'Forestry petition count is already 0'}), 400
                 array_to_transfer = forestry_petition_count_array
                 petition.forestryPetitionCount = json.dumps([])  # Setting an empty array
+                User.query.filter(User.userId.in_(array_to_transfer)).update({'isQueued': True}, synchronize_session=False)
                 User.query.filter_by(isPetitioned=1).update({'isPetitioned': 0}, synchronize_session=False)
             else:
                 rural_petition_count_array = json.loads(petition.ruralPetitionCount)
@@ -945,6 +950,7 @@ def take_passengers():
                     return jsonify({'error': 'Rural petition count is already 0'}), 400
                 array_to_transfer = rural_petition_count_array
                 petition.ruralPetitionCount = json.dumps([])  # Setting an empty array
+                User.query.filter(User.userId.in_(array_to_transfer)).update({'isQueued': True}, synchronize_session=False)
                 User.query.filter_by(isPetitioned=2).update({'isPetitioned': 0}, synchronize_session=False)
 
             # Convert the array to a JSON string

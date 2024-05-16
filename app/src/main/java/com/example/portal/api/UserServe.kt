@@ -72,8 +72,8 @@ interface UserServe {
     @GET("/get_rural_petition")
     fun getRuralPetition(@Header("Authorization") token: String): Call<Int>
 
-    @GET("is_authorized/{userId}")
-    fun isAuthorized(@Path("userId") userId: Int): Call<Boolean>
+    @GET("/is_authorized")
+    fun isAuthorized(@Header("Authorization") token: String): Call<Boolean>
 
     // POST
     @POST("/add_location")
