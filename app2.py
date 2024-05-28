@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session, abort
+from flask import Flask, jsonify, request, session, abort, render_template, make_response
 from sqlalchemy import text, DateTime, func
 from flask_cors import CORS, cross_origin
 from flask_restful import Api, Resource
@@ -32,7 +32,7 @@ app = Flask(__name__)
 api = Api(app)
 CORS(app)
 jwt = JWTManager(app)
-# run_with_ngrok(app)
+#run_with_ngrok(app)
 
 # Configure your MySQL database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost/travelbetter-dev'
@@ -377,9 +377,9 @@ def login():
             session['user_id'] = user.userId
             access_token = create_access_token(identity=user.userId)
             login_user(user)
-            return jsonify({
-                'accessToken': access_token
-            })
+            response = make_response(jsonify({'accessToken': access_token}))
+            response.set_cookie('accessToken', access_token)
+            return response
         else:
             return jsonify({'error': 'Invalid password'}), 401
     else:
@@ -1147,6 +1147,14 @@ def get_petition():
         print(f"Error occurred while processing: {str(e)}")
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
+# Route to render the admin home page
+@app.route('/')
+def login_page():
+    return render_template('admin/login_page.html')
+
+@app.route('/admin_home')
+def admin_home():
+    return render_template('admin/admin_home.html')
 
 if __name__ == '__main__':
     print("Flask Server")
