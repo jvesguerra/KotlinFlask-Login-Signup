@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#imageViewLogo {
+    margin-left: 24px;
+    margin-top: 40px;
+}
+
+#textViewTitle {
+    margin-top: 16px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.recyclerView {
+    margin-top: 16px;
+    padding: 16px;
+}
+
+button {
+    margin: 16px;
+    padding: 8px 16px;
+    font-size: 16px;
+}
+
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.card-body {
+    padding: 10px;
+}

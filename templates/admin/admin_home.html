@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Home</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='admin_home.css') }}">
+</head>
+<body>
+    <!-- Logo -->
+    <img id="imageViewLogo" src="logo.png" alt="Logo" width="200" height="73">
+
+    <!-- Title -->
+    <h1 id="textViewTitle">Home</h1>
+
+    <!-- RecyclerView -->
+    <div class="recyclerView" id="recyclerView">
+        <!-- RecyclerView items will be dynamically populated here -->
+    </div>
+
+    <!-- Buttons -->
+    <button id="btnMap">Map</button>
+    <button id="btnPending">Pending</button>
+    <button id="btnUsers">Users</button>
+    <button id="btnLogout">Sign Out</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Function to make AJAX request to Flask endpoint
+      function getAuthDrivers() {
+        // Get the access token from the cookie
+        const accessToken = getCookie('accessToken');
+
+        // Check if access token is available
+        if (!accessToken) {
+            console.error('Access token not found');
+            return;
+        }
+
+        fetch('/get_auth_drivers', {
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing items
+            document.getElementById('recyclerView').innerHTML = '';
+
+            // Iterate through data and create cards for each driver
+            data.forEach(driver => {
+                let card = document.createElement('div');
+                card.classList.add('card');
+
+                // Populate card with driver details
+                card.innerHTML = `
+                    <div class="card-header">${driver.firstName} ${driver.lastName}</div>
+                    <div class="card-body">
+                        <p>Email: ${driver.email}</p>
+                        <p>Contact Number: ${driver.contactNumber}</p>
+                        <p>Plate Number: ${driver.plateNumber}</p>
+                        <p>Route: ${driver.route}</p>
+                    </div>
+                `;
+
+                // Append card to RecyclerView
+                document.getElementById('recyclerView').appendChild(card);
+            });
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // Call the function to populate RecyclerView when the page loads
+    getAuthDrivers();
+
+    // Function to get cookie value by name
+    function getCookie(name) {
+        const cookies = document.cookie.split('; ');
+        for (let cookie of cookies) {
+            const [cookieName, cookieValue] = cookie.split('=');
+            if (cookieName === name) {
+                return cookieValue;
+            }
+        }
+        return null;
+    }
+    setInterval(getAuthDrivers, 5 * 60 * 1000); // 5 minutes interval
+        });
+    </script>
+</body>
+</html>
